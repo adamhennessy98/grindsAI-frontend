@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GrindsAI — Your personal LC tutor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f9fafb;
+    --bg-muted: #f3f4f6;
+    --border: #e5e7eb;
+    --border-soft: #eef0f3;
+    --text: #111827;
+    --text-2: #374151;
+    --text-3: #6b7280;
+    --text-4: #9ca3af;
+    --accent: #10b981;
+    --accent-600: #059669;
+    --accent-700: #047857;
+    --accent-50: #ecfdf5;
+    --accent-100: #d1fae5;
+    --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.04), 0 1px 1px rgba(17, 24, 39, 0.03);
+    --shadow: 0 1px 2px rgba(17, 24, 39, 0.04), 0 8px 24px -12px rgba(17, 24, 39, 0.08);
+    --shadow-lg: 0 1px 2px rgba(17, 24, 39, 0.04), 0 24px 48px -24px rgba(17, 24, 39, 0.18);
+    --radius: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+  }
+  * { box-sizing: border-box; }
+  html, body, #root { height: 100%; }
+  body {
+    margin: 0;
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--bg);
+    color: var(--text);
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.005em;
+  }
+  button, input, textarea { font-family: inherit; color: inherit; }
+  button { cursor: pointer; border: 0; background: none; padding: 0; }
+  a { color: inherit; text-decoration: none; }
+  .mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; height: 40px; padding: 0 16px;
+    border-radius: 8px; font-weight: 500; font-size: 14px;
+    transition: all 140ms ease;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--accent); color: white;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15), 0 1px 2px rgba(16,185,129,0.25);
+  }
+  .btn-primary:hover { background: var(--accent-600); }
+  .btn-primary:active { transform: translateY(0.5px); }
+  .btn-primary:disabled { background: #d1d5db; box-shadow: none; cursor: not-allowed; }
+  .btn-ghost { color: var(--text-2); }
+  .btn-ghost:hover { color: var(--text); background: var(--bg-muted); }
+  .btn-outline {
+    border: 1px solid var(--border); background: white; color: var(--text);
+  }
+  .btn-outline:hover { background: var(--bg-soft); border-color: #d1d5db; }
+  .btn-lg { height: 48px; padding: 0 22px; font-size: 15px; border-radius: 10px; }
+
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+  .dotgrid {
+    background-image: radial-gradient(rgba(17,24,39,0.08) 1px, transparent 1px);
+    background-size: 22px 22px;
+    background-position: -1px -1px;
+  }
+  .fade-mask {
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 40%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 40%, transparent 80%);
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; border: 2px solid white; }
+  ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--accent-50); color: var(--accent-700);
+    font-size: 12px; font-weight: 500;
+    border: 1px solid var(--accent-100);
+  }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .fade-up { animation: fadeUp 380ms ease both; }
+  .fade-up.delay-1 { animation-delay: 60ms; }
+  .fade-up.delay-2 { animation-delay: 120ms; }
+  .fade-up.delay-3 { animation-delay: 180ms; }
+  .fade-up.delay-4 { animation-delay: 240ms; }
+
+  @keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-3px); opacity: 1; } }
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 999px; background: var(--text-3); margin-right: 4px; animation: typing 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.15s; }
+  .dot:nth-child(3) { animation-delay: 0.3s; }
+
+  .hide-mobile { display: initial; }
+  .show-mobile { display: none; }
+  @media (max-width: 760px) {
+    .hide-mobile { display: none !important; }
+    .show-mobile { display: initial; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+
+// ─── Icons ───────────────────────────────────────────────────────────────────
+const Icon = {
+  Logo: ({ size = 28 }) => (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="#10b981" />
+      <path d="M11 21.5V13a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v8.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M21 16.5h-3.2a2.3 2.3 0 0 0 0 4.6H21" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  Check: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  ),
+  ArrowRight: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  ),
+  Send: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 2 11 13" />
+      <path d="M22 2 15 22l-4-9-9-4 20-7Z" />
+    </svg>
+  ),
+  Plus: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  ),
+  Menu: ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" />
+    </svg>
+  ),
+  Close: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" />
+    </svg>
+  ),
+  Google: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M22.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.22-4.75 3.22-8.11Z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.99.66-2.25 1.05-3.72 1.05-2.86 0-5.28-1.93-6.15-4.53H2.18v2.85A11 11 0 0 0 12 23Z"/>
+      <path fill="#FBBC05" d="M5.85 14.1A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.43.35-2.1V7.05H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.95l3.67-2.85Z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.07.56 4.21 1.65l3.16-3.16C17.46 2.1 14.97 1 12 1A11 11 0 0 0 2.18 7.05l3.67 2.85C6.72 7.3 9.14 5.38 12 5.38Z"/>
+    </svg>
+  ),
+  Sparkle: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>
+    </svg>
+  ),
+  Book: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>
+    </svg>
+  ),
+  MessageCircle: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  ),
+  Target: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" />
+    </svg>
+  ),
+  Shield: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  ),
+  Clock: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" /><polyline points="12 7 12 12 15 14" />
+    </svg>
+  ),
+  ChevronDown: ({ size = 14 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  ),
+  Settings: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  ),
+  Triangle: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3.5 20h17a1 1 0 0 0 .86-1.5l-8.5-14.5a1 1 0 0 0-1.72 0l-8.5 14.5A1 1 0 0 0 3.5 20Z" />
+    </svg>
+  ),
+  Flask: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 3h6" /><path d="M10 3v6L4.5 19a1 1 0 0 0 .9 1.5h13.2a1 1 0 0 0 .9-1.5L14 9V3" />
+      <path d="M7 15h10" />
+    </svg>
+  ),
+  Leaf: ({ size = 18 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 20A7 7 0 0 1 4 13c0-4 3-9 9-10 1.5 5.5 0 11-2 13" />
+      <path d="M2 21c2-3 5-5 9-7" />
+    </svg>
+  ),
+  Eye: ({ size = 16 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z" /><circle cx="12" cy="12" r="3"/>
+    </svg>
+  ),
+};
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+const inputStyle = {
+  width: '100%',
+  height: 40,
+  padding: '0 12px',
+  background: 'white',
+  border: '1px solid var(--border)',
+  borderRadius: 8,
+  fontSize: 14,
+  outline: 'none',
+  transition: 'border-color 120ms, box-shadow 120ms',
+};
+
+function Field({ label, right, children }) {
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <span style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        fontSize: 12.5, color: 'var(--text-2)', fontWeight: 500,
+      }}>
+        {label}
+        {right}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+function Auth({ navigate, initialMode = 'signup' }) {
+  const [mode, setMode] = React.useState(initialMode);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [name, setName] = React.useState('');
+  const [showPwd, setShowPwd] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  React.useEffect(() => { setMode(initialMode); }, [initialMode]);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setError('');
+    if (!email.includes('@')) { setError('Please enter a valid email.'); return; }
+    if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
+    setLoading(true);
+    setTimeout(() => { setLoading(false); navigate('chat'); }, 700);
+  };
+
+  return (
+    <div style={{
+      minHeight: '100vh', background: 'var(--bg-soft)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      padding: '40px 20px 24px',
+    }}>
+      <button onClick={() => navigate('landing')} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
+        <Icon.Logo size={32} />
+        <span style={{ fontSize: 18, fontWeight: 600, letterSpacing: '-0.01em' }}>GrindsAI</span>
+      </button>
+
+      <div className="fade-up" style={{
+        width: '100%', maxWidth: 400,
+        background: 'white', border: '1px solid var(--border)', borderRadius: 16,
+        padding: 28, boxShadow: 'var(--shadow)',
+      }}>
+        <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0, letterSpacing: '-0.015em' }}>
+          {mode === 'signup' ? 'Create your account' : 'Welcome back'}
+        </h1>
+        <p style={{ margin: '6px 0 22px', color: 'var(--text-3)', fontSize: 14 }}>
+          {mode === 'signup' ? 'Start your free 7-day trial. No card required.' : 'Sign in to continue your study session.'}
+        </p>
+
+        <button type="button" className="btn btn-outline" style={{ width: '100%', height: 42 }}>
+          <Icon.Google size={16} />
+          Continue with Google
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          <span className="mono" style={{ fontSize: 11, color: 'var(--text-4)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>or with email</span>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+
+        <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {mode === 'signup' && (
+            <Field label="Name">
+              <input value={name} onChange={e => setName(e.target.value)} placeholder="Aoife Murphy" style={inputStyle} />
+            </Field>
+          )}
+          <Field label="Email">
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@school.ie" style={inputStyle} autoComplete="email" />
+          </Field>
+          <Field
+            label="Password"
+            right={mode === 'login' && <a href="#" style={{ fontSize: 12, color: 'var(--text-3)' }}>Forgot?</a>}
+          >
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPwd ? 'text' : 'password'}
+                value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{ ...inputStyle, paddingRight: 38 }}
+                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+              />
+              <button type="button" onClick={() => setShowPwd(s => !s)} style={{
+                position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                color: 'var(--text-4)', padding: 6, display: 'grid', placeItems: 'center',
+              }} aria-label="Show password">
+                <Icon.Eye size={16} />
+              </button>
+            </div>
+          </Field>
+
+          {error && (
+            <div style={{ fontSize: 13, color: '#b91c1c', background: '#fef2f2', border: '1px solid #fecaca', padding: '8px 10px', borderRadius: 8 }}>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" className="btn btn-primary" style={{ width: '100%', height: 42, marginTop: 4 }} disabled={loading}>
+            {loading
+              ? <span><span className="dot" /><span className="dot" /><span className="dot" /></span>
+              : (mode === 'signup' ? 'Create account' : 'Sign in')}
+          </button>
+        </form>
+
+        <p style={{ marginTop: 20, marginBottom: 0, fontSize: 13.5, color: 'var(--text-3)', textAlign: 'center' }}>
+          {mode === 'signup' ? 'Already have an account?' : 'New to GrindsAI?'}{' '}
+          <button onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')} style={{ color: 'var(--accent-700)', fontWeight: 500 }}>
+            {mode === 'signup' ? 'Sign in' : 'Create one'}
+          </button>
+        </p>
+      </div>
+
+      <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-4)', textAlign: 'center', maxWidth: 360 }}>
+        By continuing you agree to our <a href="#" style={{ textDecoration: 'underline' }}>Terms</a> and <a href="#" style={{ textDecoration: 'underline' }}>Privacy Policy</a>.
+      </p>
+    </div>
+  );
+}
+
+// ─── Chat ─────────────────────────────────────────────────────────────────────
+const SUBJECTS = [
+  { id: 'maths',     name: 'Maths',     icon: 'Triangle',       enabled: true },
+  { id: 'biology',   name: 'Biology',   icon: 'Leaf',           enabled: true },
+  { id: 'chemistry', name: 'Chemistry', icon: 'Flask',          enabled: true },
+  { id: 'physics',   name: 'Physics',   icon: 'Target',         enabled: false },
+  { id: 'english',   name: 'English',   icon: 'Book',           enabled: false },
+  { id: 'irish',     name: 'Irish',     icon: 'Book',           enabled: false },
+];
+
+const STARTERS = {
+  maths:     ['Explain the quadratic formula', 'Help me with differentiation', "What's on the Strand 2 syllabus?"],
+  biology:   ['How does photosynthesis actually work?', 'Explain the structure of DNA', 'Difference between mitosis and meiosis?'],
+  chemistry: ['Explain the mole concept', 'How do I balance redox equations?', 'Why does atomic radius change across a period?'],
+};
+
+const SAMPLE_CONVO = [
+  { role: 'user', text: "Can you explain Pythagoras' theorem to me?" },
+  { role: 'ai',   text: "Great topic! Before I explain it, let me ask you something — if you have a right-angled triangle, what's special about the longest side? Do you know what it's called?" },
+  { role: 'user', text: 'Is it called the hypotenuse?' },
+  { role: 'ai',   text: "Exactly right. The hypotenuse is always the side opposite the right angle, and it's always the longest side.\n\nNow, Pythagoras noticed a relationship between the lengths of all three sides. If the hypotenuse is c, and the other two sides are a and b — what do you think that relationship might look like? Take a guess, even if you're not sure." },
+  { role: 'user', text: 'Is it a² + b² = c²?' },
+  { role: 'ai',   text: "Perfect — that's it exactly. **a² + b² = c²**.\n\nNow let's make sure you can *use* it, not just recall it. If a = 3 and b = 4, what is c? Show me your working." },
+];
+
+function renderAI(text) {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  return parts.map((p, i) => {
+    if (p.startsWith('**') && p.endsWith('**')) return <strong key={i} style={{ fontWeight: 600 }}>{p.slice(2, -2)}</strong>;
+    if (p.startsWith('*') && p.endsWith('*')) return <em key={i}>{p.slice(1, -1)}</em>;
+    return p;
+  });
+}
+
+function genericSocraticReply(subjectId, userText) {
+  const lower = userText.toLowerCase();
+  if ((lower.includes('answer') && (lower.includes('just') || lower.includes('give'))) || lower.includes('tell me')) {
+    return "I hear you — but if I just hand you the answer, you'll forget it by Friday. Let's try a smaller version of the problem together. What's the very first thing you'd write down to start it?";
+  }
+  if (/^\s*c\s*=?\s*5/.test(lower) || lower.includes('=5') || lower.includes('= 5')) {
+    return "Spot on — c = 5. You worked through 3² + 4² = 9 + 16 = 25, and √25 = 5.\n\nNow here's the deeper question: *why* does squaring the sides work? What is a² actually measuring, geometrically?";
+  }
+  if (subjectId === 'biology') {
+    return "Good question. Before we dive in — what do *you* already know about it from class? Even a half-remembered detail gives us a starting point we can build from.";
+  }
+  if (subjectId === 'chemistry') {
+    return "Let's think about it from first principles. What does the question actually want you to find — and what information does it hand you for free?";
+  }
+  return "Nice question. Let me ask you one back: what part of this feels unclear to you right now? Pinpointing that is half the battle.";
+}
+
+function SidebarSectionLabel({ children }) {
+  return (
+    <div className="mono" style={{
+      fontSize: 10.5, color: 'var(--text-4)', textTransform: 'uppercase',
+      letterSpacing: '0.08em', padding: '0 6px 8px',
+    }}>{children}</div>
+  );
+}
+
+function Sidebar({ navigate, subjectId, setSubjectId, level, setLevel, newChat, open, setOpen }) {
+  return (
+    <aside className={`grindsai-sidebar ${open ? 'open' : ''}`} style={{
+      width: 240, background: 'var(--bg-soft)', borderRight: '1px solid var(--border)',
+      display: 'flex', flexDirection: 'column', height: '100vh',
+    }}>
+      <div style={{ padding: '18px 16px 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <button onClick={() => navigate('landing')} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+            <Icon.Logo size={24} />
+            <span style={{ fontSize: 15.5, fontWeight: 600, letterSpacing: '-0.01em' }}>GrindsAI</span>
+          </button>
+          <button onClick={() => setOpen(false)} className="show-mobile" style={{ color: 'var(--text-3)', padding: 4 }} aria-label="Close sidebar">
+            <Icon.Close size={18} />
+          </button>
+        </div>
+        <button onClick={newChat} className="btn btn-primary" style={{ width: '100%', height: 38, fontWeight: 500 }}>
+          <Icon.Plus size={14} /> New chat
+        </button>
+      </div>
+
+      <div style={{ padding: '14px 14px 0', flex: 1, overflow: 'auto' }}>
+        <SidebarSectionLabel>Subject</SidebarSectionLabel>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 22 }}>
+          {SUBJECTS.map(s => {
+            const IcnCmp = Icon[s.icon] || Icon.Book;
+            const active = subjectId === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => s.enabled && setSubjectId(s.id)}
+                disabled={!s.enabled}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '8px 10px', borderRadius: 8,
+                  background: active ? 'white' : 'transparent',
+                  border: active ? '1px solid var(--border)' : '1px solid transparent',
+                  boxShadow: active ? 'var(--shadow-sm)' : 'none',
+                  color: !s.enabled ? 'var(--text-4)' : (active ? 'var(--text)' : 'var(--text-2)'),
+                  fontSize: 13.5,
+                  fontWeight: active ? 500 : 400,
+                  cursor: s.enabled ? 'pointer' : 'not-allowed',
+                  textAlign: 'left',
+                  transition: 'all 120ms',
+                  opacity: s.enabled ? 1 : 0.85,
+                }}
+                onMouseEnter={(e) => { if (s.enabled && !active) e.currentTarget.style.background = 'rgba(17,24,39,0.04)'; }}
+                onMouseLeave={(e) => { if (s.enabled && !active) e.currentTarget.style.background = 'transparent'; }}
+              >
+                <span style={{
+                  width: 22, height: 22, display: 'grid', placeItems: 'center',
+                  color: active ? 'var(--accent-700)' : (s.enabled ? 'var(--text-3)' : 'var(--text-4)'),
+                  flexShrink: 0,
+                }}>
+                  <IcnCmp size={15} />
+                </span>
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.name}</span>
+                {!s.enabled && (
+                  <span style={{
+                    fontSize: 9.5, color: 'var(--text-4)', fontFamily: "'Geist Mono', monospace",
+                    letterSpacing: '0.04em', textTransform: 'uppercase',
+                    border: '1px solid var(--border)', borderRadius: 4, padding: '1px 4px',
+                  }}>Soon</span>
+                )}
+                {active && (
+                  <span style={{ width: 6, height: 6, borderRadius: 99, background: 'var(--accent)' }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        <SidebarSectionLabel>Level</SidebarSectionLabel>
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3,
+          padding: 3, background: 'white', border: '1px solid var(--border)', borderRadius: 9,
+          marginBottom: 22,
+        }}>
+          {[['HL', 'Higher'], ['OL', 'Ordinary']].map(([k, label]) => (
+            <button key={k} onClick={() => setLevel(k)} style={{
+              padding: '7px 10px', fontSize: 13, borderRadius: 6,
+              background: level === k ? 'var(--accent)' : 'transparent',
+              color: level === k ? 'white' : 'var(--text-3)',
+              fontWeight: level === k ? 500 : 400,
+              transition: 'all 120ms',
+              boxShadow: level === k ? 'inset 0 -1px 0 rgba(0,0,0,0.12), 0 1px 1.5px rgba(16,185,129,0.25)' : 'none',
+            }}>{label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding: '12px', borderTop: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{
+          width: 30, height: 30, borderRadius: 99, background: 'var(--accent)',
+          color: 'white', display: 'grid', placeItems: 'center', fontWeight: 600, fontSize: 12,
+          flexShrink: 0,
+        }}>AM</div>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ color: 'var(--text)', fontWeight: 500, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Aoife Murphy</div>
+          <div style={{ fontSize: 11.5, color: 'var(--text-4)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>aoife.m@school.ie</div>
+        </div>
+        <button aria-label="Settings" style={{
+          width: 30, height: 30, borderRadius: 8,
+          color: 'var(--text-3)', display: 'grid', placeItems: 'center',
+          transition: 'all 120ms',
+        }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(17,24,39,0.05)'; e.currentTarget.style.color = 'var(--text)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-3)'; }}
+        >
+          <Icon.Settings size={16} />
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+function ChatHeader({ subject, SubjectIconCmp, level, onMenu, navigate }) {
+  return (
+    <header style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '14px 24px', borderBottom: '1px solid var(--border)', background: 'white',
+      minHeight: 60, flexShrink: 0,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+        <button onClick={onMenu} className="show-mobile" style={{ color: 'var(--text-2)', padding: 4 }} aria-label="Open sidebar">
+          <Icon.Menu size={20} />
+        </button>
+        <div style={{
+          width: 28, height: 28, borderRadius: 7,
+          background: 'var(--accent-50)', color: 'var(--accent-700)',
+          display: 'grid', placeItems: 'center',
+          border: '1px solid var(--accent-100)',
+          flexShrink: 0,
+        }}>
+          <SubjectIconCmp size={15} />
+        </div>
+        <h1 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text)', letterSpacing: '-0.005em', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span>{subject.name}</span>
+          <span style={{ color: 'var(--text-4)', fontWeight: 400 }}>·</span>
+          <span style={{ color: 'var(--text-2)', fontWeight: 500 }}>{level === 'HL' ? 'Higher Level' : 'Ordinary Level'}</span>
+        </h1>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span className="hide-mobile" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '5px 10px', borderRadius: 999,
+          background: 'var(--bg-soft)', border: '1px solid var(--border)',
+          fontSize: 12, color: 'var(--text-3)',
+        }}>
+          <Icon.Shield size={12} />
+          Curriculum: LC 2025
+        </span>
+        <button className="btn btn-ghost" style={{ height: 34, padding: '0 10px', fontSize: 13 }} onClick={() => navigate('pricing')}>
+          Upgrade
+        </button>
+      </div>
+    </header>
+  );
+}
+
+function EmptyState({ subject, SubjectIconCmp, level, onPick }) {
+  const starters = STARTERS[subject.id] ?? [];
+  return (
+    <div style={{
+      maxWidth: 620, margin: '0 auto', padding: '60px 24px 40px', textAlign: 'center',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+    }}>
+      <div className="fade-up" style={{
+        width: 64, height: 64, borderRadius: 18,
+        background: 'var(--accent-50)', color: 'var(--accent-700)',
+        display: 'grid', placeItems: 'center', border: '1px solid var(--accent-100)',
+        marginBottom: 10,
+      }}>
+        <SubjectIconCmp size={28} />
+      </div>
+      <h2 className="fade-up delay-1" style={{ margin: 0, fontSize: 28, fontWeight: 600, letterSpacing: '-0.02em' }}>
+        What do you want to study today?
+      </h2>
+      <p className="fade-up delay-2" style={{ margin: 0, color: 'var(--text-3)', fontSize: 15, maxWidth: 440, lineHeight: 1.55 }}>
+        Ask me anything from the {subject.name} {level === 'HL' ? 'Higher Level' : 'Ordinary Level'} course.
+      </p>
+      <div className="fade-up delay-3" style={{
+        display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center',
+        marginTop: 24, width: '100%', maxWidth: 520,
+      }}>
+        {starters.map(q => (
+          <button key={q} onClick={() => onPick(q)} style={{
+            padding: '8px 14px',
+            background: 'var(--bg-muted)', border: '1px solid transparent', borderRadius: 999,
+            fontSize: 13.5, color: 'var(--text-2)',
+            transition: 'all 140ms ease',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent-700)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-muted)'; e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.color = 'var(--text-2)'; }}
+          >
+            {q}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ChatMessage({ msg }) {
+  if (msg.role === 'user') {
+    return (
+      <div className="fade-up" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{
+          background: 'var(--accent)', color: 'white',
+          padding: '11px 16px', borderRadius: '18px 18px 4px 18px',
+          maxWidth: '65%', fontSize: 15, lineHeight: 1.55,
+          boxShadow: '0 1px 1px rgba(0,0,0,0.04)',
+          whiteSpace: 'pre-wrap',
+        }}>{msg.text}</div>
+      </div>
+    );
+  }
+  return (
+    <div className="fade-up" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: 99, background: 'white',
+        color: 'var(--accent-700)', display: 'grid', placeItems: 'center',
+        fontWeight: 600, fontSize: 14, border: '1px solid var(--accent-100)',
+        flexShrink: 0, marginTop: 2,
+        boxShadow: 'var(--shadow-sm)',
+      }}>G</div>
+      <div style={{
+        background: 'var(--bg-muted)', color: 'var(--text)',
+        padding: '12px 16px', borderRadius: '4px 18px 18px 18px',
+        maxWidth: '75%', fontSize: 15, lineHeight: 1.6,
+        whiteSpace: 'pre-wrap',
+      }}>{renderAI(msg.text)}</div>
+    </div>
+  );
+}
+
+function ThinkingBubble() {
+  return (
+    <div className="fade-up" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: 99, background: 'white',
+        color: 'var(--accent-700)', display: 'grid', placeItems: 'center',
+        fontWeight: 600, fontSize: 14, border: '1px solid var(--accent-100)',
+        flexShrink: 0, boxShadow: 'var(--shadow-sm)',
+      }}>G</div>
+      <div style={{
+        background: 'var(--bg-muted)', padding: '14px 18px',
+        borderRadius: '4px 18px 18px 18px',
+        display: 'flex', alignItems: 'center',
+      }}>
+        <span className="dot" /><span className="dot" /><span className="dot" />
+      </div>
+    </div>
+  );
+}
+
+function Composer({ draft, setDraft, taRef, onKey, onSend, subject }) {
+  return (
+    <div style={{
+      padding: '14px 24px 18px', borderTop: '1px solid var(--border)',
+      background: 'white', flexShrink: 0,
+    }}>
+      <div style={{
+        maxWidth: 760, margin: '0 auto',
+        border: '1px solid var(--border)', borderRadius: 14,
+        padding: '10px 10px 10px 14px',
+        background: 'white',
+        display: 'flex', alignItems: 'flex-end', gap: 8,
+        transition: 'border-color 120ms, box-shadow 120ms',
+      }}
+        onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(16,185,129,0.08)'; }}
+        onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }}
+      >
+        <textarea
+          ref={taRef}
+          value={draft}
+          onChange={e => setDraft(e.target.value)}
+          onKeyDown={onKey}
+          placeholder={`Ask a question about ${subject.name}…`}
+          rows={1}
+          style={{
+            flex: 1, resize: 'none', border: 'none', outline: 'none',
+            fontSize: 15, lineHeight: 1.5, padding: '8px 4px',
+            background: 'transparent', minHeight: 24, maxHeight: 132,
+          }}
+        />
+        <button
+          onClick={onSend}
+          disabled={!draft.trim()}
+          aria-label="Send"
+          style={{
+            width: 36, height: 36, borderRadius: 10,
+            background: draft.trim() ? 'var(--accent)' : '#e5e7eb',
+            color: 'white', display: 'grid', placeItems: 'center',
+            transition: 'background 120ms, transform 120ms',
+            flexShrink: 0,
+            cursor: draft.trim() ? 'pointer' : 'not-allowed',
+          }}
+        >
+          <Icon.Send size={16} />
+        </button>
+      </div>
+      <div style={{
+        maxWidth: 760, margin: '8px auto 0',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        fontSize: 11.5, color: 'var(--text-4)',
+        flexWrap: 'wrap', gap: 6,
+      }}>
+        <span>GrindsAI only uses official LC curriculum content</span>
+        <span className="mono hide-mobile">Shift + Enter for a new line</span>
+      </div>
+    </div>
+  );
+}
+
+function Chat({ navigate }) {
+  const [subjectId, setSubjectId] = React.useState('maths');
+  const [level, setLevel] = React.useState('HL');
+  const [messages, setMessages] = React.useState(SAMPLE_CONVO);
+  const [draft, setDraft] = React.useState('');
+  const [thinking, setThinking] = React.useState(true);
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
+  const subject = SUBJECTS.find(s => s.id === subjectId);
+  const SubjectIconCmp = Icon[subject.icon] || Icon.Book;
+  const threadEndRef = React.useRef(null);
+  const taRef = React.useRef(null);
+
+  React.useEffect(() => {
+    threadEndRef.current?.scrollTo({ top: threadEndRef.current.scrollHeight, behavior: 'smooth' });
+  }, [messages, thinking]);
+
+  const newChat = () => { setMessages([]); setThinking(false); setSidebarOpen(false); };
+
+  const switchSubject = (id) => {
+    if (id === subjectId) return;
+    setSubjectId(id);
+    setMessages([]);
+    setThinking(false);
+    setSidebarOpen(false);
+  };
+
+  const send = (text) => {
+    const t = (text ?? draft).trim();
+    if (!t) return;
+    setMessages(m => [...m, { role: 'user', text: t }]);
+    setDraft('');
+    setThinking(true);
+    setTimeout(() => {
+      setMessages(m => [...m, { role: 'ai', text: genericSocraticReply(subjectId, t) }]);
+      setThinking(false);
+    }, 1100 + Math.random() * 400);
+  };
+
+  const useSuggestion = (q) => {
+    setDraft(q);
+    setTimeout(() => taRef.current?.focus(), 0);
+  };
+
+  const onKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  };
+
+  React.useEffect(() => {
+    const ta = taRef.current;
+    if (!ta) return;
+    ta.style.height = '0px';
+    ta.style.height = Math.min(ta.scrollHeight, 132) + 'px';
+  }, [draft]);
+
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr',
+      height: '100vh', overflow: 'hidden', background: 'white',
+    }}>
+      <Sidebar
+        navigate={navigate}
+        subjectId={subjectId} setSubjectId={switchSubject}
+        level={level} setLevel={setLevel}
+        newChat={newChat}
+        open={sidebarOpen} setOpen={setSidebarOpen}
+      />
+
+      <main style={{ display: 'flex', flexDirection: 'column', minWidth: 0, height: '100vh' }}>
+        <ChatHeader subject={subject} SubjectIconCmp={SubjectIconCmp} level={level} onMenu={() => setSidebarOpen(true)} navigate={navigate} />
+
+        <div ref={threadEndRef} style={{ flex: 1, overflow: 'auto', padding: '32px 0 8px' }}>
+          {messages.length === 0 ? (
+            <EmptyState subject={subject} SubjectIconCmp={SubjectIconCmp} level={level} onPick={useSuggestion} />
+          ) : (
+            <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: 22 }}>
+              {messages.map((m, i) => <ChatMessage key={i} msg={m} />)}
+              {thinking && <ThinkingBubble />}
+            </div>
+          )}
+        </div>
+
+        <Composer draft={draft} setDraft={setDraft} taRef={taRef} onKey={onKey} onSend={() => send()} subject={subject} />
+      </main>
+
+      {sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)} style={{
+          position: 'fixed', inset: 0, background: 'rgba(17,24,39,0.4)', zIndex: 80,
+          display: 'none',
+        }} className="mobile-overlay" />
+      )}
+      <style>{`
+        @media (max-width: 860px) {
+          .grindsai-sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 90; transform: translateX(-100%); transition: transform 220ms ease; }
+          .grindsai-sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+          .mobile-overlay { display: ${sidebarOpen ? 'block' : 'none'} !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ─── Landing ──────────────────────────────────────────────────────────────────
+function SectionHeader({ eyebrow, title, subtitle }) {
+  return (
+    <div style={{ textAlign: 'center', maxWidth: 620, margin: '0 auto' }}>
+      <div className="mono" style={{ fontSize: 12, color: 'var(--accent-700)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+        {eyebrow}
+      </div>
+      <h2 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 600, letterSpacing: '-0.025em', margin: 0, lineHeight: 1.1 }}>
+        {title}
+      </h2>
+      {subtitle && (
+        <p style={{ marginTop: 16, color: 'var(--text-3)', fontSize: 16, lineHeight: 1.55 }}>
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function MsgUser({ children }) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{
+        background: 'var(--accent)', color: 'white',
+        padding: '10px 14px', borderRadius: '16px 16px 4px 16px',
+        maxWidth: '78%', fontSize: 14.5, lineHeight: 1.5,
+      }}>{children}</div>
+    </div>
+  );
+}
+
+function MsgAI({ children }) {
+  return (
+    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+      <div style={{
+        width: 28, height: 28, borderRadius: 8, background: 'var(--accent-50)',
+        color: 'var(--accent-700)', display: 'grid', placeItems: 'center',
+        fontWeight: 600, fontSize: 13, border: '1px solid var(--accent-100)',
+        flexShrink: 0,
+      }}>G</div>
+      <div style={{
+        background: 'var(--bg-muted)', color: 'var(--text)',
+        padding: '10px 14px', borderRadius: '4px 16px 16px 16px',
+        maxWidth: '78%', fontSize: 14.5, lineHeight: 1.55,
+      }}>{children}</div>
+    </div>
+  );
+}
+
+function HeroPreview() {
+  return (
+    <div className="fade-up delay-4" style={{ marginTop: 56 }}>
+      <div style={{
+        maxWidth: 880, margin: '0 auto',
+        background: 'white', border: '1px solid var(--border)',
+        borderRadius: 16, boxShadow: 'var(--shadow-lg)', overflow: 'hidden',
+        textAlign: 'left',
+      }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg-soft)',
+        }}>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <span style={{ width: 10, height: 10, borderRadius: 99, background: '#e5e7eb' }} />
+            <span style={{ width: 10, height: 10, borderRadius: 99, background: '#e5e7eb' }} />
+            <span style={{ width: 10, height: 10, borderRadius: 99, background: '#e5e7eb' }} />
+          </div>
+          <div className="mono" style={{ marginLeft: 12, fontSize: 12, color: 'var(--text-4)' }}>grindsai.ie/chat — Maths · Higher Level</div>
+        </div>
+        <div style={{ padding: '28px 28px 24px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <MsgUser>Why does a² + b² = c² actually work?</MsgUser>
+          <MsgAI>
+            Great question — let's build the intuition rather than memorise it. If you draw a right-angled triangle and build a square on <em>each</em> side, what do you notice about the area of the square on the hypotenuse compared to the other two?
+          </MsgAI>
+          <MsgUser>It's the same as the other two added together?</MsgUser>
+          <MsgAI>
+            Exactly. Now — can you think of <span style={{ fontWeight: 500, color: 'var(--text)' }}>why</span> that has to be true, not just that it is?
+          </MsgAI>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FauxMsg({ user, children }) {
+  return user ? (
+    <div style={{ alignSelf: 'flex-end', background: 'var(--accent)', color: 'white',
+      fontSize: 12.5, padding: '6px 10px', borderRadius: '10px 10px 2px 10px', maxWidth: '85%' }}>
+      {children}
+    </div>
+  ) : (
+    <div style={{ alignSelf: 'flex-start', background: 'white', border: '1px solid var(--border)',
+      fontSize: 12.5, padding: '6px 10px', borderRadius: '2px 10px 10px 10px', maxWidth: '85%' }}>
+      {children}
+    </div>
+  );
+}
+
+function LandingNav({ navigate }) {
+  const [scrolled, setScrolled] = React.useState(false);
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <header style={{
+      position: 'sticky', top: 0, zIndex: 50,
+      background: scrolled ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.6)',
+      backdropFilter: 'saturate(180%) blur(10px)',
+      WebkitBackdropFilter: 'saturate(180%) blur(10px)',
+      borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+      transition: 'all 200ms ease',
+    }}>
+      <div className="container" style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button onClick={() => navigate('landing')} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Icon.Logo size={28} />
+          <span style={{ fontSize: 17, fontWeight: 600, letterSpacing: '-0.01em' }}>GrindsAI</span>
+        </button>
+        <nav className="hide-mobile" style={{ display: 'flex', gap: 32, color: 'var(--text-3)', fontSize: 14 }}>
+          <a href="#how">How it works</a>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <button onClick={() => navigate('chat')} style={{ color: 'var(--text-3)', fontSize: 14 }}>Demo</button>
+        </nav>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button className="btn btn-ghost hide-mobile" onClick={() => navigate('login')}>Sign in</button>
+          <button className="btn btn-primary" onClick={() => navigate('signup')}>Get started</button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function Hero({ navigate }) {
+  return (
+    <section style={{ position: 'relative', overflow: 'hidden' }}>
+      <div className="dotgrid fade-mask" style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }} />
+      <div className="container" style={{ position: 'relative', zIndex: 1, padding: '88px 24px 64px', textAlign: 'center' }}>
+        <div className="fade-up" style={{ display: 'inline-flex' }}>
+          <span className="pill"><span style={{ width: 6, height: 6, borderRadius: 99, background: 'var(--accent)' }} /> Built for the Irish Leaving Cert</span>
+        </div>
+        <h1 className="fade-up delay-1" style={{
+          fontSize: 'clamp(40px, 6vw, 72px)', fontWeight: 600, letterSpacing: '-0.035em',
+          lineHeight: 1.02, margin: '24px 0 20px',
+        }}>
+          Your personal<br/>LC tutor.
+        </h1>
+        <p className="fade-up delay-2" style={{
+          fontSize: 'clamp(16px, 2vw, 19px)', color: 'var(--text-3)', maxWidth: 560, margin: '0 auto 36px', lineHeight: 1.55,
+        }}>
+          One grinds session costs <span style={{ color: 'var(--text-2)', fontWeight: 500 }}>€40 an hour</span>. GrindsAI is a Socratic tutor that helps you understand — not just copy answers — for less than a tank of fuel a month.
+        </p>
+        <div className="fade-up delay-3" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button className="btn btn-primary btn-lg" onClick={() => navigate('signup')}>
+            Start for free <Icon.ArrowRight size={16} />
+          </button>
+          <button className="btn btn-outline btn-lg" onClick={() => navigate('chat')}>
+            See it in action
+          </button>
+        </div>
+        <p className="fade-up delay-4 mono" style={{ marginTop: 18, fontSize: 12, color: 'var(--text-4)', letterSpacing: 0 }}>
+          No card required · 7-day free trial
+        </p>
+        <HeroPreview />
+      </div>
+    </section>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    { n: '01', icon: <Icon.Book />, title: 'Pick your subject', body: 'Choose from LC subjects at Higher or Ordinary Level. Curriculum-locked, exam-relevant.' },
+    { n: '02', icon: <Icon.MessageCircle />, title: 'Ask a question', body: 'A homework problem, a past-paper question, a topic you missed in class — anything.' },
+    { n: '03', icon: <Icon.Target />, title: 'Get guided to the answer', body: 'GrindsAI asks the questions a good teacher would. You arrive at the answer yourself.' },
+  ];
+  return (
+    <section id="how" style={{ padding: '96px 0 64px', background: 'white' }}>
+      <div className="container">
+        <SectionHeader eyebrow="How it works" title="Three steps. No fluff." />
+        <div style={{
+          display: 'grid', gap: 1,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden',
+          marginTop: 40,
+        }}>
+          {steps.map((s, i) => (
+            <div key={i} style={{ background: 'white', padding: '32px 28px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 10,
+                  background: 'var(--accent-50)', color: 'var(--accent-700)',
+                  display: 'grid', placeItems: 'center',
+                  border: '1px solid var(--accent-100)',
+                }}>{s.icon}</div>
+                <span className="mono" style={{ fontSize: 12, color: 'var(--text-4)' }}>{s.n}</span>
+              </div>
+              <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>{s.title}</h3>
+              <p style={{ margin: 0, color: 'var(--text-3)', fontSize: 14.5, lineHeight: 1.55 }}>{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Features() {
+  const features = [
+    {
+      icon: <Icon.Sparkle />,
+      title: 'Socratic method',
+      body: "It won't hand you the answer. GrindsAI asks the questions that lead you there — the way a real teacher does.",
+      demo: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <FauxMsg user>Just give me the answer.</FauxMsg>
+          <FauxMsg>Let's try a smaller version first — what's 2³?</FauxMsg>
+        </div>
+      ),
+    },
+    {
+      icon: <Icon.Shield />,
+      title: 'Curriculum-locked',
+      body: 'Trained only on the State Exams Commission syllabus. No hallucinated theorems, no off-spec rabbit holes.',
+      demo: (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {['Maths H — Topic 5.2', 'Biology — Unit 2.4', 'Chemistry — Mole concept'].map(t => (
+            <div key={t} className="mono" style={{
+              fontSize: 11.5, color: 'var(--text-3)',
+              padding: '6px 10px', background: 'white', border: '1px solid var(--border)', borderRadius: 8,
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: 99, background: 'var(--accent)' }} />
+              {t}
+            </div>
+          ))}
+        </div>
+      ),
+    },
+    {
+      icon: <Icon.Clock />,
+      title: 'Available 24/7',
+      body: "Stuck at 11pm the night before a class test? GrindsAI doesn't sleep, doesn't cancel, and never doubles its rates.",
+      demo: (
+        <div className="mono" style={{
+          background: 'white', border: '1px solid var(--border)', borderRadius: 8,
+          padding: 12, fontSize: 12, color: 'var(--text-3)', lineHeight: 1.7,
+        }}>
+          <div><span style={{ color: 'var(--accent)' }}>●</span> Online · {new Date().toLocaleString('en-IE', { weekday: 'short' })} 23:47</div>
+          <div style={{ color: 'var(--text-4)' }}>avg. response &lt; 2s</div>
+        </div>
+      ),
+    },
+  ];
+  return (
+    <section id="features" style={{ padding: '80px 0 96px', background: 'var(--bg-soft)' }}>
+      <div className="container">
+        <SectionHeader eyebrow="Why GrindsAI" title="A tutor, not a cheat sheet." />
+        <div style={{
+          display: 'grid', gap: 16,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          marginTop: 40,
+        }}>
+          {features.map((f, i) => (
+            <article key={i} style={{
+              background: 'white', border: '1px solid var(--border)', borderRadius: 16,
+              padding: 24, display: 'flex', flexDirection: 'column',
+              boxShadow: 'var(--shadow-sm)',
+            }}>
+              <div style={{
+                width: 38, height: 38, borderRadius: 10,
+                background: 'var(--accent-50)', color: 'var(--accent-700)',
+                display: 'grid', placeItems: 'center', border: '1px solid var(--accent-100)',
+                marginBottom: 16,
+              }}>{f.icon}</div>
+              <h3 style={{ fontSize: 17, fontWeight: 600, margin: '0 0 8px', letterSpacing: '-0.01em' }}>{f.title}</h3>
+              <p style={{ margin: '0 0 18px', color: 'var(--text-3)', fontSize: 14.5, lineHeight: 1.55 }}>{f.body}</p>
+              <div style={{
+                marginTop: 'auto', padding: 14, background: 'var(--bg-soft)',
+                border: '1px solid var(--border-soft)', borderRadius: 12,
+              }}>{f.demo}</div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PricingCard({ navigate, compact }) {
+  return (
+    <div style={{
+      width: '100%', maxWidth: 440,
+      background: 'white', border: '1px solid var(--border)', borderRadius: 18,
+      padding: 28, boxShadow: 'var(--shadow)',
+      position: 'relative',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, letterSpacing: '-0.01em' }}>Student</h3>
+        <span className="pill">Most popular</span>
+      </div>
+      <div style={{ marginTop: 18, display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <span style={{ fontSize: 48, fontWeight: 600, letterSpacing: '-0.04em' }}>€14</span>
+        <span style={{ color: 'var(--text-3)', fontSize: 15 }}>/ month</span>
+      </div>
+      <p style={{ color: 'var(--text-3)', fontSize: 13.5, margin: '4px 0 0' }}>
+        Or €120/year — cancel any time.
+      </p>
+      <button className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: 20 }} onClick={() => navigate('signup')}>
+        Start 7-day free trial
+      </button>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '24px 0 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {[
+          'Unlimited Socratic tutoring sessions',
+          'All LC subjects — Higher & Ordinary',
+          'Past paper walkthroughs (2010 → 2025)',
+          'Saved chat history & notes',
+          'Mobile, tablet & desktop',
+          'Cancel any time, no contract',
+        ].map(item => (
+          <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: 14, color: 'var(--text-2)' }}>
+            <span style={{ color: 'var(--accent)', marginTop: 2, flexShrink: 0 }}><Icon.Check size={16} /></span>
+            {item}
+          </li>
+        ))}
+      </ul>
+      {!compact && (
+        <p className="mono" style={{
+          marginTop: 20, fontSize: 11.5, color: 'var(--text-4)',
+          textAlign: 'center', paddingTop: 16, borderTop: '1px solid var(--border-soft)',
+        }}>
+          €14 · less than 30 mins of a real grind
+        </p>
+      )}
+    </div>
+  );
+}
+
+function SocialProof() {
+  const quotes = [
+    { name: 'Aoife M.', school: '6th Year, Galway', text: 'It actually makes me think. My maths teacher noticed.' },
+    { name: 'Cian D.', school: '5th Year, Cork', text: 'Asked it three times to just give me the answer. It kept asking better questions instead.' },
+    { name: 'Saoirse K.', school: '6th Year, Dublin', text: "Replaced my €40/hr grinds for biology. I'm doing better in tests too." },
+  ];
+  return (
+    <section style={{ padding: '0 0 96px', background: 'white' }}>
+      <div className="container">
+        <div style={{
+          display: 'grid', gap: 16,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+        }}>
+          {quotes.map(q => (
+            <figure key={q.name} style={{
+              margin: 0, padding: 22, border: '1px solid var(--border)', borderRadius: 14,
+              background: 'var(--bg-soft)',
+            }}>
+              <blockquote style={{ margin: 0, fontSize: 15, lineHeight: 1.55, color: 'var(--text)' }}>
+                "{q.text}"
+              </blockquote>
+              <figcaption style={{ marginTop: 14, fontSize: 13, color: 'var(--text-3)' }}>
+                <span style={{ color: 'var(--text-2)', fontWeight: 500 }}>{q.name}</span> · {q.school}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PricingTeaser({ navigate }) {
+  return (
+    <section id="pricing" style={{ padding: '96px 0', background: 'white' }}>
+      <div className="container">
+        <SectionHeader
+          eyebrow="Pricing"
+          title="One price. No upsells."
+          subtitle="A single private grinds session in Dublin costs €40–50. This is your tutor for an entire term."
+        />
+        <div style={{ display: 'grid', placeItems: 'center', marginTop: 40 }}>
+          <PricingCard navigate={navigate} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer style={{ borderTop: '1px solid var(--border)', padding: '32px 0', background: 'white' }}>
+      <div className="container" style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: 16,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--text-3)', fontSize: 13 }}>
+          <Icon.Logo size={20} />
+          <span>© 2026 GrindsAI · Made in Dublin</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24, color: 'var(--text-3)', fontSize: 13 }}>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function Landing({ navigate }) {
+  return (
+    <div style={{ minHeight: '100%', background: 'white' }}>
+      <LandingNav navigate={navigate} />
+      <Hero navigate={navigate} />
+      <HowItWorks />
+      <Features />
+      <PricingTeaser navigate={navigate} />
+      <SocialProof />
+      <Footer />
+    </div>
+  );
+}
+
+// ─── Pricing page ─────────────────────────────────────────────────────────────
+function Comparison() {
+  const rows = [
+    ['', 'Private grinds', 'GrindsAI'],
+    ['Hourly cost', '€40–50', '€0.46'],
+    ['Available 24/7', '✕', '✓'],
+    ['Curriculum-aligned', 'Sometimes', 'Always'],
+    ['Travels with you', '✕', '✓'],
+    ['Cancellable any time', '✕', '✓'],
+  ];
+  return (
+    <section className="fade-up delay-3" style={{ marginTop: 64, width: '100%', maxWidth: 720 }}>
+      <h2 style={{ fontSize: 18, fontWeight: 600, textAlign: 'center', margin: '0 0 18px', letterSpacing: '-0.01em' }}>
+        Side by side
+      </h2>
+      <div style={{
+        background: 'white', border: '1px solid var(--border)', borderRadius: 14,
+        overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
+      }}>
+        {rows.map((r, i) => (
+          <div key={i} style={{
+            display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr',
+            padding: '14px 20px',
+            borderBottom: i < rows.length - 1 ? '1px solid var(--border-soft)' : 'none',
+            background: i === 0 ? 'var(--bg-soft)' : 'white',
+            fontSize: 14,
+            fontWeight: i === 0 ? 500 : 400,
+            color: i === 0 ? 'var(--text-3)' : 'var(--text)',
+          }}>
+            <div>{r[0]}</div>
+            <div style={{ color: 'var(--text-3)' }}>{r[1]}</div>
+            <div style={{ color: i === 0 ? 'var(--text-3)' : 'var(--accent-700)', fontWeight: i === 0 ? 500 : 500 }}>{r[2]}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FAQ() {
+  const items = [
+    { q: 'Can I cancel any time?', a: 'Yes. Cancel from your account settings in two clicks — no email back-and-forth, no end-of-term lock-in.' },
+    { q: 'Is this just ChatGPT in a wrapper?', a: "No. GrindsAI is constrained to the Irish Leaving Cert syllabus and trained to teach Socratically — it deliberately won't hand you the answer." },
+    { q: 'What subjects are supported?', a: 'Maths, Biology and Chemistry at both Higher and Ordinary Level today. Physics, English, Irish, History and Geography are arriving over the next few months.' },
+    { q: "Will my school know I'm using it?", a: 'Only if you tell them. Your conversations are private to you.' },
+  ];
+  const [open, setOpen] = React.useState(0);
+  return (
+    <section className="fade-up delay-4" style={{ marginTop: 64, width: '100%', maxWidth: 720 }}>
+      <h2 style={{ fontSize: 18, fontWeight: 600, textAlign: 'center', margin: '0 0 18px', letterSpacing: '-0.01em' }}>
+        Common questions
+      </h2>
+      <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+        {items.map((it, i) => (
+          <button key={i} onClick={() => setOpen(open === i ? -1 : i)} style={{
+            width: '100%', textAlign: 'left',
+            padding: '16px 20px',
+            borderBottom: i < items.length - 1 ? '1px solid var(--border-soft)' : 'none',
+            display: 'flex', flexDirection: 'column', gap: 8,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <span style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)' }}>{it.q}</span>
+              <span style={{ color: 'var(--text-4)', transform: open === i ? 'rotate(180deg)' : 'none', transition: 'transform 180ms ease' }}>
+                <Icon.ChevronDown size={14} />
+              </span>
+            </div>
+            <div style={{
+              fontSize: 14, lineHeight: 1.6, color: 'var(--text-3)',
+              maxHeight: open === i ? 200 : 0, overflow: 'hidden',
+              transition: 'max-height 220ms ease',
+            }}>
+              {it.a}
+            </div>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Pricing({ navigate }) {
+  return (
+    <div style={{ minHeight: '100vh', background: 'white', display: 'flex', flexDirection: 'column' }}>
+      <header style={{ borderBottom: '1px solid var(--border)', background: 'white', position: 'sticky', top: 0, zIndex: 20 }}>
+        <div className="container" style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <button onClick={() => navigate('landing')} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Icon.Logo size={26} />
+            <span style={{ fontSize: 16.5, fontWeight: 600, letterSpacing: '-0.01em' }}>GrindsAI</span>
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button className="btn btn-ghost" onClick={() => navigate('chat')}>Back to app</button>
+          </div>
+        </div>
+      </header>
+
+      <main style={{ flex: 1, padding: '64px 24px 80px', background: 'var(--bg-soft)' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div className="fade-up" style={{ textAlign: 'center', maxWidth: 600 }}>
+            <div className="mono" style={{ fontSize: 12, color: 'var(--accent-700)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+              Pricing
+            </div>
+            <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 600, letterSpacing: '-0.03em', margin: 0, lineHeight: 1.05 }}>
+              Less than 30 minutes<br/> of a real grind.
+            </h1>
+            <p style={{ marginTop: 18, color: 'var(--text-3)', fontSize: 17, lineHeight: 1.55 }}>
+              One real grinds session costs <span style={{ color: 'var(--text-2)', fontWeight: 500 }}>€40–50</span>. This is your tutor for the whole year.
+            </p>
+          </div>
+
+          <div className="fade-up delay-2" style={{ marginTop: 40 }}>
+            <PricingCard navigate={navigate} />
+          </div>
+
+          <Comparison />
+          <FAQ />
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ─── Router ───────────────────────────────────────────────────────────────────
+const ROUTES = ['landing', 'login', 'signup', 'chat', 'pricing'];
+
+function App() {
+  const [route, setRoute] = React.useState(() => {
+    const h = window.location.hash.replace('#', '');
+    return ROUTES.includes(h) ? h : 'landing';
+  });
+
+  const navigate = React.useCallback((next) => {
+    setRoute(next);
+    window.location.hash = next;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  React.useEffect(() => {
+    const onHash = () => {
+      const h = window.location.hash.replace('#', '');
+      if (ROUTES.includes(h)) setRoute(h);
+    };
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  switch (route) {
+    case 'login':   return <Auth navigate={navigate} initialMode="login" />;
+    case 'signup':  return <Auth navigate={navigate} initialMode="signup" />;
+    case 'chat':    return <Chat navigate={navigate} />;
+    case 'pricing': return <Pricing navigate={navigate} />;
+    default:        return <Landing navigate={navigate} />;
+  }
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
