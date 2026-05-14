@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LogoIcon, GoogleIcon, EyeIcon } from "@/components/icons";
+import { getBrowserSupabase } from "@/lib/supabase/client";
 
 type Mode = "login" | "signup";
 
@@ -30,8 +31,21 @@ function Field({
 const inputCls =
   "w-full h-10 px-3 bg-white border border-gray-200 rounded-lg text-sm outline-none transition-[border-color,box-shadow] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]";
 
-export function AuthForm({ initialMode }: { initialMode: Mode }) {
+function mapAuthMessage(message: string): string {
+  if (message.includes("Invalid login credentials")) return "Email or password is incorrect.";
+  if (message.includes("User already registered")) return "An account with this email already exists. Try signing in.";
+  return message;
+}
+
+export function AuthForm({ initialMode, authError }: { initialMode: Mode; authError?: string }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = useMemo(() => {
+    const n = searchParams.get("next");
+    if (n && n.startsWith("/") && !n.startsWith("//")) return n;
+    return "/chat";
+  }, [searchParams]);
+
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,13 +54,73 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const submit = (e: React.FormEvent) => {
+  const bannerError = authError === "config" ? "Server auth is not configured yet." : authError === "auth" ? "Something went wrong signing you in." : authError ? "Sign-in failed." : "";
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!email.includes("@")) { setError("Please enter a valid email."); return; }
-    if (password.length < 6) { setError("Password must be at least 6 characters."); return; }
+    if (!email.includes("@")) {
+      setError("Please enter a valid email.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    const supabase = getBrowserSupabase();
+    if (!supabase) {
+      setError("Auth is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.");
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => { setLoading(false); router.push("/chat"); }, 700);
+    try {
+      if (mode === "signup") {
+        const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+        const { error: signErr } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectTo,
+            data: { full_name: name },
+          },
+        });
+        if (signErr) {
+          setError(mapAuthMessage(signErr.message));
+          return;
+        }
+        router.push(nextPath);
+        router.refresh();
+        return;
+      }
+
+      const { error: signErr } = await supabase.auth.signInWithPassword({ email, password });
+      if (signErr) {
+        setError(mapAuthMessage(signErr.message));
+        return;
+      }
+      router.push(nextPath);
+      router.refresh();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const google = async () => {
+    setError("");
+    const supabase = getBrowserSupabase();
+    if (!supabase) {
+      setError("Auth is not configured. Add Supabase keys to .env.local.");
+      return;
+    }
+    setLoading(true);
+    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+    const { error: oAuthErr } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo },
+    });
+    setLoading(false);
+    if (oAuthErr) setError(mapAuthMessage(oAuthErr.message));
   };
 
   return (
@@ -64,12 +138,22 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
           {mode === "signup" ? "Create your account" : "Welcome back"}
         </h1>
         <p className="mt-1.5 mb-[22px] text-gray-500 text-sm">
-          {mode === "signup" ? "Start your free 7-day trial. No card required." : "Sign in to continue your study session."}
+          {mode === "signup"
+            ? "Start your free 7-day trial. No card required."
+            : "Sign in to continue your study session."}
         </p>
+
+        {bannerError && (
+          <div className="mb-4 text-[13px] text-amber-900 bg-amber-50 border border-amber-200 px-2.5 py-2 rounded-lg">
+            {bannerError}
+          </div>
+        )}
 
         <button
           type="button"
-          className="w-full h-[42px] flex items-center justify-center gap-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+          onClick={() => void google()}
+          disabled={loading}
+          className="w-full h-[42px] flex items-center justify-center gap-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-60"
         >
           <GoogleIcon size={16} />
           Continue with Google
@@ -81,18 +165,36 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
-        <form onSubmit={submit} className="flex flex-col gap-3">
+        <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-3">
           {mode === "signup" && (
             <Field label="Name">
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Aoife Murphy" className={inputCls} />
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Aoife Murphy"
+                className={inputCls}
+              />
             </Field>
           )}
           <Field label="Email">
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@school.ie" className={inputCls} autoComplete="email" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@school.ie"
+              className={inputCls}
+              autoComplete="email"
+            />
           </Field>
           <Field
             label="Password"
-            right={mode === "login" ? <a href="#" className="text-xs text-gray-500 hover:text-gray-700">Forgot?</a> : undefined}
+            right={
+              mode === "login" ? (
+                <Link href="/reset-password" className="text-xs text-gray-500 hover:text-gray-700">
+                  Forgot?
+                </Link>
+              ) : undefined
+            }
           >
             <div className="relative">
               <input
@@ -115,9 +217,7 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
           </Field>
 
           {error && (
-            <div className="text-[13px] text-red-700 bg-red-50 border border-red-200 px-2.5 py-2 rounded-lg">
-              {error}
-            </div>
+            <div className="text-[13px] text-red-700 bg-red-50 border border-red-200 px-2.5 py-2 rounded-lg">{error}</div>
           )}
 
           <button
@@ -126,9 +226,15 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
             className="mt-1 w-full h-[42px] rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)] disabled:shadow-none flex items-center justify-center gap-1"
           >
             {loading ? (
-              <><span className="typing-dot" /><span className="typing-dot" /><span className="typing-dot" /></>
+              <>
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+              </>
+            ) : mode === "signup" ? (
+              "Create account"
             ) : (
-              mode === "signup" ? "Create account" : "Sign in"
+              "Sign in"
             )}
           </button>
         </form>
@@ -136,6 +242,7 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
         <p className="mt-5 mb-0 text-[13.5px] text-gray-500 text-center">
           {mode === "signup" ? "Already have an account?" : "New to GrindsAI?"}{" "}
           <button
+            type="button"
             onClick={() => setMode(mode === "signup" ? "login" : "signup")}
             className="text-emerald-700 font-medium hover:underline"
           >
@@ -146,9 +253,14 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
 
       <p className="mt-6 text-xs text-gray-400 text-center max-w-[360px]">
         By continuing you agree to our{" "}
-        <a href="#" className="underline hover:text-gray-600">Terms</a>{" "}
+        <Link href="/terms" className="underline hover:text-gray-600">
+          Terms
+        </Link>{" "}
         and{" "}
-        <a href="#" className="underline hover:text-gray-600">Privacy Policy</a>.
+        <Link href="/privacy" className="underline hover:text-gray-600">
+          Privacy Policy
+        </Link>
+        .
       </p>
     </div>
   );

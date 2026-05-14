@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CheckIcon } from "@/components/icons";
+import { SubscribeButton } from "@/components/pricing/subscribe-button";
 import { SectionHeader } from "./how-it-works";
 
 const FEATURES = [
@@ -11,7 +12,7 @@ const FEATURES = [
   "Cancel any time, no contract",
 ];
 
-export function PricingCard({ compact }: { compact?: boolean }) {
+export function PricingCard({ compact, checkoutCta }: { compact?: boolean; checkoutCta?: boolean }) {
   return (
     <div
       className="w-full max-w-[440px] bg-white border border-gray-200 rounded-[18px] p-7"
@@ -28,12 +29,16 @@ export function PricingCard({ compact }: { compact?: boolean }) {
         <span className="text-gray-500 text-[15px]">/ month</span>
       </div>
       <p className="text-gray-500 text-[13.5px] mt-1 mb-0">Or €120/year — cancel any time.</p>
-      <Link
-        href="/signup"
-        className="mt-5 flex items-center justify-center h-12 w-full rounded-[10px] text-[15px] font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)]"
-      >
-        Start 7-day free trial
-      </Link>
+      {checkoutCta ? (
+        <SubscribeButton label="Subscribe with Stripe" />
+      ) : (
+        <Link
+          href="/signup"
+          className="mt-5 flex items-center justify-center h-12 w-full rounded-[10px] text-[15px] font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)]"
+        >
+          Start 7-day free trial
+        </Link>
+      )}
       <ul className="list-none p-0 mt-6 flex flex-col gap-2.5 m-0">
         {FEATURES.map((item) => (
           <li key={item} className="flex items-start gap-2.5 text-sm text-gray-700">

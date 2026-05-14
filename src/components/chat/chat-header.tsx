@@ -6,13 +6,22 @@ interface ChatHeaderProps {
   subject: Subject;
   level: string;
   onOpenSidebar: () => void;
+  subscriptionActive?: boolean;
+  onSignOut: () => void;
 }
 
-export function ChatHeader({ subject, level, onOpenSidebar }: ChatHeaderProps) {
+export function ChatHeader({
+  subject,
+  level,
+  onOpenSidebar,
+  subscriptionActive,
+  onSignOut,
+}: ChatHeaderProps) {
   return (
     <header className="flex items-center justify-between px-6 border-b border-gray-200 bg-white min-h-[60px] shrink-0">
       <div className="flex items-center gap-3 min-w-0">
         <button
+          type="button"
           onClick={onOpenSidebar}
           className="min-[861px]:hidden text-gray-600 p-1 hover:text-gray-900"
           aria-label="Open sidebar"
@@ -34,12 +43,24 @@ export function ChatHeader({ subject, level, onOpenSidebar }: ChatHeaderProps) {
           <ShieldIcon size={12} />
           Curriculum: LC 2025
         </span>
+        {subscriptionActive && (
+          <span className="hidden sm:inline-flex items-center px-2.5 py-[5px] rounded-full bg-emerald-50 border border-emerald-100 text-xs font-medium text-emerald-800">
+            Pro
+          </span>
+        )}
         <Link
           href="/pricing"
           className="inline-flex items-center h-[34px] px-2.5 rounded-lg text-[13px] text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
         >
           Upgrade
         </Link>
+        <button
+          type="button"
+          onClick={onSignOut}
+          className="inline-flex items-center h-[34px] px-2.5 rounded-lg text-[13px] text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+        >
+          Sign out
+        </button>
       </div>
     </header>
   );

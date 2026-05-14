@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LogoIcon } from "@/components/icons";
 
 export function Footer() {
@@ -9,9 +10,15 @@ export function Footer() {
           <span>© 2026 GrindsAI · Made in Dublin</span>
         </div>
         <div className="flex gap-6 text-[13px] text-gray-500">
-          <a href="#" className="hover:text-gray-900 transition-colors">Privacy</a>
-          <a href="#" className="hover:text-gray-900 transition-colors">Terms</a>
-          <a href="#" className="hover:text-gray-900 transition-colors">Contact</a>
+          <Link href="/privacy" className="hover:text-gray-900 transition-colors">
+            Privacy
+          </Link>
+          <Link href="/terms" className="hover:text-gray-900 transition-colors">
+            Terms
+          </Link>
+          <a href="mailto:hello@grindsai.ie" className="hover:text-gray-900 transition-colors">
+            Contact
+          </a>
         </div>
       </div>
     </footer>

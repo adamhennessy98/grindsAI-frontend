@@ -27,7 +27,7 @@ export function LandingNav() {
       <div className="max-w-[1140px] mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
           <LogoIcon size={28} />
-          <span className="text-[17px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+          <span className="font-heading text-[17px] font-semibold tracking-[-0.01em]">GrindsAI</span>
         </Link>
 
         <nav className="hidden md:flex gap-8 text-sm text-gray-500">

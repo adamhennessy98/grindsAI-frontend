@@ -60,7 +60,7 @@ export function SectionHeader({
   return (
     <div className="text-center max-w-[620px] mx-auto">
       <div className="text-xs text-emerald-700 uppercase tracking-[0.08em] font-mono mb-3">{eyebrow}</div>
-      <h2 className="text-[clamp(28px,4vw,40px)] font-semibold tracking-[-0.025em] leading-[1.1] m-0">{title}</h2>
+      <h2 className="font-heading text-[clamp(28px,4vw,40px)] font-semibold tracking-[-0.025em] leading-[1.1] m-0">{title}</h2>
       {subtitle && <p className="mt-4 text-gray-500 text-base leading-relaxed">{subtitle}</p>}
     </div>
   );

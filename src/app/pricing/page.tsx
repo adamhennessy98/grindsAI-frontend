@@ -15,7 +15,7 @@ const rows = [
 function Comparison() {
   return (
     <section className="mt-16 w-full max-w-[720px]">
-      <h2 className="text-[18px] font-semibold text-center mb-[18px] tracking-[-0.01em]">Side by side</h2>
+      <h2 className="font-heading text-[18px] font-semibold text-center mb-[18px] tracking-[-0.01em]">Side by side</h2>
       <div
         className="bg-white border border-gray-200 rounded-2xl overflow-hidden"
         style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 1px 1px rgba(17,24,39,0.03)" }}
@@ -47,7 +47,7 @@ export default function PricingPage() {
         <div className="max-w-[1140px] mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <LogoIcon size={26} />
-            <span className="text-[16.5px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+            <span className="font-heading text-[16.5px] font-semibold tracking-[-0.01em]">GrindsAI</span>
           </Link>
           <Link
             href="/chat"
@@ -62,7 +62,7 @@ export default function PricingPage() {
         <div className="max-w-[1140px] mx-auto flex flex-col items-center">
           <div className="animate-fade-up text-center max-w-[600px]">
             <div className="text-xs text-emerald-700 uppercase tracking-[0.08em] font-mono mb-3">Pricing</div>
-            <h1 className="text-[clamp(32px,5vw,48px)] font-semibold tracking-[-0.03em] m-0 leading-[1.05]">
+            <h1 className="font-heading text-[clamp(32px,5vw,48px)] font-semibold tracking-[-0.03em] m-0 leading-[1.05]">
               Less than 30 minutes<br /> of a real grind.
             </h1>
             <p className="mt-[18px] text-gray-500 text-[17px] leading-relaxed">
@@ -72,7 +72,7 @@ export default function PricingPage() {
           </div>
 
           <div className="animate-fade-up-2 mt-10">
-            <PricingCard />
+            <PricingCard checkoutCta />
           </div>
 
           <Comparison />

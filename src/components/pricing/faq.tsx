@@ -14,7 +14,7 @@ export function FAQ() {
   const [open, setOpen] = useState(0);
   return (
     <section className="mt-16 w-full max-w-[720px]">
-      <h2 className="text-[18px] font-semibold text-center mb-[18px] tracking-[-0.01em]">Common questions</h2>
+      <h2 className="font-heading text-[18px] font-semibold text-center mb-[18px] tracking-[-0.01em]">Common questions</h2>
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         {items.map((it, i) => (
           <button

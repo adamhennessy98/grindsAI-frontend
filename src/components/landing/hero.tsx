@@ -64,7 +64,7 @@ export function Hero() {
           </span>
         </div>
 
-        <h1 className="animate-fade-up-1 text-[clamp(40px,6vw,72px)] font-semibold tracking-[-0.035em] leading-[1.02] mt-6 mb-5">
+        <h1 className="font-heading animate-fade-up-1 text-[clamp(40px,6vw,72px)] font-semibold tracking-[-0.035em] leading-[1.02] mt-6 mb-5">
           Your personal<br />LC tutor.
         </h1>
 
