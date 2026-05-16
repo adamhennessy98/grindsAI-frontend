@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { SUBJECTS } from "@/lib/constants";
-import { SubjectIcon, LogoIcon, PlusIcon, CloseIcon, SettingsIcon } from "@/components/icons";
+import type { ConversationSummary } from "@/lib/types";
+import { SubjectIcon, LogoIcon, PlusIcon, CloseIcon, SettingsIcon, MessageCircleIcon } from "@/components/icons";
 
 interface SidebarProps {
   subjectId: string;
@@ -10,6 +11,10 @@ interface SidebarProps {
   userName: string;
   userEmail: string;
   userInitials: string;
+  conversations: ConversationSummary[];
+  activeConversationId: string | null;
+  loadingConversations: boolean;
+  onSelectConversation: (conversation: ConversationSummary) => void;
   onSelectSubject: (id: string) => void;
   onSetLevel: (l: string) => void;
   onNewChat: () => void;
@@ -18,7 +23,20 @@ interface SidebarProps {
 }
 
 export function ChatSidebar({
-  subjectId, level, userName, userEmail, userInitials, onSelectSubject, onSetLevel, onNewChat, open, onClose,
+  subjectId,
+  level,
+  userName,
+  userEmail,
+  userInitials,
+  conversations,
+  activeConversationId,
+  loadingConversations,
+  onSelectConversation,
+  onSelectSubject,
+  onSetLevel,
+  onNewChat,
+  open,
+  onClose,
 }: SidebarProps) {
   return (
     <aside
@@ -105,6 +123,53 @@ export function ChatSidebar({
             </button>
           ))}
         </div>
+
+        <div className="flex items-center justify-between pr-1">
+          <SectionLabel>Recent Chats</SectionLabel>
+          {loadingConversations && <span className="text-[10.5px] text-gray-400 pb-2">Loading</span>}
+        </div>
+        {conversations.length > 0 ? (
+          <div className="flex flex-col gap-[3px] pb-4">
+            {conversations.map((conversation) => {
+              const active = activeConversationId === conversation.id;
+              const subject = SUBJECTS.find((s) => s.id === conversation.subjectId);
+              return (
+                <button
+                  key={conversation.id}
+                  type="button"
+                  onClick={() => onSelectConversation(conversation)}
+                  className={[
+                    "group flex items-start gap-2.5 px-2.5 py-2 rounded-lg text-left border transition-all",
+                    active
+                      ? "bg-white border-gray-200 shadow-[0_1px_2px_rgba(17,24,39,0.04),0_1px_1px_rgba(17,24,39,0.03)]"
+                      : "border-transparent hover:bg-black/[0.04]",
+                  ].join(" ")}
+                >
+                  <span
+                    className={[
+                      "w-[22px] h-[22px] mt-0.5 rounded-md grid place-items-center shrink-0",
+                      active ? "bg-emerald-50 text-emerald-700" : "text-gray-400 group-hover:text-gray-600",
+                    ].join(" ")}
+                  >
+                    <MessageCircleIcon size={14} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[13px] leading-5 text-gray-800 font-medium truncate">
+                      {conversation.title}
+                    </span>
+                    <span className="block text-[11px] leading-4 text-gray-400 truncate">
+                      {subject?.name ?? "Subject"} / {conversation.level === "HL" ? "Higher" : "Ordinary"}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="px-2.5 pb-4 text-[12px] leading-5 text-gray-400">
+            {loadingConversations ? "Finding your chats..." : "No saved chats yet."}
+          </div>
+        )}
       </div>
 
       {/* Bottom */}

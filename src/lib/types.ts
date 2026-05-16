@@ -11,3 +11,11 @@ export interface Subject {
   icon: string;
   enabled: boolean;
 }
+
+export interface ConversationSummary {
+  id: string;
+  subjectId: string;
+  level: string;
+  title: string;
+  updatedAt: string;
+}

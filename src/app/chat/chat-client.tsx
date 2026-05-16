@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SUBJECTS } from "@/lib/constants";
-import type { Message } from "@/lib/types";
+import type { ConversationSummary, Message } from "@/lib/types";
 import { ChatSidebar } from "@/components/chat/chat-sidebar";
 import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatMessage, ThinkingBubble } from "@/components/chat/chat-message";
@@ -16,6 +16,20 @@ type SidebarUser = {
   email: string;
 };
 
+type ConversationRow = {
+  id: string;
+  subject_id: string;
+  level: string;
+  created_at: string;
+};
+
+type MessageRow = {
+  conversation_id: string;
+  role: string;
+  content: string;
+  created_at: string;
+};
+
 function initialsFrom(name: string, email: string) {
   const source = name || email.split("@")[0] || "Student";
   return source
@@ -24,6 +38,12 @@ function initialsFrom(name: string, email: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("") || "S";
+}
+
+function titleFrom(text?: string) {
+  const clean = text?.replace(/\s+/g, " ").trim();
+  if (!clean) return "New chat";
+  return clean.length > 42 ? `${clean.slice(0, 42)}...` : clean;
 }
 
 export function ChatClient() {
@@ -43,12 +63,66 @@ export function ChatClient() {
     name: "Student",
     email: "",
   });
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [loadingConversations, setLoadingConversations] = useState(false);
 
   const subject = SUBJECTS.find((s) => s.id === subjectId)!;
   const threadRef = useRef<HTMLDivElement>(null);
 
   const checkoutSuccess = searchParams.get("checkout") === "success";
   const showCheckoutBanner = checkoutSuccess && !checkoutBannerDismissed;
+
+  const loadConversations = useCallback(async () => {
+    const sb = getBrowserSupabase();
+    if (!sb) return;
+    setLoadingConversations(true);
+    try {
+      const { data: convRows, error: convErr } = await sb
+        .from("conversations")
+        .select("id, subject_id, level, created_at")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (convErr || !convRows?.length) {
+        setConversations([]);
+        return;
+      }
+
+      const rows = convRows as ConversationRow[];
+      const ids = rows.map((row) => row.id);
+      const { data: msgRows } = await sb
+        .from("messages")
+        .select("conversation_id, role, content, created_at")
+        .in("conversation_id", ids)
+        .order("created_at", { ascending: true });
+
+      const messagesByConversation = new Map<string, MessageRow[]>();
+      for (const message of (msgRows ?? []) as MessageRow[]) {
+        const existing = messagesByConversation.get(message.conversation_id) ?? [];
+        existing.push(message);
+        messagesByConversation.set(message.conversation_id, existing);
+      }
+
+      const summaries = rows
+        .map((row) => {
+          const savedMessages = messagesByConversation.get(row.id) ?? [];
+          const firstUserMessage = savedMessages.find((message) => message.role === "user");
+          const lastMessage = savedMessages[savedMessages.length - 1];
+          return {
+            id: row.id,
+            subjectId: row.subject_id,
+            level: row.level,
+            title: titleFrom(firstUserMessage?.content),
+            updatedAt: lastMessage?.created_at ?? row.created_at,
+          };
+        })
+        .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
+
+      setConversations(summaries);
+    } finally {
+      setLoadingConversations(false);
+    }
+  }, []);
 
   useEffect(() => {
     const sb = getBrowserSupabase();
@@ -64,8 +138,9 @@ export function ChatClient() {
       if (data?.subscription_status === "active") {
         setSubscriptionActive(true);
       }
+      await loadConversations();
     })();
-  }, []);
+  }, [loadConversations]);
 
   useEffect(() => {
     threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: "smooth" });
@@ -77,6 +152,36 @@ export function ChatClient() {
     setSidebarOpen(false);
     setConversationId(null);
     setApiError(null);
+  }, []);
+
+  const openConversation = useCallback(async (summary: ConversationSummary) => {
+    const sb = getBrowserSupabase();
+    if (!sb) return;
+    setApiError(null);
+    setThinking(false);
+    setDraft("");
+    setConversationId(summary.id);
+    setSubjectId(summary.subjectId);
+    setLevel(summary.level === "OL" ? "OL" : "HL");
+    setSidebarOpen(false);
+
+    const { data, error } = await sb
+      .from("messages")
+      .select("role, content")
+      .eq("conversation_id", summary.id)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      setApiError("Could not load that conversation. Try again.");
+      return;
+    }
+
+    setMessages(
+      ((data ?? []) as { role: string; content: string }[]).map((message) => ({
+        role: message.role === "ai" ? "ai" : "user",
+        text: message.content,
+      })),
+    );
   }, []);
 
   const switchSubject = useCallback((id: string) => {
@@ -174,6 +279,8 @@ export function ChatClient() {
         if (!reply.trim()) {
           setMessages((m) => m.slice(0, -1));
           setApiError("The tutor returned an empty response. Try again.");
+        } else {
+          await loadConversations();
         }
       } catch {
         setMessages((m) => m.slice(0, -1));
@@ -183,7 +290,7 @@ export function ChatClient() {
         setThinking(false);
       }
     },
-    [draft, conversationId, subjectId, level],
+    [draft, conversationId, subjectId, level, loadConversations],
   );
 
   const useSuggestion = useCallback((q: string) => {
@@ -198,6 +305,10 @@ export function ChatClient() {
         userName={sidebarUser.name}
         userEmail={sidebarUser.email}
         userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
+        conversations={conversations}
+        activeConversationId={conversationId}
+        loadingConversations={loadingConversations}
+        onSelectConversation={openConversation}
         onSelectSubject={switchSubject}
         onSetLevel={setLevel}
         onNewChat={newChat}
