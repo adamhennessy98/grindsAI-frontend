@@ -11,6 +11,21 @@ import { EmptyState } from "@/components/chat/empty-state";
 import { Composer } from "@/components/chat/composer";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 
+type SidebarUser = {
+  name: string;
+  email: string;
+};
+
+function initialsFrom(name: string, email: string) {
+  const source = name || email.split("@")[0] || "Student";
+  return source
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "S";
+}
+
 export function ChatClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,6 +39,10 @@ export function ChatClient() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [checkoutBannerDismissed, setCheckoutBannerDismissed] = useState(false);
   const [subscriptionActive, setSubscriptionActive] = useState(false);
+  const [sidebarUser, setSidebarUser] = useState<SidebarUser>({
+    name: "Student",
+    email: "",
+  });
 
   const subject = SUBJECTS.find((s) => s.id === subjectId)!;
   const threadRef = useRef<HTMLDivElement>(null);
@@ -38,6 +57,9 @@ export function ChatClient() {
       const { data: authData } = await sb.auth.getUser();
       const user = authData.user;
       if (!user) return;
+      const fullName = typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name.trim() : "";
+      const name = fullName || user.email?.split("@")[0] || "Student";
+      setSidebarUser({ name, email: user.email ?? "" });
       const { data } = await sb.from("profiles").select("subscription_status").eq("id", user.id).maybeSingle();
       if (data?.subscription_status === "active") {
         setSubscriptionActive(true);
@@ -93,18 +115,65 @@ export function ChatClient() {
             text: t,
           }),
         });
-        const data = (await res.json()) as { conversationId?: string; reply?: string; error?: string };
         if (!res.ok) {
+          const data = (await res.json()) as { error?: string };
           setMessages((m) => m.slice(0, -1));
           setDraft(t);
           setApiError(data.error ?? "Could not reach the tutor. Try again.");
           return;
         }
-        if (data.conversationId) {
-          setConversationId(data.conversationId);
+
+        const nextConversationId = res.headers.get("X-Conversation-Id");
+        if (nextConversationId) {
+          setConversationId(nextConversationId);
         }
-        if (data.reply) {
-          setMessages((m) => [...m, { role: "ai", text: data.reply! }]);
+
+        if (!res.body) {
+          setMessages((m) => m.slice(0, -1));
+          setDraft(t);
+          setApiError("The tutor response did not include a readable stream.");
+          return;
+        }
+
+        setThinking(false);
+        setMessages((m) => [...m, { role: "ai", text: "" }]);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let reply = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          if (!chunk) continue;
+          reply += chunk;
+          setMessages((m) => {
+            const next = [...m];
+            const last = next[next.length - 1];
+            if (last?.role === "ai") {
+              next[next.length - 1] = { ...last, text: last.text + chunk };
+            }
+            return next;
+          });
+        }
+
+        const tail = decoder.decode();
+        if (tail) {
+          reply += tail;
+          setMessages((m) => {
+            const next = [...m];
+            const last = next[next.length - 1];
+            if (last?.role === "ai") {
+              next[next.length - 1] = { ...last, text: last.text + tail };
+            }
+            return next;
+          });
+        }
+
+        if (!reply.trim()) {
+          setMessages((m) => m.slice(0, -1));
+          setApiError("The tutor returned an empty response. Try again.");
         }
       } catch {
         setMessages((m) => m.slice(0, -1));
@@ -126,6 +195,9 @@ export function ChatClient() {
       <ChatSidebar
         subjectId={subjectId}
         level={level}
+        userName={sidebarUser.name}
+        userEmail={sidebarUser.email}
+        userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
         onSelectSubject={switchSubject}
         onSetLevel={setLevel}
         onNewChat={newChat}

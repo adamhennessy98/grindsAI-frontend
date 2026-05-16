@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { assertChatAllowed } from "@/lib/subscription";
 import { SUBJECTS } from "@/lib/constants";
-import { generateTutorReply } from "@/lib/llm";
+import { streamTutorReply } from "@/lib/llm";
 import type { Message } from "@/lib/types";
 
 type ChatBody = {
@@ -14,6 +14,10 @@ type ChatBody = {
 
 function isValidSubject(id: string) {
   return SUBJECTS.some((s) => s.id === id && s.enabled);
+}
+
+async function* singleChunk(text: string) {
+  yield text;
 }
 
 export async function POST(request: Request) {
@@ -103,26 +107,54 @@ export async function POST(request: Request) {
   const history = mapped.slice(0, -1).map((m) => ({ role: m.role, text: m.text }));
   const userMessage = mapped[mapped.length - 1]!.text;
 
-  let reply: string;
+  let replyStream: AsyncIterable<string>;
   let usedFallback = false;
   try {
-    const out = await generateTutorReply({ subjectId, level, history, userMessage });
-    reply = out.text;
+    const out = await streamTutorReply({ subjectId, level, history, userMessage });
+    replyStream = out.stream;
     usedFallback = out.usedFallback;
   } catch {
     const { socraticReply } = await import("@/lib/constants");
-    reply = socraticReply(subjectId, userMessage);
+    replyStream = singleChunk(socraticReply(subjectId, userMessage));
     usedFallback = true;
   }
 
-  const { error: aiMsgErr } = await supabase.from("messages").insert({
-    conversation_id: conversationId,
-    role: "ai",
-    content: reply,
-  });
-  if (aiMsgErr) {
-    return NextResponse.json({ error: "Could not save the tutor reply." }, { status: 500 });
+  if (!conversationId) {
+    return NextResponse.json({ error: "Could not start conversation." }, { status: 500 });
   }
+  const activeConversationId = conversationId;
 
-  return NextResponse.json({ conversationId, reply, usedFallback });
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      let reply = "";
+      try {
+        for await (const chunk of replyStream) {
+          reply += chunk;
+          controller.enqueue(encoder.encode(chunk));
+        }
+
+        if (reply.trim()) {
+          await supabase.from("messages").insert({
+            conversation_id: activeConversationId,
+            role: "ai",
+            content: reply,
+          });
+        }
+      } catch {
+        controller.enqueue(encoder.encode("\n\nSorry, something went wrong while writing that response. Try again."));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Conversation-Id": activeConversationId,
+      "X-Used-Fallback": String(usedFallback),
+    },
+  });
 }

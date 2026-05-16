@@ -7,6 +7,9 @@ import { SubjectIcon, LogoIcon, PlusIcon, CloseIcon, SettingsIcon } from "@/comp
 interface SidebarProps {
   subjectId: string;
   level: string;
+  userName: string;
+  userEmail: string;
+  userInitials: string;
   onSelectSubject: (id: string) => void;
   onSetLevel: (l: string) => void;
   onNewChat: () => void;
@@ -15,7 +18,7 @@ interface SidebarProps {
 }
 
 export function ChatSidebar({
-  subjectId, level, onSelectSubject, onSetLevel, onNewChat, open, onClose,
+  subjectId, level, userName, userEmail, userInitials, onSelectSubject, onSetLevel, onNewChat, open, onClose,
 }: SidebarProps) {
   return (
     <aside
@@ -107,11 +110,11 @@ export function ChatSidebar({
       {/* Bottom */}
       <div className="px-3 py-3 border-t border-gray-200 flex items-center gap-2.5">
         <div className="w-[30px] h-[30px] rounded-full bg-emerald-500 text-white grid place-items-center font-semibold text-xs shrink-0">
-          AM
+          {userInitials}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-gray-900 font-medium text-[13px] truncate">Aoife Murphy</div>
-          <div className="text-[11.5px] text-gray-400 truncate">aoife.m@school.ie</div>
+          <div className="text-gray-900 font-medium text-[13px] truncate">{userName}</div>
+          <div className="text-[11.5px] text-gray-400 truncate">{userEmail || "Signed in"}</div>
         </div>
         <button
           aria-label="Settings"
