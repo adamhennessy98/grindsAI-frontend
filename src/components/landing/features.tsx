@@ -17,11 +17,11 @@ const features = [
   {
     icon: <SparkleIcon />,
     title: "Socratic method",
-    body: "It won't hand you the answer. GrindsAI asks the questions that lead you there — the way a real teacher does.",
+    body: "It won't hand you the answer. GrindsAI asks the questions that lead you there - the way a real teacher does.",
     demo: (
       <div className="flex flex-col gap-2">
         <FauxMsg user>Just give me the answer.</FauxMsg>
-        <FauxMsg>Let&apos;s try a smaller version first — what&apos;s 2³?</FauxMsg>
+        <FauxMsg>Let&apos;s try a smaller version first - what&apos;s 2^3?</FauxMsg>
       </div>
     ),
   },
@@ -31,7 +31,7 @@ const features = [
     body: "Trained only on the State Exams Commission syllabus. No hallucinated theorems, no off-spec rabbit holes.",
     demo: (
       <div className="flex flex-col gap-1.5">
-        {["Maths H — Topic 5.2", "Biology — Unit 2.4", "Chemistry — Mole concept"].map((t) => (
+        {["Maths H - Topic 5.2", "Biology - Unit 2.4", "Chemistry - Mole concept"].map((t) => (
           <div key={t} className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-[11.5px] text-gray-500 font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
             {t}
@@ -46,7 +46,7 @@ const features = [
     body: "Stuck at 11pm the night before a class test? GrindsAI doesn't sleep, doesn't cancel, and never doubles its rates.",
     demo: (
       <div className="bg-white border border-gray-200 rounded-lg p-3 text-xs text-gray-500 font-mono leading-[1.7]">
-        <div><span className="text-emerald-500">●</span> Online · {new Date().toLocaleString("en-IE", { weekday: "short" })} 23:47</div>
+        <div><span className="text-emerald-500">*</span> Online / {new Date().toLocaleString("en-IE", { weekday: "short" })} 23:47</div>
         <div className="text-gray-400">avg. response &lt; 2s</div>
       </div>
     ),

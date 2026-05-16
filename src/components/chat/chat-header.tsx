@@ -33,7 +33,7 @@ export function ChatHeader({
         </div>
         <h1 className="m-0 text-[15px] font-semibold tracking-[-0.005em] flex items-center gap-2">
           <span>{subject.name}</span>
-          <span className="text-gray-300 font-normal">·</span>
+          <span className="text-gray-300 font-normal">/</span>
           <span className="text-gray-500 font-medium">{level === "HL" ? "Higher Level" : "Ordinary Level"}</span>
         </h1>
       </div>

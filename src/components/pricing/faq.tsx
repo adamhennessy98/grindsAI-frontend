@@ -4,8 +4,8 @@ import { useState } from "react";
 import { ChevronDownIcon } from "@/components/icons";
 
 const items = [
-  { q: "Can I cancel any time?", a: "Yes. Cancel from your account settings in two clicks — no email back-and-forth, no end-of-term lock-in." },
-  { q: "Is this just ChatGPT in a wrapper?", a: "No. GrindsAI is constrained to the Irish Leaving Cert syllabus and trained to teach Socratically — it deliberately won't hand you the answer." },
+  { q: "Can I cancel any time?", a: "Yes. Cancel from your account settings in two clicks - no email back-and-forth, no end-of-term lock-in." },
+  { q: "Is this just ChatGPT in a wrapper?", a: "No. GrindsAI is constrained to the Irish Leaving Cert syllabus and trained to teach Socratically - it deliberately won't hand you the answer." },
   { q: "What subjects are supported?", a: "Maths, Biology and Chemistry at both Higher and Ordinary Level today. Physics, English, Irish, History and Geography are arriving over the next few months." },
   { q: "Will my school know I'm using it?", a: "Only if you tell them. Your conversations are private to you." },
 ];

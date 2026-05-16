@@ -12,16 +12,16 @@ function HeroPreview() {
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => <span key={i} className="w-2.5 h-2.5 rounded-full bg-gray-200" />)}
           </div>
-          <span className="ml-3 text-xs text-gray-400 font-mono">grindsai.ie/chat — Maths · Higher Level</span>
+          <span className="ml-3 text-xs text-gray-400 font-mono">grindsai.ie/chat - Maths / Higher Level</span>
         </div>
         <div className="p-7 flex flex-col gap-3.5">
-          <UserBubble>Why does a² + b² = c² actually work?</UserBubble>
+          <UserBubble>Why does a^2 + b^2 = c^2 actually work?</UserBubble>
           <AIBubble>
-            Great question — let&apos;s build the intuition rather than memorise it. If you draw a right-angled triangle and build a square on <em>each</em> side, what do you notice about the area of the square on the hypotenuse compared to the other two?
+            Great question - let&apos;s build the intuition rather than memorise it. If you draw a right-angled triangle and build a square on <em>each</em> side, what do you notice about the area of the square on the hypotenuse compared to the other two?
           </AIBubble>
           <UserBubble>It&apos;s the same as the other two added together?</UserBubble>
           <AIBubble>
-            Exactly. Now — can you think of <span className="font-medium text-gray-900">why</span> that has to be true, not just that it is?
+            Exactly. Now - can you think of <span className="font-medium text-gray-900">why</span> that has to be true, not just that it is?
           </AIBubble>
         </div>
       </div>
@@ -69,7 +69,7 @@ export function Hero() {
         </h1>
 
         <p className="animate-fade-up-2 text-[clamp(16px,2vw,19px)] text-gray-500 max-w-[560px] mx-auto mb-9 leading-relaxed">
-          One grinds session costs <span className="text-gray-700 font-medium">€40 an hour</span>. GrindsAI is a Socratic tutor that helps you understand — not just copy answers — for less than a tank of fuel a month.
+          One grinds session costs <span className="text-gray-700 font-medium">EUR40 an hour</span>. GrindsAI is a Socratic tutor that helps you understand - not just copy answers - for less than a tank of fuel a month.
         </p>
 
         <div className="animate-fade-up-3 flex gap-3 justify-center flex-wrap">
@@ -88,7 +88,7 @@ export function Hero() {
         </div>
 
         <p className="animate-fade-up-4 mt-[18px] text-xs text-gray-400 font-mono">
-          No card required · 7-day free trial
+          No card required / 7-day free trial
         </p>
 
         <HeroPreview />

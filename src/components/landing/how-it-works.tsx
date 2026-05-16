@@ -11,7 +11,7 @@ const steps = [
     n: "02",
     icon: <MessageCircleIcon />,
     title: "Ask a question",
-    body: "A homework problem, a past-paper question, a topic you missed in class — anything.",
+    body: "A homework problem, a past-paper question, a topic you missed in class - anything.",
   },
   {
     n: "03",

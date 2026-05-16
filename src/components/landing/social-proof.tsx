@@ -1,7 +1,7 @@
 const quotes = [
   { name: "Aoife M.", school: "6th Year, Galway", text: "It actually makes me think. My maths teacher noticed." },
   { name: "Cian D.", school: "5th Year, Cork", text: "Asked it three times to just give me the answer. It kept asking better questions instead." },
-  { name: "Saoirse K.", school: "6th Year, Dublin", text: "Replaced my €40/hr grinds for biology. I'm doing better in tests too." },
+  { name: "Saoirse K.", school: "6th Year, Dublin", text: "Replaced my EUR40/hr grinds for biology. I'm doing better in tests too." },
 ];
 
 export function SocialProof() {
@@ -15,7 +15,7 @@ export function SocialProof() {
                 &ldquo;{q.text}&rdquo;
               </blockquote>
               <figcaption className="mt-3.5 text-[13px] text-gray-500">
-                <span className="text-gray-700 font-medium">{q.name}</span> · {q.school}
+                <span className="text-gray-700 font-medium">{q.name}</span> / {q.school}
               </figcaption>
             </figure>
           ))}

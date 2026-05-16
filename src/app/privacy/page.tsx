@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalDocShell } from "@/components/legal/doc-shell";
 
 export const metadata: Metadata = {
-  title: "Privacy — GrindsAI",
+  title: "Privacy - GrindsAI",
   description: "How GrindsAI handles your data and privacy.",
 };
 

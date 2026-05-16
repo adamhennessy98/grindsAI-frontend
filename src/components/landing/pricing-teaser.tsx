@@ -5,8 +5,8 @@ import { SectionHeader } from "./how-it-works";
 
 const FEATURES = [
   "Unlimited Socratic tutoring sessions",
-  "All LC subjects — Higher & Ordinary",
-  "Past paper walkthroughs (2010 → 2025)",
+  "All LC subjects - Higher & Ordinary",
+  "Past paper walkthroughs (2010 to 2025)",
   "Saved chat history & notes",
   "Mobile, tablet & desktop",
   "Cancel any time, no contract",
@@ -25,10 +25,10 @@ export function PricingCard({ compact, checkoutCta }: { compact?: boolean; check
         </span>
       </div>
       <div className="mt-[18px] flex items-baseline gap-1.5">
-        <span className="text-[48px] font-semibold tracking-[-0.04em]">€14</span>
+        <span className="text-[48px] font-semibold tracking-[-0.04em]">EUR14</span>
         <span className="text-gray-500 text-[15px]">/ month</span>
       </div>
-      <p className="text-gray-500 text-[13.5px] mt-1 mb-0">Or €120/year — cancel any time.</p>
+      <p className="text-gray-500 text-[13.5px] mt-1 mb-0">Or EUR120/year - cancel any time.</p>
       {checkoutCta ? (
         <SubscribeButton label="Subscribe with Stripe" />
       ) : (
@@ -49,7 +49,7 @@ export function PricingCard({ compact, checkoutCta }: { compact?: boolean; check
       </ul>
       {!compact && (
         <p className="mt-5 text-[11.5px] text-gray-400 font-mono text-center pt-4 border-t border-[#eef0f3] mb-0">
-          €14 · less than 30 mins of a real grind
+          EUR14 / less than 30 mins of a real grind
         </p>
       )}
     </div>
@@ -63,7 +63,7 @@ export function PricingTeaser() {
         <SectionHeader
           eyebrow="Pricing"
           title="One price. No upsells."
-          subtitle="A single private grinds session in Dublin costs €40–50. This is your tutor for an entire term."
+          subtitle="A single private grinds session in Dublin costs EUR40-50. This is your tutor for an entire term."
         />
         <div className="mt-10 grid place-items-center">
           <PricingCard />

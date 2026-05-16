@@ -5,11 +5,11 @@ import { FAQ } from "@/components/pricing/faq";
 
 const rows = [
   ["", "Private grinds", "GrindsAI"],
-  ["Hourly cost", "€40–50", "€0.46"],
-  ["Available 24/7", "✕", "✓"],
+  ["Hourly cost", "EUR40-50", "EUR0.46"],
+  ["Available 24/7", "No", "Yes"],
   ["Curriculum-aligned", "Sometimes", "Always"],
-  ["Travels with you", "✕", "✓"],
-  ["Cancellable any time", "✕", "✓"],
+  ["Travels with you", "No", "Yes"],
+  ["Cancellable any time", "No", "Yes"],
 ];
 
 function Comparison() {
@@ -67,7 +67,7 @@ export default function PricingPage() {
             </h1>
             <p className="mt-[18px] text-gray-500 text-[17px] leading-relaxed">
               One real grinds session costs{" "}
-              <span className="text-gray-700 font-medium">€40–50</span>. This is your tutor for the whole year.
+              <span className="text-gray-700 font-medium">EUR40-50</span>. This is your tutor for the whole year.
             </p>
           </div>
 

@@ -327,7 +327,7 @@ export function ChatClient() {
       <main className="flex flex-col min-w-0 h-screen">
         {showCheckoutBanner && (
           <div className="px-6 py-2.5 text-sm text-emerald-900 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between gap-3 shrink-0">
-            <span>Subscription active — thanks for supporting GrindsAI.</span>
+            <span>Subscription active - thanks for supporting GrindsAI.</span>
             <button
               type="button"
               onClick={() => setCheckoutBannerDismissed(true)}

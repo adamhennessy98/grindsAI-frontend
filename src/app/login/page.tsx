@@ -4,7 +4,7 @@ import { AuthForm } from "@/components/auth-form";
 function AuthFormFallback({ mode }: { mode: "login" | "signup" }) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-5 text-sm text-gray-500">
-      Loading {mode === "login" ? "sign in" : "sign up"}…
+      Loading {mode === "login" ? "sign in" : "sign up"}...
     </div>
   );
 }

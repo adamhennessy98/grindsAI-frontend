@@ -40,7 +40,7 @@ export function SubscribeButton({ label = "Subscribe with Stripe" }: { label?: s
   return (
     <div>
       <button type="button" className={btnCls} disabled={loading} onClick={() => void startCheckout()}>
-        {loading ? "Redirecting…" : label}
+        {loading ? "Redirecting..." : label}
       </button>
       {error && <p className="mt-2 text-[13px] text-red-600 text-center mb-0">{error}</p>}
     </div>

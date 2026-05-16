@@ -129,7 +129,7 @@
   }
 }
 
-/* ── GrindsAI design utilities ─────────────────────────────────────── */
+/* GrindsAI design utilities */
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }

@@ -21,9 +21,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GrindsAI — Your personal LC tutor",
+  title: "GrindsAI - Your personal LC tutor",
   description:
-    "An AI-powered Leaving Certificate tutor that uses the Socratic method to guide Irish students to answers — not just give them.",
+    "An AI-powered Leaving Certificate tutor that uses the Socratic method to guide Irish students to answers - not just give them.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

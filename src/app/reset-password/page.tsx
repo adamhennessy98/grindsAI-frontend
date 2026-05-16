@@ -70,7 +70,7 @@ export default function ResetPasswordPage() {
               disabled={loading}
               className="mt-1 w-full h-[42px] rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200"
             >
-              {loading ? "Sending…" : "Send reset link"}
+              {loading ? "Sending..." : "Send reset link"}
             </button>
           </form>
         )}

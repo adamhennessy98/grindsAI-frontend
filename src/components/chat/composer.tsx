@@ -35,7 +35,7 @@ export function Composer({ draft, subject, onChange, onSend }: ComposerProps) {
           value={draft}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKey}
-          placeholder={`Ask a question about ${subject.name}…`}
+          placeholder={`Ask a question about ${subject.name}...`}
           rows={1}
           className="flex-1 resize-none border-none outline-none text-[15px] leading-relaxed py-2 px-1 bg-transparent min-h-6 max-h-[132px]"
         />

@@ -201,7 +201,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
                 type={showPwd ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="********"
                 className={`${inputCls} pr-10`}
                 autoComplete={mode === "signup" ? "new-password" : "current-password"}
               />
