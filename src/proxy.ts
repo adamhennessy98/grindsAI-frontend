@@ -35,11 +35,21 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && request.nextUrl.pathname.startsWith("/chat")) {
+  const { pathname } = request.nextUrl;
+
+  if (user && (pathname === "/login" || pathname === "/signup")) {
+    return NextResponse.redirect(new URL("/chat", request.url));
+  }
+
+  if (!user && pathname.startsWith("/chat")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("next", request.nextUrl.pathname);
+    url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
+  }
+
+  if (!user && pathname === "/api/chat") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   return supabaseResponse;

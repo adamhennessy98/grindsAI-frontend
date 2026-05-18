@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { SUBJECTS } from "@/lib/constants";
 import type { Message } from "@/lib/types";
 
@@ -22,38 +22,42 @@ export function buildSystemPrompt(subjectId: string, level: string): string {
   ].join(" ");
 }
 
+function anthropicMessages(history: Pick<Message, "role" | "text">[], userMessage: string): Anthropic.MessageParam[] {
+  return [
+    ...history.map((m) => ({
+      role: m.role === "ai" ? ("assistant" as const) : ("user" as const),
+      content: m.text,
+    })),
+    { role: "user" as const, content: userMessage },
+  ];
+}
+
 export async function generateTutorReply(input: {
   subjectId: string;
   level: string;
   history: Pick<Message, "role" | "text">[];
   userMessage: string;
 }): Promise<{ text: string; usedFallback: boolean }> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     const { socraticReply } = await import("@/lib/constants");
     return { text: socraticReply(input.subjectId, input.userMessage), usedFallback: true };
   }
 
-  const openai = new OpenAI({ apiKey });
-  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
-
+  const client = new Anthropic({ apiKey });
+  const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
   const system = buildSystemPrompt(input.subjectId, input.level);
-  const messages = [
-    { role: "system" as const, content: system },
-    ...input.history.map((m) => ({
-      role: m.role === "ai" ? ("assistant" as const) : ("user" as const),
-      content: m.text,
-    })),
-    { role: "user" as const, content: input.userMessage },
-  ];
 
-  const completion = await openai.chat.completions.create({
+  const response = await client.messages.create({
     model,
-    messages,
+    system,
+    messages: anthropicMessages(input.history, input.userMessage),
+    max_tokens: 1024,
     temperature: 0.6,
   });
 
-  const text = completion.choices[0]?.message?.content?.trim();
+  const block = response.content[0];
+  const text = block?.type === "text" ? block.text.trim() : "";
   if (!text) {
     const { socraticReply } = await import("@/lib/constants");
     return { text: socraticReply(input.subjectId, input.userMessage), usedFallback: true };
@@ -68,35 +72,29 @@ export async function streamTutorReply(input: {
   history: Pick<Message, "role" | "text">[];
   userMessage: string;
 }): Promise<{ stream: AsyncIterable<string>; usedFallback: boolean }> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     const { socraticReply } = await import("@/lib/constants");
     return { stream: singleChunk(socraticReply(input.subjectId, input.userMessage)), usedFallback: true };
   }
 
-  const openai = new OpenAI({ apiKey });
-  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+  const client = new Anthropic({ apiKey });
+  const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
   const system = buildSystemPrompt(input.subjectId, input.level);
-  const messages = [
-    { role: "system" as const, content: system },
-    ...input.history.map((m) => ({
-      role: m.role === "ai" ? ("assistant" as const) : ("user" as const),
-      content: m.text,
-    })),
-    { role: "user" as const, content: input.userMessage },
-  ];
 
-  const completion = await openai.chat.completions.create({
+  const anthropicStream = client.messages.stream({
     model,
-    messages,
+    system,
+    messages: anthropicMessages(input.history, input.userMessage),
+    max_tokens: 1024,
     temperature: 0.6,
-    stream: true,
   });
 
   async function* chunks() {
-    for await (const chunk of completion) {
-      const text = chunk.choices[0]?.delta?.content;
-      if (text) yield text;
+    for await (const event of anthropicStream) {
+      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+        yield event.delta.text;
+      }
     }
   }
 
