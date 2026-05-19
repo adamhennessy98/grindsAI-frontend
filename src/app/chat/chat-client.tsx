@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SUBJECTS } from "@/lib/constants";
+import { conversationKey, getSubjectTopics, getTopic, SUBJECTS } from "@/lib/constants";
 import type { ConversationSummary, Message } from "@/lib/types";
 import { ChatSidebar } from "@/components/chat/chat-sidebar";
 import { ChatHeader } from "@/components/chat/chat-header";
@@ -20,6 +20,8 @@ type ConversationRow = {
   id: string;
   subject_id: string;
   level: string;
+  topic_id?: string | null;
+  conversation_key?: string | null;
   created_at: string;
 };
 
@@ -51,6 +53,7 @@ export function ChatClient() {
   const searchParams = useSearchParams();
   const [subjectId, setSubjectId] = useState("maths");
   const [level, setLevel] = useState("HL");
+  const [topicId, setTopicId] = useState("general");
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -67,6 +70,8 @@ export function ChatClient() {
   const [conversationId, setConversationId] = useState<string | null>(null);
 
   const subject = SUBJECTS.find((s) => s.id === subjectId)!;
+  const topics = getSubjectTopics(subjectId);
+  const activeTopic = getTopic(subjectId, topicId);
   const threadRef = useRef<HTMLDivElement>(null);
 
   const checkoutSuccess = searchParams.get("checkout") === "success";
@@ -79,7 +84,7 @@ export function ChatClient() {
     try {
       const { data: convRows, error: convErr } = await sb
         .from("conversations")
-        .select("id, subject_id, level, created_at")
+        .select("id, subject_id, level, topic_id, conversation_key, created_at")
         .order("created_at", { ascending: false })
         .limit(20);
 
@@ -108,10 +113,14 @@ export function ChatClient() {
           const savedMessages = messagesByConversation.get(row.id) ?? [];
           const firstUserMessage = savedMessages.find((message) => message.role === "user");
           const lastMessage = savedMessages[savedMessages.length - 1];
+          const rowTopicId = row.topic_id ?? "general";
+          const rowKey = row.conversation_key ?? conversationKey(row.subject_id, row.level, rowTopicId);
           return {
             id: row.id,
             subjectId: row.subject_id,
             level: row.level,
+            topicId: rowTopicId,
+            conversationKey: rowKey,
             title: titleFrom(firstUserMessage?.content),
             updatedAt: lastMessage?.created_at ?? row.created_at,
           };
@@ -146,15 +155,13 @@ export function ChatClient() {
     threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
 
-  const newChat = useCallback(() => {
-    setMessages([]);
-    setConversationId(null);
-    setThinking(false);
-    setSidebarOpen(false);
-    setApiError(null);
-  }, []);
+  const findConversation = useCallback(
+    (nextSubjectId: string, nextLevel: string, nextTopicId: string) =>
+      conversations.find((conversation) => conversation.conversationKey === conversationKey(nextSubjectId, nextLevel, nextTopicId)),
+    [conversations],
+  );
 
-  const openConversation = useCallback(async (summary: ConversationSummary) => {
+  const openConversation = useCallback(async (summary: ConversationSummary, closeSidebar = true) => {
     const sb = getBrowserSupabase();
     if (!sb) return;
     setApiError(null);
@@ -163,7 +170,8 @@ export function ChatClient() {
     setConversationId(summary.id);
     setSubjectId(summary.subjectId);
     setLevel(summary.level === "OL" ? "OL" : "HL");
-    setSidebarOpen(false);
+    setTopicId(summary.topicId);
+    if (closeSidebar) setSidebarOpen(false);
 
     const { data, error } = await sb
       .from("messages")
@@ -184,15 +192,41 @@ export function ChatClient() {
     );
   }, []);
 
+  const openSelection = useCallback(
+    async (nextSubjectId: string, nextLevel: string, nextTopicId: string, closeSidebar = true) => {
+      const summary = findConversation(nextSubjectId, nextLevel, nextTopicId);
+      setSubjectId(nextSubjectId);
+      setLevel(nextLevel === "OL" ? "OL" : "HL");
+      setTopicId(nextTopicId);
+      setApiError(null);
+      setThinking(false);
+      setDraft("");
+
+      if (summary) {
+        await openConversation(summary, closeSidebar);
+        return;
+      }
+
+      setMessages([]);
+      setConversationId(null);
+      if (closeSidebar) setSidebarOpen(false);
+    },
+    [findConversation, openConversation],
+  );
+
   const switchSubject = useCallback((id: string) => {
     if (id === subjectId) return;
-    setSubjectId(id);
-    setMessages([]);
-    setConversationId(null);
-    setThinking(false);
-    setSidebarOpen(false);
-    setApiError(null);
-  }, [subjectId]);
+    const nextTopicId = getSubjectTopics(id)[0]?.id ?? "general";
+    void openSelection(id, level, nextTopicId, false);
+  }, [level, openSelection, subjectId]);
+
+  const switchTopic = useCallback((id: string) => {
+    void openSelection(subjectId, level, id);
+  }, [level, openSelection, subjectId]);
+
+  const switchLevel = useCallback((nextLevel: string) => {
+    void openSelection(subjectId, nextLevel, topicId, false);
+  }, [openSelection, subjectId, topicId]);
 
   const signOut = useCallback(async () => {
     const sb = getBrowserSupabase();
@@ -215,7 +249,7 @@ export function ChatClient() {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ conversationId, subjectId, level, text: t, history }),
+          body: JSON.stringify({ conversationId, subjectId, level, topicId, text: t, history }),
         });
         if (!res.ok) {
           const data = (await res.json()) as { error?: string };
@@ -287,7 +321,7 @@ export function ChatClient() {
         setThinking(false);
       }
     },
-    [draft, conversationId, messages, subjectId, level, loadConversations],
+    [draft, conversationId, messages, subjectId, level, topicId, loadConversations],
   );
 
   const useSuggestion = useCallback((q: string) => {
@@ -300,15 +334,16 @@ export function ChatClient() {
         subjectId={subjectId}
         level={level}
         userName={sidebarUser.name}
-        userEmail={sidebarUser.email}
-        userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
-        conversations={conversations}
-        activeConversationId={conversationId}
+         userEmail={sidebarUser.email}
+         userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
+         conversations={conversations}
+         activeTopicId={topicId}
+        topics={topics}
         loadingConversations={loadingConversations}
         onSelectConversation={openConversation}
         onSelectSubject={switchSubject}
-        onSetLevel={setLevel}
-        onNewChat={newChat}
+        onSelectTopic={switchTopic}
+        onSetLevel={switchLevel}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
@@ -340,6 +375,7 @@ export function ChatClient() {
         <ChatHeader
           subject={subject}
           level={level}
+          topic={activeTopic}
           onOpenSidebar={() => setSidebarOpen(true)}
           subscriptionActive={subscriptionActive}
           onSignOut={() => void signOut()}
@@ -347,7 +383,7 @@ export function ChatClient() {
 
         <div ref={threadRef} className="flex-1 overflow-auto py-8">
           {messages.length === 0 ? (
-            <EmptyState subject={subject} level={level} onPick={useSuggestion} />
+            <EmptyState subject={subject} level={level} topic={activeTopic} onPick={useSuggestion} />
           ) : (
             <div className="max-w-[760px] mx-auto px-6 flex flex-col gap-[22px]">
               {messages.map((m, i) => (

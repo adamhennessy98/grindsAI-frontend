@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { SUBJECTS } from "@/lib/constants";
+import { getTopic, SUBJECTS } from "@/lib/constants";
 import type { Message } from "@/lib/types";
 
 function subjectLabel(subjectId: string): string {
@@ -10,11 +10,13 @@ async function* singleChunk(text: string) {
   yield text;
 }
 
-export function buildSystemPrompt(subjectId: string, level: string): string {
+export function buildSystemPrompt(subjectId: string, level: string, topicId = "general"): string {
   const name = subjectLabel(subjectId);
+  const topic = getTopic(subjectId, topicId);
   const lvl = level === "HL" ? "Leaving Certificate Higher Level" : "Leaving Certificate Ordinary Level";
   return [
     `You are GrindsAI, a ${lvl} tutor for ${name} (Irish Leaving Cert).`,
+    topic.id === "general" ? "The current chat is for general subject help." : `The current chat topic is ${topic.name}. Keep explanations anchored to that topic unless the student asks to move elsewhere.`,
     "Use the Socratic method: ask guiding questions, give hints, and help the student discover answers.",
     "Do not do the student's homework for them when they ask for direct answers; redirect to understanding.",
     "Keep replies concise but warm. Use markdown sparingly (bold for key terms).",
@@ -35,6 +37,7 @@ function anthropicMessages(history: Pick<Message, "role" | "text">[], userMessag
 export async function generateTutorReply(input: {
   subjectId: string;
   level: string;
+  topicId?: string;
   history: Pick<Message, "role" | "text">[];
   userMessage: string;
 }): Promise<{ text: string; usedFallback: boolean }> {
@@ -46,7 +49,7 @@ export async function generateTutorReply(input: {
 
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-  const system = buildSystemPrompt(input.subjectId, input.level);
+  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId);
 
   const response = await client.messages.create({
     model,
@@ -69,6 +72,7 @@ export async function generateTutorReply(input: {
 export async function streamTutorReply(input: {
   subjectId: string;
   level: string;
+  topicId?: string;
   history: Pick<Message, "role" | "text">[];
   userMessage: string;
 }): Promise<{ stream: AsyncIterable<string>; usedFallback: boolean }> {
@@ -80,7 +84,7 @@ export async function streamTutorReply(input: {
 
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-  const system = buildSystemPrompt(input.subjectId, input.level);
+  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId);
 
   const anthropicStream = client.messages.stream({
     model,
