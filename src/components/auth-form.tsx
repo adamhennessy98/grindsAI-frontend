@@ -33,6 +33,7 @@ const inputCls =
 
 function mapAuthMessage(message: string): string {
   if (message.includes("Invalid login credentials")) return "Email or password is incorrect.";
+  if (message.includes("Email not confirmed")) return "Confirm your email first — check your inbox for the link from GrindsAI.";
   if (message.includes("User already registered")) return "An account with this email already exists. Try signing in.";
   return message;
 }
@@ -53,12 +54,14 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
   const bannerError = authError === "config" ? "Server auth is not configured yet." : authError === "auth" ? "Something went wrong signing you in." : authError ? "Sign-in failed." : "";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setInfo("");
     if (!email.includes("@")) {
       setError("Please enter a valid email.");
       return;
@@ -77,20 +80,24 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
     try {
       if (mode === "signup") {
         const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
-        const { error: signErr } = await supabase.auth.signUp({
+        const { data, error: signErr } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: redirectTo,
-            data: { full_name: name },
+            data: { full_name: name.trim() || undefined },
           },
         });
         if (signErr) {
           setError(mapAuthMessage(signErr.message));
           return;
         }
-        router.push(nextPath);
-        router.refresh();
+        if (data.session) {
+          router.push(nextPath);
+          router.refresh();
+          return;
+        }
+        setInfo("Account created. Check your email for a confirmation link, then sign in.");
         return;
       }
 
@@ -108,6 +115,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
 
   const google = async () => {
     setError("");
+    setInfo("");
     const supabase = getBrowserSupabase();
     if (!supabase) {
       setError("Auth is not configured. Add Supabase keys to .env.local.");
@@ -146,6 +154,12 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
         {bannerError && (
           <div className="mb-4 text-[13px] text-amber-900 bg-amber-50 border border-amber-200 px-2.5 py-2 rounded-lg">
             {bannerError}
+          </div>
+        )}
+
+        {info && (
+          <div className="mb-4 text-[13px] text-emerald-900 bg-emerald-50 border border-emerald-200 px-2.5 py-2 rounded-lg">
+            {info}
           </div>
         )}
 
@@ -243,7 +257,11 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
           {mode === "signup" ? "Already have an account?" : "New to GrindsAI?"}{" "}
           <button
             type="button"
-            onClick={() => setMode(mode === "signup" ? "login" : "signup")}
+            onClick={() => {
+              setMode(mode === "signup" ? "login" : "signup");
+              setError("");
+              setInfo("");
+            }}
             className="text-emerald-700 font-medium hover:underline"
           >
             {mode === "signup" ? "Sign in" : "Create one"}

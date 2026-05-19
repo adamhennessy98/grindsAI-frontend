@@ -55,7 +55,6 @@ export function ChatClient() {
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [conversationId, setConversationId] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [checkoutBannerDismissed, setCheckoutBannerDismissed] = useState(false);
   const [subscriptionActive, setSubscriptionActive] = useState(false);
@@ -65,6 +64,7 @@ export function ChatClient() {
   });
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [loadingConversations, setLoadingConversations] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   const subject = SUBJECTS.find((s) => s.id === subjectId)!;
   const threadRef = useRef<HTMLDivElement>(null);
@@ -148,9 +148,9 @@ export function ChatClient() {
 
   const newChat = useCallback(() => {
     setMessages([]);
+    setConversationId(null);
     setThinking(false);
     setSidebarOpen(false);
-    setConversationId(null);
     setApiError(null);
   }, []);
 
@@ -188,9 +188,9 @@ export function ChatClient() {
     if (id === subjectId) return;
     setSubjectId(id);
     setMessages([]);
+    setConversationId(null);
     setThinking(false);
     setSidebarOpen(false);
-    setConversationId(null);
     setApiError(null);
   }, [subjectId]);
 
@@ -207,18 +207,15 @@ export function ChatClient() {
       if (!t) return;
       setApiError(null);
       setDraft("");
+      // Snapshot history before adding the new user message
+      const history = messages;
       setMessages((m) => [...m, { role: "user", text: t }]);
       setThinking(true);
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            conversationId,
-            subjectId,
-            level,
-            text: t,
-          }),
+          body: JSON.stringify({ conversationId, subjectId, level, text: t, history }),
         });
         if (!res.ok) {
           const data = (await res.json()) as { error?: string };
@@ -290,7 +287,7 @@ export function ChatClient() {
         setThinking(false);
       }
     },
-    [draft, conversationId, subjectId, level, loadConversations],
+    [draft, conversationId, messages, subjectId, level, loadConversations],
   );
 
   const useSuggestion = useCallback((q: string) => {

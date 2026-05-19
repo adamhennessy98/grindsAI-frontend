@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
-import { assertChatAllowed } from "@/lib/subscription";
 import { SUBJECTS } from "@/lib/constants";
 import { streamTutorReply } from "@/lib/llm";
+import { assertChatAllowed } from "@/lib/subscription";
+import { createClient } from "@/lib/supabase/server";
 import type { Message } from "@/lib/types";
 
 type ChatBody = {
@@ -10,6 +10,7 @@ type ChatBody = {
   subjectId: string;
   level: string;
   text: string;
+  history?: { role: "user" | "ai"; text: string }[];
 };
 
 function isValidSubject(id: string) {
@@ -56,6 +57,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid subject." }, { status: 400 });
   }
 
+  const history: Pick<Message, "role" | "text">[] = Array.isArray(body.history)
+    ? body.history.map((m) => ({ role: m.role === "ai" ? "ai" : "user", text: String(m.text) }))
+    : [];
+
   let conversationId = typeof body.conversationId === "string" ? body.conversationId : null;
 
   if (conversationId) {
@@ -89,33 +94,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Could not save your message." }, { status: 500 });
   }
 
-  const { data: rows, error: rowsErr } = await supabase
-    .from("messages")
-    .select("role, content")
-    .eq("conversation_id", conversationId)
-    .order("created_at", { ascending: true });
-
-  if (rowsErr || !rows?.length) {
-    return NextResponse.json({ error: "Could not load conversation." }, { status: 500 });
-  }
-
-  const mapped: Message[] = rows.map((r: { role: string; content: string }) => ({
-    role: r.role === "ai" ? "ai" : "user",
-    text: r.content,
-  }));
-
-  const history = mapped.slice(0, -1).map((m) => ({ role: m.role, text: m.text }));
-  const userMessage = mapped[mapped.length - 1]!.text;
-
   let replyStream: AsyncIterable<string>;
   let usedFallback = false;
   try {
-    const out = await streamTutorReply({ subjectId, level, history, userMessage });
+    const out = await streamTutorReply({ subjectId, level, history, userMessage: text });
     replyStream = out.stream;
     usedFallback = out.usedFallback;
-  } catch {
+  } catch (err) {
+    console.error("[chat] streamTutorReply threw:", err);
     const { socraticReply } = await import("@/lib/constants");
-    replyStream = singleChunk(socraticReply(subjectId, userMessage));
+    replyStream = singleChunk(socraticReply(subjectId, text));
     usedFallback = true;
   }
 
@@ -123,7 +111,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Could not start conversation." }, { status: 500 });
   }
   const activeConversationId = conversationId;
-
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
