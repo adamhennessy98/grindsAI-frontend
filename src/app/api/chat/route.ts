@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { SUBJECTS } from "@/lib/constants";
+import { conversationKey, getSubjectTopics, SUBJECTS } from "@/lib/constants";
 import { streamTutorReply } from "@/lib/llm";
 import { assertChatAllowed } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
@@ -9,12 +9,18 @@ type ChatBody = {
   conversationId?: string | null;
   subjectId: string;
   level: string;
+  topicId?: string | null;
   text: string;
   history?: { role: "user" | "ai"; text: string }[];
 };
 
 function isValidSubject(id: string) {
   return SUBJECTS.some((s) => s.id === id && s.enabled);
+}
+
+function validTopicId(subjectId: string, topicId: unknown) {
+  const requested = typeof topicId === "string" && topicId.trim() ? topicId.trim() : "general";
+  return getSubjectTopics(subjectId).some((topic) => topic.id === requested) ? requested : "general";
 }
 
 async function* singleChunk(text: string) {
@@ -56,6 +62,8 @@ export async function POST(request: Request) {
   if (!isValidSubject(subjectId)) {
     return NextResponse.json({ error: "Invalid subject." }, { status: 400 });
   }
+  const topicId = validTopicId(subjectId, body.topicId);
+  const key = conversationKey(subjectId, level, topicId);
 
   const history: Pick<Message, "role" | "text">[] = Array.isArray(body.history)
     ? body.history.map((m) => ({ role: m.role === "ai" ? "ai" : "user", text: String(m.text) }))
@@ -66,7 +74,7 @@ export async function POST(request: Request) {
   if (conversationId) {
     const { data: conv, error: convErr } = await supabase
       .from("conversations")
-      .select("id")
+      .select("id, conversation_key")
       .eq("id", conversationId)
       .eq("user_id", user.id)
       .maybeSingle();
@@ -74,15 +82,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Conversation not found." }, { status: 404 });
     }
   } else {
-    const { data: created, error: insErr } = await supabase
+    const { data: existing } = await supabase
       .from("conversations")
-      .insert({ user_id: user.id, subject_id: subjectId, level })
       .select("id")
-      .single();
-    if (insErr || !created) {
-      return NextResponse.json({ error: "Could not start conversation." }, { status: 500 });
+      .eq("user_id", user.id)
+      .eq("conversation_key", key)
+      .maybeSingle();
+
+    if (existing?.id) {
+      conversationId = existing.id;
+    } else {
+      const { data: created, error: insErr } = await supabase
+        .from("conversations")
+        .insert({ user_id: user.id, subject_id: subjectId, level, topic_id: topicId, conversation_key: key })
+        .select("id")
+        .single();
+      if (insErr || !created) {
+        return NextResponse.json({ error: "Could not start conversation." }, { status: 500 });
+      }
+      conversationId = created.id;
     }
-    conversationId = created.id;
   }
 
   const { error: userMsgErr } = await supabase.from("messages").insert({
@@ -97,7 +116,7 @@ export async function POST(request: Request) {
   let replyStream: AsyncIterable<string>;
   let usedFallback = false;
   try {
-    const out = await streamTutorReply({ subjectId, level, history, userMessage: text });
+    const out = await streamTutorReply({ subjectId, level, topicId, history, userMessage: text });
     replyStream = out.stream;
     usedFallback = out.usedFallback;
   } catch (err) {

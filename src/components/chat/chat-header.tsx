@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { SubjectIcon, MenuIcon, ShieldIcon } from "@/components/icons";
-import type { Subject } from "@/lib/types";
+import type { Subject, SubjectTopic } from "@/lib/types";
 
 interface ChatHeaderProps {
   subject: Subject;
   level: string;
+  topic: SubjectTopic;
   onOpenSidebar: () => void;
   subscriptionActive?: boolean;
   onSignOut: () => void;
@@ -13,6 +14,7 @@ interface ChatHeaderProps {
 export function ChatHeader({
   subject,
   level,
+  topic,
   onOpenSidebar,
   subscriptionActive,
   onSignOut,
@@ -35,6 +37,8 @@ export function ChatHeader({
           <span>{subject.name}</span>
           <span className="text-gray-300 font-normal">/</span>
           <span className="text-gray-500 font-medium">{level === "HL" ? "Higher Level" : "Ordinary Level"}</span>
+          <span className="text-gray-300 font-normal">/</span>
+          <span className="text-gray-500 font-medium truncate">{topic.name}</span>
         </h1>
       </div>
 
