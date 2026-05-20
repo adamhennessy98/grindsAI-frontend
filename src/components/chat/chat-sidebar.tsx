@@ -20,6 +20,8 @@ interface SidebarProps {
   onSelectSubject: (id: string) => void;
   onSelectTopic: (id: string) => void;
   onSetLevel: (l: string) => void;
+  mobilePanel: "subjects" | "topics";
+  onMobilePanelChange: (panel: "subjects" | "topics") => void;
   open: boolean;
   onClose: () => void;
 }
@@ -38,10 +40,11 @@ export function ChatSidebar({
   onSelectSubject,
   onSelectTopic,
   onSetLevel,
+  mobilePanel,
+  onMobilePanelChange,
   open,
   onClose,
 }: SidebarProps) {
-  const [mobilePanel, setMobilePanel] = useState<"subjects" | "topics">("subjects");
   const activeSubject = SUBJECTS.find((subject) => subject.id === subjectId);
   const topicConversations = useMemo(() => {
     const byTopic = new Map<string, ConversationSummary>();
@@ -55,7 +58,7 @@ export function ChatSidebar({
 
   const selectSubject = (id: string) => {
     onSelectSubject(id);
-    setMobilePanel("topics");
+    onMobilePanelChange("topics");
   };
 
   const selectTopic = (topicId: string, conversation?: ConversationSummary) => {
@@ -65,7 +68,6 @@ export function ChatSidebar({
       onSelectTopic(topicId);
     }
     onClose();
-    setMobilePanel("subjects");
   };
 
   return (
@@ -97,7 +99,7 @@ export function ChatSidebar({
         loadingConversations={loadingConversations}
         onSetLevel={onSetLevel}
         onSelectTopic={selectTopic}
-        onBack={() => setMobilePanel("subjects")}
+        onBack={() => onMobilePanelChange("subjects")}
         visibleOnMobile={mobilePanel === "topics"}
       />
     </aside>

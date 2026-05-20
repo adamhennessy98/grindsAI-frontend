@@ -58,6 +58,7 @@ export function ChatClient() {
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileNavPanel, setMobileNavPanel] = useState<"subjects" | "topics">("subjects");
   const [apiError, setApiError] = useState<string | null>(null);
   const [checkoutBannerDismissed, setCheckoutBannerDismissed] = useState(false);
   const [subscriptionActive, setSubscriptionActive] = useState(false);
@@ -228,6 +229,11 @@ export function ChatClient() {
     void openSelection(subjectId, nextLevel, topicId, false);
   }, [openSelection, subjectId, topicId]);
 
+  const openMobileNavigation = useCallback(() => {
+    setMobileNavPanel("topics");
+    setSidebarOpen(true);
+  }, []);
+
   const signOut = useCallback(async () => {
     const sb = getBrowserSupabase();
     await sb?.auth.signOut();
@@ -334,16 +340,18 @@ export function ChatClient() {
         subjectId={subjectId}
         level={level}
         userName={sidebarUser.name}
-         userEmail={sidebarUser.email}
-         userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
-         conversations={conversations}
-         activeTopicId={topicId}
+        userEmail={sidebarUser.email}
+        userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
+        conversations={conversations}
+        activeTopicId={topicId}
         topics={topics}
         loadingConversations={loadingConversations}
         onSelectConversation={openConversation}
         onSelectSubject={switchSubject}
         onSelectTopic={switchTopic}
         onSetLevel={switchLevel}
+        mobilePanel={mobileNavPanel}
+        onMobilePanelChange={setMobileNavPanel}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
@@ -376,7 +384,7 @@ export function ChatClient() {
           subject={subject}
           level={level}
           topic={activeTopic}
-          onOpenSidebar={() => setSidebarOpen(true)}
+          onOpenSidebar={openMobileNavigation}
           subscriptionActive={subscriptionActive}
           onSignOut={() => void signOut()}
         />
