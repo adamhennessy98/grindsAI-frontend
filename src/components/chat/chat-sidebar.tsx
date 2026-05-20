@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { conversationKey, SUBJECTS } from "@/lib/constants";
 import type { ConversationSummary, SubjectTopic } from "@/lib/types";
@@ -179,21 +179,65 @@ function SubjectColumn({
       </div>
 
       <div className="px-3 py-3 border-t border-gray-200 flex items-center gap-2.5">
-        <div className="w-[30px] h-[30px] rounded-full bg-emerald-500 text-white grid place-items-center font-semibold text-xs shrink-0">
-          {userInitials}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-[30px] h-[30px] rounded-full bg-emerald-500 text-white grid place-items-center font-semibold text-xs shrink-0">
+              {userInitials}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-gray-900 font-medium text-[13px] truncate">{userName}</div>
+              <div className="text-[11.5px] text-gray-400 truncate">{userEmail || "Signed in"}</div>
+            </div>
+            <button
+              aria-label="Settings"
+              className="w-[30px] h-[30px] rounded-lg text-gray-400 grid place-items-center hover:bg-black/[0.05] hover:text-gray-700 transition-all"
+            >
+              <SettingsIcon size={16} />
+            </button>
+          </div>
+          <ThemeToggle />
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="text-gray-900 font-medium text-[13px] truncate">{userName}</div>
-          <div className="text-[11.5px] text-gray-400 truncate">{userEmail || "Signed in"}</div>
-        </div>
-        <button
-          aria-label="Settings"
-          className="w-[30px] h-[30px] rounded-lg text-gray-400 grid place-items-center hover:bg-black/[0.05] hover:text-gray-700 transition-all"
-        >
-          <SettingsIcon size={16} />
-        </button>
       </div>
     </div>
+  );
+}
+
+function readInitialDarkMode() {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem("grindsai-theme") === "dark";
+}
+
+function ThemeToggle() {
+  const [darkMode, setDarkMode] = useState(readInitialDarkMode);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    window.localStorage.setItem("grindsai-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  return (
+    <button
+      type="button"
+      onClick={() => setDarkMode((value) => !value)}
+      aria-pressed={darkMode}
+      className="mt-3 w-full h-8 px-2 rounded-lg border border-gray-200 bg-white text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-between text-[12.5px]"
+    >
+      <span>Dark mode</span>
+      <span
+        className={[
+          "w-8 h-4 rounded-full p-0.5 transition-colors",
+          darkMode ? "bg-emerald-500" : "bg-gray-200",
+        ].join(" ")}
+        aria-hidden
+      >
+        <span
+          className={[
+            "block w-3 h-3 rounded-full bg-white transition-transform",
+            darkMode ? "translate-x-4" : "translate-x-0",
+          ].join(" ")}
+        />
+      </span>
+    </button>
   );
 }
 
