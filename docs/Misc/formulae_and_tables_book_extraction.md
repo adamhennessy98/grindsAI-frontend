@@ -23,19 +23,21 @@ for use in the State Examinations
 
 | Section | Page |
 |---|---|
-| Length and area | 4 |
-| Surface area and volume | 5 |
-| Area approximations | 6 |
-| Trigonometry | 7 |
-| Co-ordinate geometry | 10 |
-| Geometry | 11 |
-| Algebra | 12 |
-| Sequences and series | 12 |
-| Number sets – notation | 13 |
-| Calculus | 14 |
-| Financial mathematics | 16 |
-| Statistics and probability | 18 |
-| Units of measurement | 26 |
+| Length and area | 8 |
+| Surface area and volume | 10 |
+| Area approximations | 12 |
+| Trigonometry | 13 |
+| Geometry | 17 |
+| Co-ordinate geometry | 18 |
+| Algebra | 20 |
+| Indices and logarithms | 21 |
+| Sequences and series | 22 |
+| Sets and logic | 23 |
+| Calculus | 25 |
+| Economics | 28 |
+| Financial mathematics | 30 |
+| Statistics and probability | 33 |
+| Units of measurement | 44 |
 | Common quantities, their symbols and units of measurement | 28 |
 | Frequently used constants | 33 |
 | Particle physics | 34 |
@@ -59,6 +61,17 @@ for use in the State Examinations
 - Length of circle (circumference) = 2πr  
 - Area of disc = πr²
 
+### Triangle
+- Perimeter = a + b + c  
+- Area = ½ah = ½ab sin C = √[s(s−a)(s−b)(s−c)]  
+  where s = (a + b + c)/2
+
+> *Visual note: This page includes labelled diagrams of a parallelogram, circle/disc, and triangle illustrating the variables used in the formulae above.*
+
+---
+
+## Formulae and Tables printed page 9 — Arc / Sector
+
 ### Arc / Sector
 **When θ is in radians:**
 - Length of arc = rθ  
@@ -68,12 +81,7 @@ for use in the State Examinations
 - Length of arc = (θ/360°) × 2πr  
 - Area of sector = (θ/360°) × πr²
 
-### Triangle
-- Perimeter = a + b + c  
-- Area = ½ah = ½ab sin C = √[s(s−a)(s−b)(s−c)]  
-  where s = (a + b + c)/2
-
-> *Visual note: This page includes labelled diagrams of a parallelogram, circle/sector, and triangle illustrating the variables used in the formulae above.*
+> *Visual note: This page includes labelled diagrams of an arc and a sector showing the angle θ and radius r.*
 
 ---
 
@@ -259,7 +267,7 @@ Area = ½ab sin C
 
 ---
 
-## Page 12 — Algebra; Sequences and Series
+## Formulae and Tables printed page 20 — Algebra
 
 ### Algebra
 
@@ -271,11 +279,20 @@ x = (−b ± √(b² − 4ac)) / 2a
 
 **De Moivre's theorem:**  
 [r(cos θ + i sin θ)]ⁿ = rⁿ(cos nθ + i sin nθ) = rⁿ eⁱⁿθ  
-or: [r cis θ]ⁿ = rⁿ cis(nθ)
 
 **Inverse of matrix A = [[a, b], [c, d]]:**  
 A⁻¹ = (1/det A) [[d, −b], [−c, a]]  
 where det A = ad − bc
+
+---
+
+## Formulae and Tables printed page 21 — Indices and Logarithms
+
+> *Extraction note: This printed page contains the indices and logarithms reference formulae. The original PDF remains authoritative for the full layout.*
+
+---
+
+## Formulae and Tables printed page 22 — Sequences and Series
 
 ### Sequences and Series
 

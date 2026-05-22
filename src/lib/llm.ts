@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getTopic, SUBJECTS } from "@/lib/constants";
+import { getMathsFormulaBookContext } from "@/lib/formula-book";
 import type { Message } from "@/lib/types";
 
 function subjectLabel(subjectId: string): string {
@@ -10,7 +11,7 @@ async function* singleChunk(text: string) {
   yield text;
 }
 
-export function buildSystemPrompt(subjectId: string, level: string, topicId = "general"): string {
+export function buildSystemPrompt(subjectId: string, level: string, topicId = "general", formulaBookContext = ""): string {
   const name = subjectLabel(subjectId);
   const topic = getTopic(subjectId, topicId);
   const lvl = level === "HL" ? "Leaving Certificate Higher Level" : "Leaving Certificate Ordinary Level";
@@ -21,6 +22,9 @@ export function buildSystemPrompt(subjectId: string, level: string, topicId = "g
     "Do not do the student's homework for them when they ask for direct answers; redirect to understanding.",
     "Keep replies concise but warm. Use markdown sparingly (bold for key terms).",
     "If the student is stuck, break the problem into smaller steps.",
+    "For Maths notation and formulae, prefer the notation used in the Formulae and Tables book. Avoid introducing shorthand or alternative notation unless the student asks about it.",
+    "Do not use LaTeX math delimiters like $...$, \\(...\\), or $$...$$. The chat renders plain text, so write formulae in readable text/Unicode form.",
+    formulaBookContext,
   ].join(" ");
 }
 
@@ -49,7 +53,8 @@ export async function generateTutorReply(input: {
 
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId);
+  const formulaBookContext = await getMathsFormulaBookContext(input);
+  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext);
 
   const response = await client.messages.create({
     model,
@@ -84,7 +89,8 @@ export async function streamTutorReply(input: {
 
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId);
+  const formulaBookContext = await getMathsFormulaBookContext(input);
+  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext);
 
   const anthropicStream = client.messages.stream({
     model,
