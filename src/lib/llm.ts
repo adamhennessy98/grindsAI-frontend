@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getTopic, SUBJECTS } from "@/lib/constants";
 import { getMathsFormulaBookContext } from "@/lib/formula-book";
+import { getPastPaperContext } from "@/lib/retrieve";
 import type { Message } from "@/lib/types";
 
 function subjectLabel(subjectId: string): string {
@@ -11,7 +12,13 @@ async function* singleChunk(text: string) {
   yield text;
 }
 
-export function buildSystemPrompt(subjectId: string, level: string, topicId = "general", formulaBookContext = ""): string {
+export function buildSystemPrompt(
+  subjectId: string,
+  level: string,
+  topicId = "general",
+  formulaBookContext = "",
+  pastPaperContext = "",
+): string {
   const name = subjectLabel(subjectId);
   const topic = getTopic(subjectId, topicId);
   const lvl = level === "HL" ? "Leaving Certificate Higher Level" : "Leaving Certificate Ordinary Level";
@@ -25,7 +32,10 @@ export function buildSystemPrompt(subjectId: string, level: string, topicId = "g
     "For Maths notation and formulae, prefer the notation used in the Formulae and Tables book. Avoid introducing shorthand or alternative notation unless the student asks about it.",
     "Do not use LaTeX math delimiters like $...$, \\(...\\), or $$...$$. The chat renders plain text, so write formulae in readable text/Unicode form.",
     formulaBookContext,
-  ].join(" ");
+    pastPaperContext,
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 function anthropicMessages(history: Pick<Message, "role" | "text">[], userMessage: string): Anthropic.MessageParam[] {
@@ -53,8 +63,12 @@ export async function generateTutorReply(input: {
 
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-  const formulaBookContext = await getMathsFormulaBookContext(input);
-  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext);
+  const [formulaBookContext, pastPaperContext] = await Promise.all([
+    getMathsFormulaBookContext(input),
+    getPastPaperContext(input),
+  ]);
+  console.log("[RAG]", pastPaperContext ? `${pastPaperContext.substring(0, 150)}...` : "EMPTY");
+  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext, pastPaperContext);
 
   const response = await client.messages.create({
     model,
@@ -89,8 +103,12 @@ export async function streamTutorReply(input: {
 
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
-  const formulaBookContext = await getMathsFormulaBookContext(input);
-  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext);
+  const [formulaBookContext, pastPaperContext] = await Promise.all([
+    getMathsFormulaBookContext(input),
+    getPastPaperContext(input),
+  ]);
+  console.log("[RAG]", pastPaperContext ? `${pastPaperContext.substring(0, 150)}...` : "EMPTY");
+  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext, pastPaperContext);
 
   const anthropicStream = client.messages.stream({
     model,
