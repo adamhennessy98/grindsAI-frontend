@@ -9,6 +9,8 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { ChatMessage, ThinkingBubble } from "@/components/chat/chat-message";
 import { EmptyState } from "@/components/chat/empty-state";
 import { Composer } from "@/components/chat/composer";
+import { ModeSwitcher, type ToolMode } from "@/components/chat/mode-switcher";
+import { ExamGeneratorPanel } from "@/components/exam-generator/exam-generator-panel";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 
 type SidebarUser = {
@@ -59,6 +61,7 @@ export function ChatClient() {
   const [thinking, setThinking] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileNavPanel, setMobileNavPanel] = useState<"subjects" | "topics">("subjects");
+  const [toolMode, setToolMode] = useState<ToolMode>("chat");
   const [apiError, setApiError] = useState<string | null>(null);
   const [checkoutBannerDismissed, setCheckoutBannerDismissed] = useState(false);
   const [subscriptionActive, setSubscriptionActive] = useState(false);
@@ -377,7 +380,7 @@ export function ChatClient() {
             </button>
           </div>
         )}
-        {apiError && (
+        {toolMode === "chat" && apiError && (
           <div className="px-6 py-2.5 text-sm text-red-800 bg-red-50 border-b border-red-100 shrink-0">{apiError}</div>
         )}
         <ChatHeader
@@ -388,21 +391,28 @@ export function ChatClient() {
           subscriptionActive={subscriptionActive}
           onSignOut={() => void signOut()}
         />
+        <ModeSwitcher mode={toolMode} onChange={setToolMode} />
 
-        <div ref={threadRef} className="flex-1 overflow-auto py-8">
-          {messages.length === 0 ? (
-            <EmptyState subject={subject} level={level} topic={activeTopic} onPick={useSuggestion} />
-          ) : (
-            <div className="max-w-[760px] mx-auto px-6 flex flex-col gap-[22px]">
-              {messages.map((m, i) => (
-                <ChatMessage key={i} msg={m} />
-              ))}
-              {thinking && <ThinkingBubble />}
+        {toolMode === "chat" ? (
+          <>
+            <div ref={threadRef} className="flex-1 overflow-auto py-8">
+              {messages.length === 0 ? (
+                <EmptyState subject={subject} level={level} topic={activeTopic} onPick={useSuggestion} />
+              ) : (
+                <div className="max-w-[760px] mx-auto px-6 flex flex-col gap-[22px]">
+                  {messages.map((m, i) => (
+                    <ChatMessage key={i} msg={m} />
+                  ))}
+                  {thinking && <ThinkingBubble />}
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <Composer draft={draft} subject={subject} onChange={setDraft} onSend={() => void send()} />
+            <Composer draft={draft} subject={subject} onChange={setDraft} onSend={() => void send()} />
+          </>
+        ) : (
+          <ExamGeneratorPanel subject={subject} level={level} topic={activeTopic} />
+        )}
       </main>
     </div>
   );
