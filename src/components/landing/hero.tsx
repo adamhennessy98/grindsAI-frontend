@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/icons";
+import { IS_BETA } from "@/lib/beta";
 
 function HeroPreview() {
   return (
@@ -57,19 +58,50 @@ export function Hero() {
     <section className="relative overflow-hidden">
       <div className="dotgrid fade-mask absolute inset-0 pointer-events-none" />
       <div className="relative max-w-[1140px] mx-auto px-6 pt-[88px] pb-16 text-center">
-        <div className="animate-fade-up inline-flex">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Built for the Irish Leaving Cert
+        <div className="animate-fade-up inline-flex flex-wrap justify-center gap-2">
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
+              IS_BETA
+                ? "bg-amber-50 text-amber-900 border-amber-200"
+                : "bg-emerald-50 text-emerald-700 border-emerald-100"
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${IS_BETA ? "bg-amber-500" : "bg-emerald-500"}`} />
+            {IS_BETA ? "Free beta for Leaving Cert students" : "Built for the Irish Leaving Cert"}
           </span>
+          {IS_BETA && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium border border-gray-200">
+              Work in progress
+            </span>
+          )}
         </div>
 
         <h1 className="font-heading animate-fade-up-1 text-[clamp(40px,6vw,72px)] font-semibold tracking-[-0.035em] leading-[1.02] mt-6 mb-5">
-          Your personal<br />LC tutor.
+          {IS_BETA ? (
+            <>
+              Your LC tutor,<br />
+              still in beta.
+            </>
+          ) : (
+            <>
+              Your personal<br />
+              LC tutor.
+            </>
+          )}
         </h1>
 
         <p className="animate-fade-up-2 text-[clamp(16px,2vw,19px)] text-gray-500 max-w-[560px] mx-auto mb-9 leading-relaxed">
-          One grinds session costs <span className="text-gray-700 font-medium">EUR40 an hour</span>. GrindsAI is a Socratic tutor that helps you understand - not just copy answers - for less than a tank of fuel a month.
+          {IS_BETA ? (
+            <>
+              GrindsAI asks the questions that help you understand — not just copy answers. We&apos;re testing with real
+              5th and 6th years before launch; expect rough edges and tell us what to fix.
+            </>
+          ) : (
+            <>
+              One grinds session costs <span className="text-gray-700 font-medium">EUR40 an hour</span>. GrindsAI is a
+              Socratic tutor that helps you understand - not just copy answers - for less than a tank of fuel a month.
+            </>
+          )}
         </p>
 
         <div className="animate-fade-up-3 flex gap-3 justify-center flex-wrap">
@@ -77,18 +109,18 @@ export function Hero() {
             href="/signup"
             className="inline-flex items-center gap-2 h-12 px-[22px] rounded-[10px] text-[15px] font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)]"
           >
-            Start for free <ArrowRightIcon size={16} />
+            {IS_BETA ? "Join the free beta" : "Start for free"} <ArrowRightIcon size={16} />
           </Link>
           <Link
             href="/chat"
             className="inline-flex items-center h-12 px-[22px] rounded-[10px] text-[15px] font-medium border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors"
           >
-            See it in action
+            {IS_BETA ? "Try the demo" : "See it in action"}
           </Link>
         </div>
 
         <p className="animate-fade-up-4 mt-[18px] text-xs text-gray-400 font-mono">
-          No card required / 7-day free trial
+          {IS_BETA ? "Free while in beta · No payment · Feedback welcome" : "No card required / 7-day free trial"}
         </p>
 
         <HeroPreview />

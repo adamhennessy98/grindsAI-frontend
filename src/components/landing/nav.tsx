@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LogoIcon } from "@/components/icons";
+import { BetaBadge } from "@/components/beta-badge";
+import { IS_BETA } from "@/lib/beta";
 
 export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -28,12 +30,17 @@ export function LandingNav() {
         <Link href="/" className="flex items-center gap-2.5">
           <LogoIcon size={28} />
           <span className="font-heading text-[17px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+          <BetaBadge />
         </Link>
 
         <nav className="hidden md:flex gap-8 text-sm text-gray-500">
           <a href="#how" className="hover:text-gray-900 transition-colors">How it works</a>
           <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
-          <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
+          {IS_BETA ? (
+            <a href="#beta" className="hover:text-gray-900 transition-colors">Beta access</a>
+          ) : (
+            <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
+          )}
           <Link href="/chat" className="hover:text-gray-900 transition-colors">Demo</Link>
         </nav>
 
@@ -48,7 +55,7 @@ export function LandingNav() {
             href="/signup"
             className="inline-flex items-center h-10 px-4 rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)]"
           >
-            Get started
+            {IS_BETA ? "Try the beta" : "Get started"}
           </Link>
         </div>
       </div>

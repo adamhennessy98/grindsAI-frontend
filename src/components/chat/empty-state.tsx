@@ -1,5 +1,6 @@
 import { STARTERS } from "@/lib/constants";
 import { SubjectIcon } from "@/components/icons";
+import { IS_BETA } from "@/lib/beta";
 import type { Subject, SubjectTopic } from "@/lib/types";
 
 interface EmptyStateProps {
@@ -24,6 +25,11 @@ export function EmptyState({ subject, level, topic, onPick }: EmptyStateProps) {
           ? `Ask me anything from the ${subject.name} ${level === "HL" ? "Higher Level" : "Ordinary Level"} course.`
           : `Ask me anything about ${topic.name} for ${subject.name} ${level === "HL" ? "Higher Level" : "Ordinary Level"}.`}
       </p>
+      {IS_BETA && (
+        <p className="animate-fade-up-2 m-0 mt-1 text-amber-800/90 text-[13px] max-w-[440px] leading-relaxed">
+          Beta preview — answers can be wrong. Check important work with your teacher.
+        </p>
+      )}
       <div className="animate-fade-up-3 flex flex-wrap gap-2 justify-center mt-6 w-full max-w-[520px]">
         {starters.map((q) => (
           <button

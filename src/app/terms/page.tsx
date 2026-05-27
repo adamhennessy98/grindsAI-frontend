@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LegalDocShell } from "@/components/legal/doc-shell";
+import { IS_BETA } from "@/lib/beta";
 
 export const metadata: Metadata = {
   title: "Terms - GrindsAI",
@@ -30,10 +31,11 @@ export default function TermsPage() {
         <li>No attempts to break, overload, or reverse engineer the service except as permitted by law.</li>
         <li>No use of the service to generate disallowed content in educational contexts.</li>
       </ul>
-      <h2>Subscriptions</h2>
+      <h2>{IS_BETA ? "Beta access" : "Subscriptions"}</h2>
       <p>
-        Paid plans, trials, renewals, and refunds are described at checkout and in any separate agreement presented at
-        purchase. Taxes may apply based on your location.
+        {IS_BETA
+          ? "During the Leaving Cert beta preview, access is free and no payment is collected. We may change or discontinue beta access with reasonable notice. Paid plans, if introduced later, will be described clearly before you are charged."
+          : "Paid plans, trials, renewals, and refunds are described at checkout and in any separate agreement presented at purchase. Taxes may apply based on your location."}
       </p>
       <h2>Disclaimer</h2>
       <p>

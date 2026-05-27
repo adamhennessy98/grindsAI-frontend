@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { SubjectIcon, MenuIcon, ShieldIcon } from "@/components/icons";
+import { BetaBadge } from "@/components/beta-badge";
+import { BETA_FEEDBACK_EMAIL, IS_BETA } from "@/lib/beta";
 import type { Subject, SubjectTopic } from "@/lib/types";
 
 interface ChatHeaderProps {
@@ -52,18 +54,32 @@ export function ChatHeader({
           <ShieldIcon size={12} />
           Curriculum: LC 2025
         </span>
-        {subscriptionActive && (
-          <span className="hidden sm:inline-flex items-center px-2.5 py-[5px] rounded-full bg-emerald-50 border border-emerald-100 text-xs font-medium text-emerald-800">
-            Pro
-          </span>
-        )}
-        {!subscriptionActive && (
-          <Link
-            href="/pricing"
-            className="inline-flex items-center h-[34px] max-sm:h-[32px] px-2.5 max-sm:px-2 rounded-lg text-[13px] max-sm:text-[12.5px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors shrink-0"
-          >
-            Upgrade
-          </Link>
+        {IS_BETA ? (
+          <>
+            <BetaBadge className="hidden sm:inline-flex" />
+            <a
+              href={`mailto:${BETA_FEEDBACK_EMAIL}?subject=GrindsAI%20beta%20feedback`}
+              className="hidden lg:inline-flex items-center h-[34px] px-2.5 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors shrink-0"
+            >
+              Send feedback
+            </a>
+          </>
+        ) : (
+          <>
+            {subscriptionActive && (
+              <span className="hidden sm:inline-flex items-center px-2.5 py-[5px] rounded-full bg-emerald-50 border border-emerald-100 text-xs font-medium text-emerald-800">
+                Pro
+              </span>
+            )}
+            {!subscriptionActive && (
+              <Link
+                href="/pricing"
+                className="inline-flex items-center h-[34px] max-sm:h-[32px] px-2.5 max-sm:px-2 rounded-lg text-[13px] max-sm:text-[12.5px] font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors shrink-0"
+              >
+                Upgrade
+              </Link>
+            )}
+          </>
         )}
         <button
           type="button"

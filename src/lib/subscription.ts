@@ -15,5 +15,12 @@ export async function assertChatAllowed(supabase: SupabaseClient, userId: string
     return { ok: true };
   }
 
-  return { ok: false, status: 402, message: "An active subscription is required to use the tutor." };
+  return {
+    ok: false,
+    status: 402,
+    message:
+      process.env.NEXT_PUBLIC_BETA_MODE !== "false"
+        ? "Chat is temporarily unavailable. If this persists, email hello@grindsai.ie."
+        : "An active subscription is required to use the tutor.",
+  };
 }
