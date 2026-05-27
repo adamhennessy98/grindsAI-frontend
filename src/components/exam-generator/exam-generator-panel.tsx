@@ -1,19 +1,6 @@
 import * as React from "react";
+import { requestExamQuestions, type ExamQuestionDifficulty, type ExamQuestionType, type GeneratedExamQuestion } from "@/lib/exam-generator";
 import type { Subject, SubjectTopic } from "@/lib/types";
-
-type QuestionType = "short" | "long" | "mixed";
-type Difficulty = "easy" | "exam";
-
-type GeneratedQuestion = {
-  id: string;
-  index: number;
-  type: QuestionType;
-  difficulty: Difficulty;
-  marks: number;
-  subject: string;
-  level: string;
-  topic: string;
-};
 
 interface ExamGeneratorPanelProps {
   subject: Subject;
@@ -21,61 +8,57 @@ interface ExamGeneratorPanelProps {
   topic: SubjectTopic;
 }
 
-const QUESTION_TYPES: Array<{ id: QuestionType; label: string; marks: number }> = [
-  { id: "short", label: "Short Questions", marks: 10 },
-  { id: "long", label: "Long Questions", marks: 25 },
-  { id: "mixed", label: "Mixed Exam Questions", marks: 15 },
+const QUESTION_TYPES: Array<{ id: ExamQuestionType; label: string }> = [
+  { id: "short", label: "Short Questions" },
+  { id: "long", label: "Long Questions" },
+  { id: "mixed", label: "Mixed Exam Questions" },
 ];
 
-const DIFFICULTIES: Array<{ id: Difficulty; label: string; description: string }> = [
+const DIFFICULTIES: Array<{ id: ExamQuestionDifficulty; label: string; description: string }> = [
   { id: "easy", label: "Easy", description: "For solidifying the basics" },
   { id: "exam", label: "Exam standard", description: "Exam level difficulty" },
 ];
+
+const MAX_QUESTIONS = 3;
 
 function levelLabel(level: string) {
   return level === "OL" ? "Ordinary Level" : "Higher Level";
 }
 
-function questionTypeLabel(type: QuestionType) {
-  return QUESTION_TYPES.find((option) => option.id === type)?.label ?? "Exam Questions";
-}
-
-function buildMockQuestions(input: {
-  subject: Subject;
-  level: string;
-  topic: SubjectTopic;
-  type: QuestionType;
-  difficulty: Difficulty;
-  count: number;
-}) {
-  const type = QUESTION_TYPES.find((option) => option.id === input.type) ?? QUESTION_TYPES[0];
-  return Array.from({ length: input.count }, (_, i): GeneratedQuestion => ({
-    id: `${input.subject.id}:${input.level}:${input.topic.id}:${input.type}:${Date.now()}:${i}`,
-    index: i + 1,
-    type: input.type,
-    difficulty: input.difficulty,
-    marks: type.marks,
-    subject: input.subject.name,
-    level: levelLabel(input.level),
-    topic: input.topic.name,
-  }));
-}
-
 export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanelProps) {
   const contextKey = `${subject.id}:${level}:${topic.id}`;
-  const [questionType, setQuestionType] = React.useState<QuestionType>("mixed");
-  const [difficulty, setDifficulty] = React.useState<Difficulty>("exam");
+  const [questionType, setQuestionType] = React.useState<ExamQuestionType>("mixed");
+  const [difficulty, setDifficulty] = React.useState<ExamQuestionDifficulty>("exam");
   const [count, setCount] = React.useState(3);
   const [includeWorkedSolution, setIncludeWorkedSolution] = React.useState(true);
   const [includeHints, setIncludeHints] = React.useState(true);
-  const [generatedSet, setGeneratedSet] = React.useState<{ contextKey: string; questions: GeneratedQuestion[] } | null>(null);
+  const [includeMarkingScheme, setIncludeMarkingScheme] = React.useState(false);
+  const [generating, setGenerating] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [generatedSet, setGeneratedSet] = React.useState<{ contextKey: string; questions: GeneratedExamQuestion[] } | null>(null);
   const generated = generatedSet?.contextKey === contextKey ? generatedSet.questions : [];
 
-  const generate = () => {
-    setGeneratedSet({
-      contextKey,
-      questions: buildMockQuestions({ subject, level, topic, type: questionType, difficulty, count }),
-    });
+  const generate = async () => {
+    setGenerating(true);
+    setError(null);
+    try {
+      const result = await requestExamQuestions({
+        subjectId: subject.id,
+        level,
+        topicId: topic.id,
+        questionType,
+        difficulty,
+        count,
+        includeHints,
+        includeWorkedSolution,
+        includeMarkingScheme,
+      });
+      setGeneratedSet({ contextKey, questions: result.questions });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not generate questions. Try again.");
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
@@ -96,29 +79,36 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
           count={count}
           includeWorkedSolution={includeWorkedSolution}
           includeHints={includeHints}
+          includeMarkingScheme={includeMarkingScheme}
+          generating={generating}
           onQuestionTypeChange={setQuestionType}
           onDifficultyChange={setDifficulty}
           onCountChange={setCount}
           onWorkedSolutionChange={setIncludeWorkedSolution}
           onHintsChange={setIncludeHints}
-          onGenerate={generate}
+          onMarkingSchemeChange={setIncludeMarkingScheme}
+          onGenerate={() => void generate()}
         />
 
         <div className="mt-6 flex flex-col gap-3.5">
+          {error && (
+            <div className="border border-red-100 bg-red-50 rounded-[10px] px-4 py-3 text-[13.5px] text-red-800">
+              {error}
+            </div>
+          )}
+
           {generated.length === 0 ? (
             <div className="border border-dashed border-gray-200 bg-gray-50 rounded-[10px] px-5 py-8 text-center">
               <p className="m-0 text-[15px] font-medium text-gray-800">Generate exam-style questions</p>
               <p className="m-0 mt-1.5 text-[13.5px] text-gray-500">
-                Based on your selected subject, level, and topic. Real generation will be wired in later.
+                Based on your selected subject, level, and topic.
               </p>
             </div>
           ) : (
-            generated.map((question) => (
+            generated.map((question, index) => (
               <GeneratedQuestionCard
-                key={question.id}
+                key={`${contextKey}:${question.title}:${index}`}
                 question={question}
-                includeWorkedSolution={includeWorkedSolution}
-                includeHints={includeHints}
               />
             ))
           )}
@@ -134,23 +124,29 @@ function QuestionGeneratorControls({
   count,
   includeWorkedSolution,
   includeHints,
+  includeMarkingScheme,
+  generating,
   onQuestionTypeChange,
   onDifficultyChange,
   onCountChange,
   onWorkedSolutionChange,
   onHintsChange,
+  onMarkingSchemeChange,
   onGenerate,
 }: {
-  questionType: QuestionType;
-  difficulty: Difficulty;
+  questionType: ExamQuestionType;
+  difficulty: ExamQuestionDifficulty;
   count: number;
   includeWorkedSolution: boolean;
   includeHints: boolean;
-  onQuestionTypeChange: (type: QuestionType) => void;
-  onDifficultyChange: (difficulty: Difficulty) => void;
+  includeMarkingScheme: boolean;
+  generating: boolean;
+  onQuestionTypeChange: (type: ExamQuestionType) => void;
+  onDifficultyChange: (difficulty: ExamQuestionDifficulty) => void;
   onCountChange: (count: number) => void;
   onWorkedSolutionChange: (checked: boolean) => void;
   onHintsChange: (checked: boolean) => void;
+  onMarkingSchemeChange: (checked: boolean) => void;
   onGenerate: () => void;
 }) {
   return (
@@ -199,12 +195,12 @@ function QuestionGeneratorControls({
             <input
               type="number"
               min={1}
-              max={5}
+              max={MAX_QUESTIONS}
               value={count}
-              onChange={(event) => onCountChange(Math.min(5, Math.max(1, Number(event.target.value) || 1)))}
+              onChange={(event) => onCountChange(Math.min(MAX_QUESTIONS, Math.max(1, Number(event.target.value) || 1)))}
               className="h-10 w-20 rounded-[8px] border border-gray-200 bg-white px-3 text-[14px] outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]"
             />
-            <span className="text-[12.5px] text-gray-500">1 to 5</span>
+            <span className="text-[12.5px] text-gray-500">1 to 3</span>
           </div>
 
           <div className="mt-4">
@@ -212,6 +208,7 @@ function QuestionGeneratorControls({
             <div className="flex flex-col gap-2">
               <CheckRow checked={includeWorkedSolution} onChange={onWorkedSolutionChange} label="Worked solution" />
               <CheckRow checked={includeHints} onChange={onHintsChange} label="Hints" />
+              <CheckRow checked={includeMarkingScheme} onChange={onMarkingSchemeChange} label="Marking scheme" />
             </div>
           </div>
         </div>
@@ -221,9 +218,10 @@ function QuestionGeneratorControls({
         <button
           type="button"
           onClick={onGenerate}
+          disabled={generating}
           className="h-10 px-4 rounded-[9px] bg-emerald-500 text-white text-[14px] font-medium hover:bg-emerald-600 transition-colors max-sm:w-full"
         >
-          Generate Questions
+          {generating ? "Generating..." : "Generate Questions"}
         </button>
       </div>
     </div>
@@ -267,19 +265,25 @@ function CheckRow({ checked, onChange, label }: { checked: boolean; onChange: (c
 
 function GeneratedQuestionCard({
   question,
-  includeWorkedSolution,
-  includeHints,
 }: {
-  question: GeneratedQuestion;
-  includeWorkedSolution: boolean;
-  includeHints: boolean;
+  question: GeneratedExamQuestion;
 }) {
+  const [openSections, setOpenSections] = React.useState({
+    hint: false,
+    workedSolution: false,
+    markingScheme: false,
+  });
+
+  const toggleSection = (section: keyof typeof openSections) => {
+    setOpenSections((current) => ({ ...current, [section]: !current[section] }));
+  };
+
   return (
     <article className="border border-gray-200 bg-white rounded-[10px] p-4 shadow-[0_1px_2px_rgba(17,24,39,0.04)]">
       <div className="flex items-start justify-between gap-3 max-sm:flex-col">
         <div className="min-w-0">
           <h3 className="m-0 text-[16px] font-semibold text-gray-900">
-            Question {question.index}: {questionTypeLabel(question.type)}
+            {question.title}
           </h3>
           <p className="m-0 mt-1 text-[12.5px] text-gray-500">
             {question.subject} / {question.level} / {question.topic}
@@ -290,17 +294,72 @@ function GeneratedQuestionCard({
         </span>
       </div>
 
-      <p className="mt-4 mb-0 text-[14.5px] leading-relaxed text-gray-800">
-        Generated placeholder question for {question.subject} / {question.level} / {question.topic}. Real exam-style
-        generation, syllabus retrieval, and marking-scheme alignment will be added later.
+      <p className="mt-4 mb-0 whitespace-pre-line text-[14.5px] leading-relaxed text-gray-800">
+        {question.question}
       </p>
 
+      <div className="mt-4 flex flex-col gap-3">
+        {question.hint && (
+          <QuestionDetail
+            title="Hint"
+            open={openSections.hint}
+            onToggle={() => toggleSection("hint")}
+          >
+            {question.hint}
+          </QuestionDetail>
+        )}
+        {question.workedSolution && (
+          <QuestionDetail
+            title="Worked solution"
+            open={openSections.workedSolution}
+            onToggle={() => toggleSection("workedSolution")}
+          >
+            {question.workedSolution}
+          </QuestionDetail>
+        )}
+        {question.markingScheme && (
+          <QuestionDetail
+            title="Marking scheme"
+            open={openSections.markingScheme}
+            onToggle={() => toggleSection("markingScheme")}
+          >
+            {question.markingScheme}
+          </QuestionDetail>
+        )}
+      </div>
+
       <div className="mt-4 flex flex-wrap gap-2">
-        <CardAction disabled={!includeHints}>Show hint</CardAction>
-        <CardAction disabled={!includeWorkedSolution}>Show worked solution</CardAction>
         <CardAction>Save</CardAction>
       </div>
     </article>
+  );
+}
+
+function QuestionDetail({
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  const lowerTitle = title.toLowerCase();
+  return (
+    <section className="rounded-[8px] border border-gray-200 bg-gray-50 px-3 py-2.5">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-3 text-left text-[12.5px] font-semibold text-gray-700 hover:text-gray-900 transition-colors"
+      >
+        <span>{open ? `Hide ${lowerTitle}` : `Show ${lowerTitle}`}</span>
+        <span className="text-[14px] leading-none text-gray-400">{open ? "-" : "+"}</span>
+      </button>
+      {open && <p className="m-0 mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-gray-600">{children}</p>}
+    </section>
   );
 }
 
