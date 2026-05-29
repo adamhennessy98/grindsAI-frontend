@@ -30,7 +30,7 @@ export function buildSystemPrompt(
     "Keep replies concise but warm. Use markdown sparingly (bold for key terms).",
     "If the student is stuck, break the problem into smaller steps.",
     "For Maths notation and formulae, prefer the notation used in the Formulae and Tables book. Avoid introducing shorthand or alternative notation unless the student asks about it.",
-    "Do not use LaTeX math delimiters like $...$, \\(...\\), or $$...$$. The chat renders plain text, so write formulae in readable text/Unicode form.",
+    "Write mathematical expressions using LaTeX. Use inline maths with $...$ and display maths with $$...$$ where appropriate. Do not overuse display maths for small expressions.",
     formulaBookContext,
     pastPaperContext,
   ]

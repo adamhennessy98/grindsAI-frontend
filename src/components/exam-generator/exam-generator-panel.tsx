@@ -1,5 +1,6 @@
 import * as React from "react";
 import { requestExamQuestions, type ExamQuestionDifficulty, type ExamQuestionType, type GeneratedExamQuestion } from "@/lib/exam-generator";
+import { MathMarkdown } from "@/components/math-markdown";
 import type { Subject, SubjectTopic } from "@/lib/types";
 
 interface ExamGeneratorPanelProps {
@@ -267,9 +268,7 @@ function GeneratedQuestionCard({
         </span>
       </div>
 
-      <p className="mt-4 mb-0 whitespace-pre-line text-[14.5px] leading-relaxed text-gray-800">
-        {question.question}
-      </p>
+      <MathMarkdown className="mt-4 text-[14.5px] leading-relaxed text-gray-800">{question.question}</MathMarkdown>
 
       <div className="mt-4 flex flex-col gap-3">
         {question.hint && (
@@ -308,7 +307,7 @@ function QuestionDetail({
   title: string;
   open: boolean;
   onToggle: () => void;
-  children: React.ReactNode;
+  children: string;
 }) {
   const lowerTitle = title.toLowerCase();
   return (
@@ -322,7 +321,7 @@ function QuestionDetail({
         <span>{open ? `Hide ${lowerTitle}` : `Show ${lowerTitle}`}</span>
         <span className="text-[14px] leading-none text-gray-400">{open ? "-" : "+"}</span>
       </button>
-      {open && <p className="m-0 mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-gray-600">{children}</p>}
+      {open && <MathMarkdown className="mt-2 text-[13.5px] leading-relaxed text-gray-600">{children}</MathMarkdown>}
     </section>
   );
 }
