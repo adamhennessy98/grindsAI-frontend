@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist_Mono, Inter } from "next/font/google";
+import { IS_BETA } from "@/lib/beta";
 import "./globals.css";
 
 const inter = Inter({
@@ -21,9 +22,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GrindsAI - Your personal LC tutor",
-  description:
-    "An AI-powered Leaving Certificate tutor that uses the Socratic method to guide Irish students to answers - not just give them.",
+  title: IS_BETA ? "GrindsAI (Beta) - LC study tutor" : "GrindsAI - Your personal LC tutor",
+  description: IS_BETA
+    ? "Free beta for Leaving Cert students. An AI tutor that guides you with questions — still a work in progress."
+    : "An AI-powered Leaving Certificate tutor that uses the Socratic method to guide Irish students to answers - not just give them.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

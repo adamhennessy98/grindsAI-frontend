@@ -1,13 +1,19 @@
 import Link from "next/link";
 import { LogoIcon } from "@/components/icons";
+import { BetaBadge } from "@/components/beta-badge";
+import { IS_BETA } from "@/lib/beta";
 
 export function Footer() {
   return (
     <footer className="border-t border-gray-200 py-8 bg-white">
       <div className="max-w-[1140px] mx-auto px-6 flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-2.5 text-gray-500 text-[13px]">
+        <div className="flex items-center gap-2.5 text-gray-500 text-[13px] flex-wrap">
           <LogoIcon size={20} />
-          <span>Copyright 2026 GrindsAI / Made in Dublin</span>
+          <span>
+            Copyright 2026 GrindsAI / Made in Dublin
+            {IS_BETA && " · Free beta preview — not a finished product"}
+          </span>
+          <BetaBadge />
         </div>
         <div className="flex gap-6 text-[13px] text-gray-500">
           <Link href="/privacy" className="hover:text-gray-900 transition-colors">

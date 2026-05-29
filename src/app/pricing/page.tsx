@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { LogoIcon } from "@/components/icons";
 import { PricingCard } from "@/components/landing/pricing-teaser";
 import { FAQ } from "@/components/pricing/faq";
+import { IS_BETA } from "@/lib/beta";
 
 const rows = [
   ["", "Private grinds", "GrindsAI"],
@@ -41,6 +43,10 @@ function Comparison() {
 }
 
 export default function PricingPage() {
+  if (IS_BETA) {
+    redirect("/#beta");
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <header className="border-b border-gray-200 bg-white sticky top-0 z-20">
