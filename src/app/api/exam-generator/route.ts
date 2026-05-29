@@ -37,10 +37,10 @@ export async function POST(request: Request) {
     topicId: typeof body.topicId === "string" && body.topicId.trim() ? body.topicId.trim() : "general",
     questionType: body.questionType === "short" || body.questionType === "long" ? body.questionType : "mixed",
     difficulty: body.difficulty === "easy" ? "easy" : "exam",
-    count: typeof body.count === "number" ? body.count : 1,
+    count: 1,
     includeHints: Boolean(body.includeHints),
     includeWorkedSolution: Boolean(body.includeWorkedSolution),
-    includeMarkingScheme: Boolean(body.includeMarkingScheme),
+    includeMarkingScheme: false,
   });
 
   if (!context) {
