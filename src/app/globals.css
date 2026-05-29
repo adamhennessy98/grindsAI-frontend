@@ -214,3 +214,15 @@
 .dark textarea::placeholder { color: #64748b; }
 .dark ::-webkit-scrollbar-thumb { background: #334155; border-color: #0f172a; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+.math-markdown .katex {
+  color: inherit;
+  font-size: 1.04em;
+}
+
+.math-markdown .katex-display {
+  margin: 0.85rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.15rem 0;
+}

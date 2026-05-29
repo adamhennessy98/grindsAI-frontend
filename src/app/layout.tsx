@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist_Mono, Inter } from "next/font/google";
 import { IS_BETA } from "@/lib/beta";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 const inter = Inter({

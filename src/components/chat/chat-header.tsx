@@ -52,7 +52,7 @@ export function ChatHeader({
       <div className="flex items-center gap-2.5 max-sm:gap-1.5 shrink-0">
         <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-[5px] rounded-full bg-gray-50 border border-gray-200 text-xs text-gray-500">
           <ShieldIcon size={12} />
-          Curriculum: LC 2025
+          Curriculum: LC 2026
         </span>
         {IS_BETA ? (
           <>

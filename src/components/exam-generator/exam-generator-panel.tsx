@@ -1,5 +1,6 @@
 import * as React from "react";
 import { requestExamQuestions, type ExamQuestionDifficulty, type ExamQuestionType, type GeneratedExamQuestion } from "@/lib/exam-generator";
+import { MathMarkdown } from "@/components/math-markdown";
 import type { Subject, SubjectTopic } from "@/lib/types";
 
 interface ExamGeneratorPanelProps {
@@ -9,17 +10,15 @@ interface ExamGeneratorPanelProps {
 }
 
 const QUESTION_TYPES: Array<{ id: ExamQuestionType; label: string }> = [
-  { id: "short", label: "Short Questions" },
-  { id: "long", label: "Long Questions" },
-  { id: "mixed", label: "Mixed Exam Questions" },
+  { id: "short", label: "Short Question" },
+  { id: "long", label: "Long Question" },
+  { id: "mixed", label: "Mixed Exam Question" },
 ];
 
 const DIFFICULTIES: Array<{ id: ExamQuestionDifficulty; label: string; description: string }> = [
   { id: "easy", label: "Easy", description: "For solidifying the basics" },
   { id: "exam", label: "Exam standard", description: "Exam level difficulty" },
 ];
-
-const MAX_QUESTIONS = 3;
 
 function levelLabel(level: string) {
   return level === "OL" ? "Ordinary Level" : "Higher Level";
@@ -29,10 +28,8 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
   const contextKey = `${subject.id}:${level}:${topic.id}`;
   const [questionType, setQuestionType] = React.useState<ExamQuestionType>("mixed");
   const [difficulty, setDifficulty] = React.useState<ExamQuestionDifficulty>("exam");
-  const [count, setCount] = React.useState(3);
   const [includeWorkedSolution, setIncludeWorkedSolution] = React.useState(true);
   const [includeHints, setIncludeHints] = React.useState(true);
-  const [includeMarkingScheme, setIncludeMarkingScheme] = React.useState(false);
   const [generating, setGenerating] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [generatedSet, setGeneratedSet] = React.useState<{ contextKey: string; questions: GeneratedExamQuestion[] } | null>(null);
@@ -48,10 +45,10 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
         topicId: topic.id,
         questionType,
         difficulty,
-        count,
+        count: 1,
         includeHints,
         includeWorkedSolution,
-        includeMarkingScheme,
+        includeMarkingScheme: false,
       });
       setGeneratedSet({ contextKey, questions: result.questions });
     } catch (err) {
@@ -76,17 +73,13 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
         <QuestionGeneratorControls
           questionType={questionType}
           difficulty={difficulty}
-          count={count}
           includeWorkedSolution={includeWorkedSolution}
           includeHints={includeHints}
-          includeMarkingScheme={includeMarkingScheme}
           generating={generating}
           onQuestionTypeChange={setQuestionType}
           onDifficultyChange={setDifficulty}
-          onCountChange={setCount}
           onWorkedSolutionChange={setIncludeWorkedSolution}
           onHintsChange={setIncludeHints}
-          onMarkingSchemeChange={setIncludeMarkingScheme}
           onGenerate={() => void generate()}
         />
 
@@ -121,37 +114,29 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
 function QuestionGeneratorControls({
   questionType,
   difficulty,
-  count,
   includeWorkedSolution,
   includeHints,
-  includeMarkingScheme,
   generating,
   onQuestionTypeChange,
   onDifficultyChange,
-  onCountChange,
   onWorkedSolutionChange,
   onHintsChange,
-  onMarkingSchemeChange,
   onGenerate,
 }: {
   questionType: ExamQuestionType;
   difficulty: ExamQuestionDifficulty;
-  count: number;
   includeWorkedSolution: boolean;
   includeHints: boolean;
-  includeMarkingScheme: boolean;
   generating: boolean;
   onQuestionTypeChange: (type: ExamQuestionType) => void;
   onDifficultyChange: (difficulty: ExamQuestionDifficulty) => void;
-  onCountChange: (count: number) => void;
   onWorkedSolutionChange: (checked: boolean) => void;
   onHintsChange: (checked: boolean) => void;
-  onMarkingSchemeChange: (checked: boolean) => void;
   onGenerate: () => void;
 }) {
   return (
     <div className="border border-gray-200 bg-white rounded-[10px] p-4 max-sm:p-3.5 shadow-[0_1px_2px_rgba(17,24,39,0.04)]">
-      <div className="grid grid-cols-[1.25fr_1fr_150px] max-lg:grid-cols-2 max-sm:grid-cols-1 gap-4">
+      <div className="grid grid-cols-[1.2fr_1fr_170px] max-lg:grid-cols-2 max-sm:grid-cols-1 gap-4">
         <fieldset className="min-w-0">
           <ControlLabel>Question type</ControlLabel>
           <div className="grid grid-cols-2 gap-2 max-sm:grid-cols-1">
@@ -190,26 +175,10 @@ function QuestionGeneratorControls({
         </fieldset>
 
         <div className="min-w-0">
-          <ControlLabel>Number</ControlLabel>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min={1}
-              max={MAX_QUESTIONS}
-              value={count}
-              onChange={(event) => onCountChange(Math.min(MAX_QUESTIONS, Math.max(1, Number(event.target.value) || 1)))}
-              className="h-10 w-20 rounded-[8px] border border-gray-200 bg-white px-3 text-[14px] outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]"
-            />
-            <span className="text-[12.5px] text-gray-500">1 to 3</span>
-          </div>
-
-          <div className="mt-4">
-            <ControlLabel>Include</ControlLabel>
-            <div className="flex flex-col gap-2">
-              <CheckRow checked={includeWorkedSolution} onChange={onWorkedSolutionChange} label="Worked solution" />
-              <CheckRow checked={includeHints} onChange={onHintsChange} label="Hints" />
-              <CheckRow checked={includeMarkingScheme} onChange={onMarkingSchemeChange} label="Marking scheme" />
-            </div>
+          <ControlLabel>Include</ControlLabel>
+          <div className="flex flex-col gap-2">
+            <CheckRow checked={includeWorkedSolution} onChange={onWorkedSolutionChange} label="Worked solution" />
+            <CheckRow checked={includeHints} onChange={onHintsChange} label="Hints" />
           </div>
         </div>
       </div>
@@ -219,9 +188,15 @@ function QuestionGeneratorControls({
           type="button"
           onClick={onGenerate}
           disabled={generating}
-          className="h-10 px-4 rounded-[9px] bg-emerald-500 text-white text-[14px] font-medium hover:bg-emerald-600 transition-colors max-sm:w-full"
+          className="h-10 px-4 rounded-[9px] bg-emerald-500 text-white text-[14px] font-medium hover:bg-emerald-600 transition-colors max-sm:w-full disabled:cursor-wait disabled:opacity-80 inline-flex items-center justify-center gap-2"
         >
-          {generating ? "Generating..." : "Generate Questions"}
+          {generating && (
+            <span
+              className="h-4 w-4 rounded-full border-2 border-white/35 border-t-white animate-spin"
+              aria-hidden="true"
+            />
+          )}
+          {generating ? "Generating question..." : "Generate Question"}
         </button>
       </div>
     </div>
@@ -271,7 +246,6 @@ function GeneratedQuestionCard({
   const [openSections, setOpenSections] = React.useState({
     hint: false,
     workedSolution: false,
-    markingScheme: false,
   });
 
   const toggleSection = (section: keyof typeof openSections) => {
@@ -294,9 +268,7 @@ function GeneratedQuestionCard({
         </span>
       </div>
 
-      <p className="mt-4 mb-0 whitespace-pre-line text-[14.5px] leading-relaxed text-gray-800">
-        {question.question}
-      </p>
+      <MathMarkdown className="mt-4 text-[14.5px] leading-relaxed text-gray-800">{question.question}</MathMarkdown>
 
       <div className="mt-4 flex flex-col gap-3">
         {question.hint && (
@@ -317,15 +289,6 @@ function GeneratedQuestionCard({
             {question.workedSolution}
           </QuestionDetail>
         )}
-        {question.markingScheme && (
-          <QuestionDetail
-            title="Marking scheme"
-            open={openSections.markingScheme}
-            onToggle={() => toggleSection("markingScheme")}
-          >
-            {question.markingScheme}
-          </QuestionDetail>
-        )}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -344,7 +307,7 @@ function QuestionDetail({
   title: string;
   open: boolean;
   onToggle: () => void;
-  children: React.ReactNode;
+  children: string;
 }) {
   const lowerTitle = title.toLowerCase();
   return (
@@ -358,7 +321,7 @@ function QuestionDetail({
         <span>{open ? `Hide ${lowerTitle}` : `Show ${lowerTitle}`}</span>
         <span className="text-[14px] leading-none text-gray-400">{open ? "-" : "+"}</span>
       </button>
-      {open && <p className="m-0 mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-gray-600">{children}</p>}
+      {open && <MathMarkdown className="mt-2 text-[13.5px] leading-relaxed text-gray-600">{children}</MathMarkdown>}
     </section>
   );
 }

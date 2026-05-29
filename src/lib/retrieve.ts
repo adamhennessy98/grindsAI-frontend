@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { getMathsProcessedPastPaperContext } from "@/lib/exam-question-chunks";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const RAG_SUBJECTS: Record<string, string> = {
@@ -152,10 +153,17 @@ export async function getPastPaperContext(input: {
   topicId?: string;
   userMessage: string;
 }): Promise<string> {
-  console.log("[RAG] getPastPaperContext called", input);
+  if (input.subjectId === "maths") {
+    try {
+      return await getMathsProcessedPastPaperContext(input);
+    } catch (err) {
+      console.warn("[RAG] Maths processed chunk retrieval failed:", err);
+      return "";
+    }
+  }
+
   try {
     const filterSubject = RAG_SUBJECTS[input.subjectId];
-    console.log("[RAG] filterSubject:", filterSubject);
     if (!filterSubject) return "";
 
     const filterLevel = LEVEL_MAP[input.level];
@@ -174,17 +182,7 @@ export async function getPastPaperContext(input: {
     const filterTopic = mapTopic(input.subjectId, input.topicId ?? "general");
 
     const embeddingStr = `[${queryEmbedding.join(",")}]`;
-    console.log("[RAG] embedding dims:", queryEmbedding.length, "str length:", embeddingStr.length, "sample:", embeddingStr.substring(0, 60));
-
     const supabase = createAdminClient();
-
-    // Try minimal call first — no filters, just embedding + count
-    const { data: testData, error: testError } = await supabase.rpc("match_exam_chunks", {
-      query_embedding: embeddingStr,
-      match_count: 3,
-    });
-    console.log("[RAG] minimal call (no filters) → rows=%d error=%s", testData?.length ?? 0, testError?.message ?? "none");
-    if (testError) console.error("[RAG] minimal call full error:", JSON.stringify(testError));
 
     const { data, error } = await supabase.rpc("match_exam_chunks", {
       query_embedding: embeddingStr,
@@ -195,9 +193,6 @@ export async function getPastPaperContext(input: {
       filter_year_min: null,
       filter_year_max: null,
     });
-
-    console.log("[RAG] subject=%s level=%s topic=%s → rows=%d error=%s",
-      filterSubject, filterLevel, filterTopic, data?.length ?? 0, JSON.stringify(error) ?? "none");
 
     if (error) {
       console.error("[RAG] RPC error:", error);

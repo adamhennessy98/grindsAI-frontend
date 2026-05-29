@@ -144,7 +144,7 @@ export async function getMathsFormulaBookContext(input: {
   if (!excerpts.length) return "";
 
   return [
-    "Formulae and Tables book excerpts for Maths. When a relevant formula appears below, lead with the Formulae and Tables citation and the formula before explaining or asking a guiding question. If multiple relevant formulae appear, list the relevant options first, then help the student choose. Cite the printed book page shown in the excerpt heading, e.g. \"Formulae and Tables, p. 20\" or \"Formulae and Tables, pp. 18-19\". Do not cite the source extraction page number. If a relevant formula is not in these excerpts, do not invent a page reference. Avoid LaTeX delimiters such as $...$, \\(...\\), or $$...$$ because the chat UI renders plain text; use readable plain text or Unicode notation instead.",
+    "Formulae and Tables book excerpts for Maths. When a relevant formula appears below, lead with the Formulae and Tables citation and the formula before explaining or asking a guiding question. If multiple relevant formulae appear, list the relevant options first, then help the student choose. Cite the printed book page shown in the excerpt heading, e.g. \"Formulae and Tables, p. 20\" or \"Formulae and Tables, pp. 18-19\". Do not cite the source extraction page number. If a relevant formula is not in these excerpts, do not invent a page reference. Write mathematical expressions using LaTeX with inline maths $...$ and display maths $$...$$ where appropriate.",
     excerpts.join("\n\n---\n\n"),
   ].join("\n\n");
 }

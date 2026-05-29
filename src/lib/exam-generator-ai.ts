@@ -83,6 +83,7 @@ function buildExamGeneratorPrompt(input: GenerationContext, formulaBookContext: 
     "Write original exam-style or SEC-style questions. Do not claim that any question is an actual SEC past paper question.",
     "Use available formula-book, syllabus, or retrieval context where relevant, especially for Maths.",
     "For Maths notation and formulae, the Formulae and Tables book takes precedence over alternative notation.",
+    "Write mathematical expressions using LaTeX. Use inline maths with $...$ and display maths with $$...$$ where appropriate. Do not overuse display maths for small expressions.",
     input.includeHints ? "Include a useful hint for every question." : "Do not include hints.",
     input.includeWorkedSolution ? "Include a worked solution for every question." : "Do not include worked solutions.",
     input.includeMarkingScheme ? "Include a concise marking scheme for every question." : "Do not include marking schemes.",
