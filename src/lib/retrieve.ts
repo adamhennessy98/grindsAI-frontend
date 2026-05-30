@@ -1,6 +1,11 @@
 import OpenAI from "openai";
 import { getAccountingSyllabusContext } from "@/lib/accounting-syllabus";
-import { getAccountingProcessedPastPaperContext, getMathsProcessedPastPaperContext } from "@/lib/exam-question-chunks";
+import { getAppliedMathsSpecificationContext } from "@/lib/applied-maths-syllabus";
+import {
+  getAccountingProcessedPastPaperContext,
+  getAppliedMathsProcessedPastPaperContext,
+  getMathsProcessedPastPaperContext,
+} from "@/lib/exam-question-chunks";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const RAG_SUBJECTS: Record<string, string> = {
@@ -172,6 +177,19 @@ export async function getPastPaperContext(input: {
       return [syllabusContext, pastPaperContext].filter(Boolean).join("\n\n");
     } catch (err) {
       console.warn("[RAG] Accounting processed context retrieval failed:", err);
+      return "";
+    }
+  }
+
+  if (input.subjectId === "applied-maths") {
+    try {
+      const [specificationContext, pastPaperContext] = await Promise.all([
+        getAppliedMathsSpecificationContext(input),
+        getAppliedMathsProcessedPastPaperContext(input),
+      ]);
+      return [specificationContext, pastPaperContext].filter(Boolean).join("\n\n");
+    } catch (err) {
+      console.warn("[RAG] Applied Mathematics processed context retrieval failed:", err);
       return "";
     }
   }
