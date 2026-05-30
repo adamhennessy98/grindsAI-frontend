@@ -1,26 +1,37 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { SUBJECT_TOPICS } from "@/lib/constants";
 
-const CHUNKS_ROOT = path.join(process.cwd(), "docs", "processed", "maths", "leaving_cert", "output_question_chunks");
 const MAX_CHUNKS = 4;
 
-const TOPIC_LABELS: Record<string, string> = {
-  algebra: "Algebra",
-  "functions-graphs": "Functions & Graphs",
-  calculus: "Calculus",
-  "sequences-series": "Sequences & Series",
-  "complex-numbers": "Complex Numbers",
-  "financial-maths": "Financial Maths",
-  "coordinate-geometry": "Coordinate Geometry",
-  "geometry-proofs": "Geometry & Proofs",
-  trigonometry: "Trigonometry",
-  probability: "Probability",
-  statistics: "Statistics",
-  "area-volume-measurement": "Area, Volume & Measurement",
+const PROCESSED_SUBJECTS: Record<
+  string,
+  {
+    chunksRoot: string;
+    displayName: string;
+    contextLabel: string;
+    intro: string;
+  }
+> = {
+  accounting: {
+    chunksRoot: path.join(process.cwd(), "docs", "processed", "accounting", "leaving_cert", "output_question_chunks"),
+    displayName: "Accounting",
+    contextLabel: "Accounting Past Paper Example",
+    intro:
+      "Relevant Leaving Certificate Accounting past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, accounting layouts, workings, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
+  },
+  maths: {
+    chunksRoot: path.join(process.cwd(), "docs", "processed", "maths", "leaving_cert", "output_question_chunks"),
+    displayName: "Maths",
+    contextLabel: "Past Paper Example",
+    intro:
+      "Relevant Leaving Certificate Maths past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
+  },
 };
 
 const STOP_WORDS = new Set([
   "about",
+  "accounting",
   "after",
   "again",
   "answer",
@@ -60,10 +71,13 @@ type FrontmatterValue = string | number | boolean | string[] | number[];
 
 type ChunkMetadata = {
   subject?: string;
+  subject_id?: string;
   level?: string;
   year?: number;
   paper?: string;
+  paper_num?: number;
   question_number?: number;
+  section?: string;
   topic?: string;
   secondary_topics?: string[];
   classification_type?: string;
@@ -83,8 +97,8 @@ type ExamQuestionChunk = {
   searchableText: string;
 };
 
-let chunkCache: Promise<ExamQuestionChunk[]> | null = null;
-let warnedMissingChunks = false;
+const chunkCache = new Map<string, Promise<ExamQuestionChunk[]>>();
+const warnedMissingChunks = new Set<string>();
 
 function normalizeLevel(level: string): "higher" | "ordinary" {
   const value = level.toLowerCase();
@@ -94,6 +108,10 @@ function normalizeLevel(level: string): "higher" | "ordinary" {
 
 function normalizeLabel(value: string) {
   return value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function topicLabelsForSubject(subjectId: string) {
+  return Object.fromEntries((SUBJECT_TOPICS[subjectId] ?? []).map((topic) => [topic.id, topic.name]));
 }
 
 function tokenize(text: string) {
@@ -202,9 +220,12 @@ function levelAndCollectionFromPath(filePath: string): Pick<ExamQuestionChunk, "
   return { levelFolder: level, collection };
 }
 
-async function loadChunks() {
+async function loadChunks(subjectId: string) {
+  const subjectConfig = PROCESSED_SUBJECTS[subjectId];
+  if (!subjectConfig) return [];
+
   try {
-    const files = await listMarkdownFiles(CHUNKS_ROOT);
+    const files = await listMarkdownFiles(subjectConfig.chunksRoot);
     const chunks = await Promise.all(
       files.map(async (filePath) => {
         try {
@@ -212,7 +233,7 @@ async function loadChunks() {
           if (!location) return null;
           const parsed = parseFrontmatter(await readFile(filePath, "utf8"));
           if (!parsed) {
-            console.warn(`[RAG] Skipping chunk with invalid frontmatter: ${filePath}`);
+            console.warn(`[RAG] Skipping ${subjectConfig.displayName} chunk with invalid frontmatter: ${filePath}`);
             return null;
           }
           const { questionText, markingSchemeText } = splitBody(parsed.body);
@@ -230,24 +251,26 @@ async function loadChunks() {
             ].join(" "),
           } satisfies ExamQuestionChunk;
         } catch (error) {
-          console.warn(`[RAG] Skipping unreadable Maths chunk: ${filePath}`, error);
+          console.warn(`[RAG] Skipping unreadable ${subjectConfig.displayName} chunk: ${filePath}`, error);
           return null;
         }
       }),
     );
     return chunks.filter((chunk): chunk is ExamQuestionChunk => Boolean(chunk));
   } catch (error) {
-    if (!warnedMissingChunks) {
-      console.warn(`[RAG] Maths processed chunks are unavailable at ${CHUNKS_ROOT}.`, error);
-      warnedMissingChunks = true;
+    if (!warnedMissingChunks.has(subjectId)) {
+      console.warn(`[RAG] ${subjectConfig.displayName} processed chunks are unavailable at ${subjectConfig.chunksRoot}.`, error);
+      warnedMissingChunks.add(subjectId);
     }
     return [];
   }
 }
 
-function getChunks() {
-  chunkCache ??= loadChunks();
-  return chunkCache;
+function getChunks(subjectId: string) {
+  if (!chunkCache.has(subjectId)) {
+    chunkCache.set(subjectId, loadChunks(subjectId));
+  }
+  return chunkCache.get(subjectId) ?? Promise.resolve([]);
 }
 
 function keywordScore(queryTokens: string[], text: string) {
@@ -256,20 +279,22 @@ function keywordScore(queryTokens: string[], text: string) {
   return queryTokens.reduce((score, token) => score + (normalizedText.includes(token) ? 1 : 0), 0);
 }
 
-function scoreChunk(chunk: ExamQuestionChunk, input: { topicId: string; queryTokens: string[] }) {
-  const targetTopic = TOPIC_LABELS[input.topicId];
+function scoreChunk(
+  chunk: ExamQuestionChunk,
+  input: { topicId: string; targetTopic: string | undefined; queryTokens: string[] },
+) {
   const chunkTopic = normalizeLabel(chunk.metadata.topic ?? "");
   const secondaryTopics = (chunk.metadata.secondary_topics ?? []).map(normalizeLabel);
-  const target = targetTopic ? normalizeLabel(targetTopic) : "";
+  const target = input.targetTopic ? normalizeLabel(input.targetTopic) : "";
 
   let score = 0;
   if (input.topicId === "general") {
     score += chunk.collection === "mixed" ? 8 : chunk.collection === "topic_specific" ? 2 : 0;
   } else {
-    if (chunkTopic === target) score += 20;
-    if (secondaryTopics.includes(target)) score += 10;
-    if (chunk.collection === "topic_specific" && chunkTopic === target) score += 4;
-    if (chunk.collection === "mixed" && secondaryTopics.includes(target)) score += 3;
+    if (target && chunkTopic === target) score += 20;
+    if (target && secondaryTopics.includes(target)) score += 10;
+    if (target && chunk.collection === "topic_specific" && chunkTopic === target) score += 4;
+    if (target && chunk.collection === "mixed" && secondaryTopics.includes(target)) score += 3;
   }
 
   score += keywordScore(input.queryTokens, chunk.searchableText) * 2;
@@ -286,12 +311,12 @@ function formatPages(pages: number[] | undefined) {
   return pages?.length ? pages.join(", ") : "not specified";
 }
 
-function formatChunk(chunk: ExamQuestionChunk) {
+function formatChunk(chunk: ExamQuestionChunk, contextLabel: string) {
   const metadata = chunk.metadata;
   const secondaryTopics = metadata.secondary_topics?.length ? metadata.secondary_topics.join(", ") : "none";
   const visualAssets = metadata.visual_assets?.length ?? 0;
   return [
-    "[Past Paper Example]",
+    `[${contextLabel}]`,
     `Year: ${metadata.year ?? "Unknown"}`,
     `Level: ${metadata.level ?? chunk.levelFolder}`,
     `Paper: ${metadata.paper ?? "Unknown"}`,
@@ -327,19 +352,25 @@ function selectDiverse(chunks: ExamQuestionChunk[]) {
   return selected;
 }
 
-export async function getMathsProcessedPastPaperContext(input: {
+export async function getProcessedPastPaperContext(input: {
+  subjectId: string;
   level: string;
   topicId?: string;
   userMessage: string;
 }) {
+  const subjectConfig = PROCESSED_SUBJECTS[input.subjectId];
+  if (!subjectConfig) return "";
+
   const levelFolder = normalizeLevel(input.level);
   const topicId = input.topicId ?? "general";
-  const queryTokens = tokenize([input.userMessage, TOPIC_LABELS[topicId] ?? ""].join(" "));
-  const allChunks = (await getChunks()).filter((chunk) => chunk.levelFolder === levelFolder);
+  const topicLabels = topicLabelsForSubject(input.subjectId);
+  const targetTopic = topicLabels[topicId];
+  const queryTokens = tokenize([input.userMessage, targetTopic ?? ""].join(" "));
+  const allChunks = (await getChunks(input.subjectId)).filter((chunk) => chunk.levelFolder === levelFolder);
   if (!allChunks.length) return "";
 
   const scored = allChunks
-    .map((chunk) => ({ chunk, score: scoreChunk(chunk, { topicId, queryTokens }) }))
+    .map((chunk) => ({ chunk, score: scoreChunk(chunk, { topicId, targetTopic, queryTokens }) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score || (b.chunk.metadata.year ?? 0) - (a.chunk.metadata.year ?? 0))
     .map(({ chunk }) => chunk);
@@ -348,7 +379,23 @@ export async function getMathsProcessedPastPaperContext(input: {
   if (!selected.length) return "";
 
   return [
-    "Relevant Leaving Certificate Maths past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
-    selected.map(formatChunk).join("\n\n---\n\n"),
+    subjectConfig.intro,
+    selected.map((chunk) => formatChunk(chunk, subjectConfig.contextLabel)).join("\n\n---\n\n"),
   ].join("\n\n");
+}
+
+export async function getMathsProcessedPastPaperContext(input: {
+  level: string;
+  topicId?: string;
+  userMessage: string;
+}) {
+  return getProcessedPastPaperContext({ ...input, subjectId: "maths" });
+}
+
+export async function getAccountingProcessedPastPaperContext(input: {
+  level: string;
+  topicId?: string;
+  userMessage: string;
+}) {
+  return getProcessedPastPaperContext({ ...input, subjectId: "accounting" });
 }
