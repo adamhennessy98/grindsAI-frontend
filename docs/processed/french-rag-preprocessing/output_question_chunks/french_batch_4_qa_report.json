@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-05-31T18:44:18",
+  "status": "PASS",
+  "total_files_checked": 993,
+  "counts": {
+    "by_level": {
+      "higher": 380,
+      "ordinary": 613
+    },
+    "by_classification_type": {
+      "mixed": 61,
+      "topic_specific": 932
+    },
+    "by_topic": {
+      "Mixed": 61,
+      "French-Speaking Culture": 843,
+      "Reading Comprehension": 24,
+      "Written Production": 14,
+      "Grammar and Language Accuracy": 19,
+      "School, Work and Future Plans": 20,
+      "Personal Life and Identity": 10,
+      "Travel, Holidays and Daily Life": 1,
+      "Society, Culture and Current Issues": 1
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

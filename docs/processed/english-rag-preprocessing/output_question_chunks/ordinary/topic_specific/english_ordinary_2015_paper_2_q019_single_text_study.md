@@ -1,0 +1,88 @@
+---
+subject: "English"
+subject_id: "english"
+level: "Ordinary"
+year: 2015
+paper: "Paper 2"
+question_number: 19
+section: "3.   Answer ONE of the following: [Each part carries 30 marks]"
+topic: "Single Text Study"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2015_paper_2_exam_page_006.png"
+source_exam_pages:
+  - "6"
+source_marking_scheme_pages:
+  - "10"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "Single Text Study"
+  - "Media and Visual Literacy"
+  - "Writing and Composition"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+3.   Answer ONE of the following: [Each part carries 30 marks]
+
+      (i)   Choose a character from Home Before Night who you think needs advice
+            in dealing with a difficulty or crisis. Identify the difficulty or crisis faced
+         by the character and, demonstrating your knowledge of the text, outline the
+          advice you would offer.
+                       OR
+
+       (ii)   In your opinion, which one of the following statements best describes Home
+          Before Night?
+
+            –   It is a book about family.
+            –   It is a book about Ireland in the past.
+            –   It is a book about growing up.
+
+          Explain your answer with reference to the text.
+
+                       OR
+
+       (iii)  Imagine that you are Mr Drumm. Write a report about Jack Keyes Byrne. The
+            report should give an account of Jack’s time in the civil service and your view of
+           Jack’s attitude towards the civil service. Your report should demonstrate your
+          knowledge of the text.
+
+
+G  ALL MY SONS – Arthur Miller
+
+    Answer all of the questions.
+
+# Marking Scheme
+
+3. “I’m not having that!” (TEXT 2).
+   Write a personal essay about an occasion when you overcame opposition
+    to do something you believed to be important.
+Candidates should write about an occasion when they overcame opposition to do
+something they believed to be important. Expect that the personal essay will be
+from the perspective of the engaged ‘I’ – the register personal, etc. It is envisaged
+that candidates will adopt a wide variety of approaches to framing their views.
+Allow for a broad interpretation of “important”. Consideration should be given to
+the quality of all aspects of the composition.
+
+    Discrete Criteria ex 100    P = 30     C = 30      L = 30    M = 10
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/english_ordinary_2015_paper_2_exam.md
+- pages: [6]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/english_ordinary_2015_paper_1_marking_scheme.md
+- pages: [10]
+
+# Notes
+

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-05-31T18:49:07",
+  "status": "PASS",
+  "total_files_checked": 501,
+  "counts": {
+    "by_level": {
+      "higher": 271,
+      "ordinary": 230
+    },
+    "by_classification_type": {
+      "mixed": 183,
+      "topic_specific": 318
+    },
+    "by_topic": {
+      "Mixed": 183,
+      "Physical Geography": 240,
+      "Economic Geography": 16,
+      "Settlement and Urban Geography": 19,
+      "Regional Geography": 6,
+      "Human Geography": 11,
+      "Climate and Weather": 9,
+      "Population and Migration": 3,
+      "Environmental Geography": 5,
+      "Map, Photograph and Data Interpretation": 9
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

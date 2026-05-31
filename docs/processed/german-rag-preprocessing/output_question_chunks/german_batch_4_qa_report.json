@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-05-31T18:50:32",
+  "status": "PASS",
+  "total_files_checked": 642,
+  "counts": {
+    "by_level": {
+      "higher": 269,
+      "ordinary": 373
+    },
+    "by_classification_type": {
+      "mixed": 21,
+      "topic_specific": 621
+    },
+    "by_topic": {
+      "Mixed": 21,
+      "German-Speaking Culture": 476,
+      "School, Work and Future Plans": 109,
+      "Listening Comprehension": 23,
+      "Grammar and Language Accuracy": 1,
+      "Society, Culture and Current Issues": 1,
+      "Travel, Holidays and Daily Life": 11
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

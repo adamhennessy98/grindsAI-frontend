@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { getAccountingSyllabusContext } from "@/lib/accounting-syllabus";
-import { getAccountingProcessedPastPaperContext, getMathsProcessedPastPaperContext } from "@/lib/exam-question-chunks";
+import { getCurriculumContext } from "@/lib/curriculum-context";
+import { getProcessedPastPaperContext, hasProcessedSubjectConfig } from "@/lib/exam-question-chunks";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const RAG_SUBJECTS: Record<string, string> = {
@@ -154,24 +154,15 @@ export async function getPastPaperContext(input: {
   topicId?: string;
   userMessage: string;
 }): Promise<string> {
-  if (input.subjectId === "maths") {
+  if (hasProcessedSubjectConfig(input.subjectId)) {
     try {
-      return await getMathsProcessedPastPaperContext(input);
-    } catch (err) {
-      console.warn("[RAG] Maths processed chunk retrieval failed:", err);
-      return "";
-    }
-  }
-
-  if (input.subjectId === "accounting") {
-    try {
-      const [pastPaperContext, syllabusContext] = await Promise.all([
-        getAccountingProcessedPastPaperContext(input),
-        getAccountingSyllabusContext(input),
+      const [pastPaperContext, curriculumContext] = await Promise.all([
+        getProcessedPastPaperContext(input),
+        getCurriculumContext(input),
       ]);
-      return [syllabusContext, pastPaperContext].filter(Boolean).join("\n\n");
+      return [pastPaperContext, curriculumContext].filter(Boolean).join("\n\n");
     } catch (err) {
-      console.warn("[RAG] Accounting processed context retrieval failed:", err);
+      console.warn(`[RAG] Local processed context retrieval failed for ${input.subjectId}:`, err);
       return "";
     }
   }

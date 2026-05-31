@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-05-31T18:54:03",
+  "status": "PASS",
+  "total_files_checked": 236,
+  "counts": {
+    "by_level": {
+      "higher": 118,
+      "ordinary": 118
+    },
+    "by_classification_type": {
+      "mixed": 82,
+      "topic_specific": 154
+    },
+    "by_topic": {
+      "Mixed": 82,
+      "Temperature and Heat": 22,
+      "Light and Optics": 7,
+      "Nuclear and Particle Physics": 33,
+      "Modern Physics": 86,
+      "Waves": 1,
+      "Electricity": 1,
+      "Sound": 4
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

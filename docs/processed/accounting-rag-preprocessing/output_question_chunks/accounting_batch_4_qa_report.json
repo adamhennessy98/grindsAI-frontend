@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-05-31T19:25:42",
+  "status": "PASS",
+  "total_files_checked": 505,
+  "counts": {
+    "by_level": {
+      "higher": 264,
+      "ordinary": 241
+    },
+    "by_classification_type": {
+      "mixed": 149,
+      "topic_specific": 356
+    },
+    "by_topic": {
+      "Mixed": 149,
+      "Final Accounts and Financial Statements": 80,
+      "Conceptual Framework and Accounting Principles": 51,
+      "Cost Accounting": 30,
+      "Company Accounting": 51,
+      "Cash Flow Statements": 23,
+      "Budgeting and Forecasting": 14,
+      "Incomplete Records and Control Accounts": 57,
+      "Club, Farm, Service and Non-Profit Accounts": 22,
+      "Published Accounts and Interpretation": 24,
+      "Marginal Costing and Decision Making": 4
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

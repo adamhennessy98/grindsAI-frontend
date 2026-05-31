@@ -1,0 +1,56 @@
+---
+subject: "Biology"
+subject_id: "biology"
+level: "Higher"
+year: 2016
+paper: "Paper 1"
+question_number: 24
+section: "10.    (a)     (i)   What is the precise meaning of the term niche as used by ecologists?"
+topic: "Ecology and Ecosystems"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/biology_higher_2016_paper_1_exam_page_010.png"
+source_exam_pages:
+  - "10"
+source_marking_scheme_pages:
+  - "10"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "Ecology and Ecosystems"
+  - "Plant Biology"
+  - "Human Biology"
+  - "Scientific Method and Investigation"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+10.    (a)     (i)   What is the precise meaning of the term niche as used by ecologists?
+
+                 (ii)   From your investigations of a named ecosystem, give one example each of:
+
+# Marking Scheme
+
+10.    (a)      (i)    Niche: An organism’s role or an organism’s function (in the ecosystem).               3
+
+                  (ii)     If answers do not match named ecosystem, maximum of 3 marks
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/biology_higher_2016_paper_1_exam.md
+- pages: [10]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/biology_higher_2016_paper_1_marking_scheme.md
+- pages: [10]
+
+# Notes
+

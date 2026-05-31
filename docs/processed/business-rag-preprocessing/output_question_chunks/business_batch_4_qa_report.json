@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-05-31T18:16:29",
+  "status": "PASS",
+  "total_files_checked": 703,
+  "counts": {
+    "by_level": {
+      "higher": 330,
+      "ordinary": 373
+    },
+    "by_classification_type": {
+      "mixed": 282,
+      "topic_specific": 421
+    },
+    "by_topic": {
+      "Mixed": 282,
+      "People in Business": 218,
+      "Domestic Business Environment": 59,
+      "Finance and Accounting in Business": 33,
+      "International Business Environment": 44,
+      "Business Operations": 20,
+      "Marketing": 18,
+      "Business Communication": 16,
+      "Human Resource Management": 10,
+      "Business Ethics and Social Responsibility": 3
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

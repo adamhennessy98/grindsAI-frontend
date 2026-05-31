@@ -1,0 +1,102 @@
+---
+subject: "German"
+subject_id: "german"
+level: "Higher"
+year: 2016
+paper: "Paper 1"
+question_number: 14
+section: "3.  (a)   D\u00e9an cur s\u00edos mion ar na tr\u00ed shl\u00ed chun              3.   (a)  Describe in detail the three ways to shop at"
+topic: "German-Speaking Culture"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/german_higher_2016_paper_1_exam_page_010.png"
+source_exam_pages:
+  - "10"
+source_marking_scheme_pages:
+  - "4"
+  - "5"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "German-Speaking Culture"
+  - "Travel, Holidays and Daily Life"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+3.  (a)   Déan cur síos mion ar na trí shlí chun              3.   (a)  Describe in detail the three ways to shop at
+           siopadóireacht a dhéanamh le Emmas Enkel.           Emmas Enkel.                    (lines 120 – 137)
+                                     (na línte 120 – 137)
+
+
+
+    _______________________________________________________________________________________________
+
+    _______________________________________________________________________________________________
+
+    _______________________________________________________________________________________________
+
+    _______________________________________________________________________________________________
+
+
+     (b)   In Emmas Enkel castar saol an lae inniu agus            (b)  In Emmas Enkel the past meets the present.
+          an saol mar a bhíodh ar a chéile. Tabhair sonraí.           Give details.                     (lines 138 – 154)
+                                     (na línte 138 – 154)
+
+
+
+    _______________________________________________________________________________________________
+
+    _______________________________________________________________________________________________
+
+    _______________________________________________________________________________________________
+
+    _______________________________________________________________________________________________
+
+# Marking Scheme
+
+3.     (6 marks: 2 x 3 marks)
+      What advice does he give to potential blood donors? Give details.
+         (Any two: 2 x 3 marks)
+            (a)   be healthy
+            (b)   no recent operation(s)
+            (c)   no recent vaccination(s)
+            (d)   not have recently travelled to particular countries
+            (e)    eat/ have a substantial meal (before/ after donation)  (eat healthily = 0)
+              (f)    drink (plenty of) water (before// after donation)
+            (g)   allow one hour
+            (h)   donation itself takes 10 minutes
+              (i)     rest/ no sport that day
+
+
+
+
+                                        2
+
+<!-- PAGE 5 -->
+# Page 5
+
+![Page 5](../../../image_assets/marking_schemes/higher/german_higher_2016_paper_1_marking_scheme_page_005.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/german_higher_2016_paper_1_exam.md
+- pages: [10]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/german_higher_2016_paper_1_marking_scheme.md
+- pages: [4, 5]
+
+# Notes
+

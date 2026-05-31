@@ -1,0 +1,36 @@
+{
+  "total_chunks": 345,
+  "topic_specific": 155,
+  "mixed": 190,
+  "needs_review": 0,
+  "topic_counts": {
+    "What Economics Is About": 66,
+    "Mixed": 190,
+    "National Income and Economic Growth": 59,
+    "Markets, Demand and Supply": 4,
+    "Government Intervention and Regulation": 6,
+    "Market Structures and Competition": 3,
+    "Employment and Unemployment": 5,
+    "Research Study and Economic Data": 6,
+    "Economic Decision Making": 6
+  },
+  "confidence_counts": {
+    "medium": 274,
+    "high": 71
+  },
+  "allowed_topics": [
+    "What Economics Is About",
+    "Economic Decision Making",
+    "Markets, Demand and Supply",
+    "Market Structures and Competition",
+    "Government Intervention and Regulation",
+    "National Income and Economic Growth",
+    "Money, Banking and Inflation",
+    "Employment and Unemployment",
+    "International Trade and Globalisation",
+    "Public Finances and Taxation",
+    "Economic Inequality and Sustainability",
+    "Research Study and Economic Data",
+    "Mixed"
+  ]
+}

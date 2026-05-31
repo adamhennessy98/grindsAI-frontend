@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-05-31T18:25:52",
+  "status": "PASS",
+  "total_files_checked": 286,
+  "counts": {
+    "by_level": {
+      "higher": 158,
+      "ordinary": 128
+    },
+    "by_classification_type": {
+      "mixed": 20,
+      "topic_specific": 266
+    },
+    "by_topic": {
+      "Mixed": 20,
+      "Computer Systems": 240,
+      "Programming": 11,
+      "Algorithms and Logic": 5,
+      "Data Representation": 4,
+      "Modelling and Simulation": 1,
+      "Ethics and Technology": 1,
+      "Computational Thinking": 3,
+      "Web and Digital Artefacts": 1
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

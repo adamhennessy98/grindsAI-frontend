@@ -1,0 +1,35 @@
+{
+  "total_chunks": 286,
+  "topic_specific": 266,
+  "mixed": 20,
+  "needs_review": 0,
+  "topic_counts": {
+    "Computer Systems": 240,
+    "Mixed": 20,
+    "Programming": 11,
+    "Algorithms and Logic": 5,
+    "Data Representation": 4,
+    "Modelling and Simulation": 1,
+    "Ethics and Technology": 1,
+    "Computational Thinking": 3,
+    "Web and Digital Artefacts": 1
+  },
+  "confidence_counts": {
+    "medium": 265,
+    "high": 21
+  },
+  "allowed_topics": [
+    "Computational Thinking",
+    "Algorithms and Logic",
+    "Programming",
+    "Computer Systems",
+    "Data Representation",
+    "Web and Digital Artefacts",
+    "Modelling and Simulation",
+    "Robotics",
+    "Computers and Society",
+    "Ethics and Technology",
+    "Applied Learning Tasks",
+    "Mixed"
+  ]
+}

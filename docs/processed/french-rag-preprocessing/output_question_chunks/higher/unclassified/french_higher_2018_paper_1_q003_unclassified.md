@@ -1,0 +1,46 @@
+---
+subject: "French"
+subject_id: "french"
+level: "Higher"
+year: 2018
+paper: "Paper 1"
+question_number: 3
+section: "3. N\u00ed ceadmhach ar ch\u00fainse ar bith d\u2019ainm a scr\u00edobh ar an bhfreagarleabhar."
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: false
+visual_assets: []
+source_exam_pages:
+  - 1
+source_marking_scheme_pages:
+  - 18
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+3. Ní ceadmhach ar chúinse ar bith d’ainm a scríobh ar an bhfreagarleabhar.
+
+# Marking Scheme
+
+Q. 3 (a) or (b)
+                        Communication     15 marks
+                         Language          15 marks
+                                                                    (30 marks)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/french_higher_2018_paper_1_exam.md
+- pages: [1]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/french_higher_2018_paper_1_marking_scheme.md
+- pages: [18]
+
+# Notes
+

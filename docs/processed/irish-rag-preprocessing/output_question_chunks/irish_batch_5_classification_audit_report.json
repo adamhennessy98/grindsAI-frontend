@@ -1,0 +1,28 @@
+{
+  "total_chunks": 781,
+  "topic_specific": 728,
+  "mixed": 53,
+  "needs_review": 0,
+  "topic_counts": {
+    "The Irish Language Around Us": 728,
+    "Mixed": 53
+  },
+  "confidence_counts": {
+    "medium": 781
+  },
+  "allowed_topics": [
+    "Oral Communication",
+    "Listening Comprehension",
+    "Reading Comprehension",
+    "Written Production",
+    "Grammar and Language Accuracy",
+    "Vocabulary and Idiom",
+    "The Student and Their Environment",
+    "School and Working Life",
+    "The Irish Language Around Us",
+    "Youth Life and Contemporary Issues",
+    "Irish Culture",
+    "Literature, Prose and Poetry",
+    "Mixed"
+  ]
+}

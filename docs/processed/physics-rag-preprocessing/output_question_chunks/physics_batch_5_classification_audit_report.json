@@ -1,0 +1,35 @@
+{
+  "total_chunks": 236,
+  "topic_specific": 154,
+  "mixed": 82,
+  "needs_review": 0,
+  "topic_counts": {
+    "Mixed": 82,
+    "Temperature and Heat": 22,
+    "Light and Optics": 7,
+    "Nuclear and Particle Physics": 33,
+    "Modern Physics": 86,
+    "Waves": 1,
+    "Electricity": 1,
+    "Sound": 4
+  },
+  "confidence_counts": {
+    "medium": 198,
+    "high": 38
+  },
+  "allowed_topics": [
+    "Mechanics",
+    "Temperature and Heat",
+    "Waves",
+    "Sound",
+    "Light and Optics",
+    "Electricity",
+    "Magnetism and Electromagnetism",
+    "Modern Physics",
+    "Nuclear and Particle Physics",
+    "Applied Electricity",
+    "Mathematical Skills and Formulae",
+    "Laboratory Experiments and Practical Skills",
+    "Mixed"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-05-31T18:14:25",
+  "status": "PASS",
+  "total_files_checked": 1233,
+  "counts": {
+    "by_level": {
+      "higher": 657,
+      "ordinary": 576
+    },
+    "by_classification_type": {
+      "mixed": 362,
+      "topic_specific": 871
+    },
+    "by_topic": {
+      "Mixed": 362,
+      "Plant Biology": 469,
+      "Food, Nutrition and Enzymes": 53,
+      "Human Biology": 92,
+      "Genetics, DNA and Evolution": 34,
+      "Cell Structure and Cell Function": 118,
+      "Scientific Method and Investigation": 45,
+      "Ecology and Ecosystems": 29,
+      "Reproduction and Growth": 4,
+      "Photosynthesis and Respiration": 15,
+      "Microbiology and Biotechnology": 9,
+      "Homeostasis and Coordination": 3
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

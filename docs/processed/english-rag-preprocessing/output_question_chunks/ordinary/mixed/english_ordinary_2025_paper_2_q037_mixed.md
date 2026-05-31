@@ -1,0 +1,140 @@
+---
+subject: "English"
+subject_id: "english"
+level: "Ordinary"
+year: 2025
+paper: "Paper 2"
+question_number: 37
+section: "4.   Your class is having a debate about the ending of Whitehead\u2019s novel, The Underground"
+topic: "Mixed"
+secondary_topics:
+  - "Comparative Study"
+  - "Single Text Study"
+  - "Media and Visual Literacy"
+classification_type: "mixed_topic"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2025_paper_2_exam_page_011.png"
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2025_paper_2_exam_page_010.png"
+source_exam_pages:
+  - "10"
+  - "11"
+source_marking_scheme_pages:
+  - "17"
+  - "18"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "Comparative Study"
+  - "Single Text Study"
+  - "Media and Visual Literacy"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+4.   Your class is having a debate about the ending of Whitehead’s novel, The Underground
+       Railroad. Write the text of your contribution to the debate, beginning either with the line:
+                             I was satisfied with the ending of ‘The Underground Railroad’, because …
+                                                or
+                          I was not satisfied with the ending of ‘The Underground Railroad’, because ...
+      Argue three points in your response.
+
+      Your response should demonstrate your knowledge of the text.
+
+
+
+
+
+Leaving Certificate Examination 2025                 10
+English – Ordinary Level – Paper 2
+
+<!-- PAGE 11 -->
+# Page 11
+
+![Page 11](../../../image_assets/exam_papers/ordinary/english_ordinary_2025_paper_2_exam_page_011.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+SECTION II   THE COMPARATIVE STUDY    (70 MARKS)
+
+Candidates must answer ONE question from either A – Theme or B – Social Setting or C –
+Relationships. In your answer you may not use the text you have answered on in SECTION I – The
+Single Text. All texts used in this section must be prescribed for comparative study for this year’s
+examination. Candidates may refer to only one film in the course of their answers.
+N.B.   Questions use the word text to refer to all the different kinds of texts available for study
+on this course. Questions use the word character to refer to both real people and fictional
+characters in texts. When used the word author is understood to include all writers, and
+directors of films.
+
+ A   THEME
+
+# Marking Scheme
+
+4.   In TEXT 2, Rosaleen McDonagh tells readers that her wheelchair is her freedom.
+
+You are a parent delivering a talk to the Parents’ Council in your school entitled, “Freedom and
+Young People Today – The Challenges!” Write the text of the talk you would give.
+
+Candidates should write a talk entitled, “Freedom and Young People Today – The Challenges!”.
+Reward the sense of an appropriate register. Reward sustained focus, clarity of expression.
+Consideration should be given to the quality of all aspects of the composition with regard to the
+Criteria for Assessment.
+
+Mark ex 100 by reference to the Criteria for Assessment.
+
+
+
+P:   Focus – a talk, to be delivered to the Parents’ Council in your school entitled, “Freedom and
+     Young People Today – The Challenges!”.
+     Understanding of genre – tone and register may be formal or informal but should show an
+     awareness of the intended audience; there should a persuasive aspect to the writing; may include
+     examples/anecdotes/quotations; use inclusive/rhetorical language, etc.
+     Relevance
+      Originality and freshness, etc.
+C:   The extent to which the talk is successfully shaped, sustained and developed;
+     sequencing and management of ideas, etc.
+L:    Quality and control of language e.g. style, vocabulary, syntax, punctuation, etc.
+M:  Accuracy of mechanics
+
+
+
+           01       02       03       04       05       06       07       08
+
+         100 - 90   89 - 80   79 - 70   69 - 60   59 - 50   49 - 40   39 - 30    29 - 0
+
+  30%    30 - 27      24       21       18       15       12       9      8 - 0
+
+  10%     10 - 9       8        7        6        5        4        3        2- 0
+
+
+
+
+
+                                           17
+
+<!-- PAGE 18 -->
+# Page 18
+
+![Page 18](../../../image_assets/marking_schemes/ordinary/english_ordinary_2025_paper_1_marking_scheme_page_018.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/english_ordinary_2025_paper_2_exam.md
+- pages: [10, 11]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/english_ordinary_2025_paper_1_marking_scheme.md
+- pages: [17, 18]
+
+# Notes
+

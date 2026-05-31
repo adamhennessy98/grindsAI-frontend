@@ -1,0 +1,106 @@
+---
+subject: "Biology"
+subject_id: "biology"
+level: "Ordinary"
+year: 2025
+paper: "Section C"
+question_number: 40
+section: "2.    Give one adaptation (or"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/biology_ordinary_2025_section_c_exam_page_010.png"
+source_exam_pages:
+  - 10
+source_marking_scheme_pages:
+  - 4
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+2.    Give one adaptation (or
+                         characteristic) that enables
+                                       C
+                     the alveolus to carry out its
+                                                                                       Alveolus                       function.
+                 (iii)  Which one of the following
+               statements (X or Y) describes how
+                the diaphragm moves during            B                      Rib
+                 inhalation?
+                 X:    Contracts and moves down.                        A
+                  Y:    Relaxes and moves up.
+              (iv)  Which one of the following
+               statements (X or Y) describes how
+                the ribcage moves during
+                 inhalation?
+                 X:   Moves downwards and                  Diaphragm
+                      inwards.
+                  Y:   Moves upwards and outwards.
+             (v)  Name a disorder of the breathing system and give a treatment for this disorder.
+              (vi)  The trachea (or windpipe) is surrounded by rings of cartilage.
+             What is the function of these rings of cartilage?
+
+
+
+      (d)  The human body’s defence (immune) system has general and specific parts that
+          defend against pathogens.
+                (i)   What is a pathogen?
+                 (ii)   Describe two ways the general defence system prevents entry of pathogens.
+                 (iii)  Which three of the following organs are specific parts of the immune system?
+                Spleen   Heart    Thymus   Lung    Lymph node
+
+         The presence of antibodies provides induced immunity. There are two types of
+          induced immunity – active and passive.
+              (iv)  Match the terms active and passive to the sentences below:
+                A:   Develops after vaccination or after an infection.
+                 B:   Occurs when individuals are given antibodies produced in another
+                     organism.
+             (v)   White blood cells are involved in both the general and specific defence systems.
+              They are found in the blood and in another circulatory fluid of the body.
+
+# Marking Scheme
+
+2.  Cancelled Answers
+
+      The following is an extract from S.63 Instructions to Examiners, 2025 (for subjects being
+      marked online) (section 5.4, p.18):
+
+         “Where a candidate answers a question or part of a question once only and
+          then cancels the answer, you should ignore the cancelling and treat the answer
+          as if the candidate had not cancelled it.”
+
+      Sample question:        What is pollination?
+
+      Marking scheme states:     Transfer of pollen / from anther / to stigma.              3(3)
+
+      Sample answer:            Transfer of pollen by insect to stigma.
+
+      The candidate has cancelled the answer and has not made another attempt to answer the
+       question. The candidate may be awarded 2(3) marks.
+
+           If an answer is cancelled and an alternative version given, the cancellation should be
+      accepted and marks awarded, where merited, for the un-cancelled version only.
+
+           If two (or more) un-cancelled versions of an answer are given to the same question or part
+       of a question, both (or all) should be marked and the answer accepted that yields the
+       greater (greatest) number of marks. Points may not, however, be combined from multiple
+       versions to arrive at a manufactured total.
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/biology_ordinary_2025_section_c_exam.md
+- pages: [10]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/biology_ordinary_2025_paper_1_marking_scheme.md
+- pages: [4]
+
+# Notes
+

@@ -1,0 +1,40 @@
+{
+  "total_chunks": 740,
+  "topic_specific": 643,
+  "mixed": 97,
+  "needs_review": 0,
+  "topic_counts": {
+    "Documents-Based Question": 531,
+    "Mixed": 97,
+    "Historical Skills and Evidence": 12,
+    "Research Study Report": 14,
+    "Nationalism and Identity": 1,
+    "Early Modern Ireland": 37,
+    "Religion and Culture": 2,
+    "Society and Economy": 12,
+    "Early Modern Europe and the Wider World": 9,
+    "Politics and Government": 6,
+    "Later Modern Ireland": 17,
+    "War, Conflict and Diplomacy": 1,
+    "Later Modern Europe and the Wider World": 1
+  },
+  "confidence_counts": {
+    "high": 232,
+    "medium": 508
+  },
+  "allowed_topics": [
+    "Historical Skills and Evidence",
+    "Research Study Report",
+    "Early Modern Ireland",
+    "Early Modern Europe and the Wider World",
+    "Later Modern Ireland",
+    "Later Modern Europe and the Wider World",
+    "Politics and Government",
+    "Society and Economy",
+    "Religion and Culture",
+    "War, Conflict and Diplomacy",
+    "Nationalism and Identity",
+    "Documents-Based Question",
+    "Mixed"
+  ]
+}

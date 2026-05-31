@@ -1,0 +1,38 @@
+{
+  "total_chunks": 1233,
+  "topic_specific": 871,
+  "mixed": 362,
+  "needs_review": 0,
+  "topic_counts": {
+    "Plant Biology": 469,
+    "Food, Nutrition and Enzymes": 53,
+    "Mixed": 362,
+    "Human Biology": 92,
+    "Genetics, DNA and Evolution": 34,
+    "Cell Structure and Cell Function": 118,
+    "Scientific Method and Investigation": 45,
+    "Ecology and Ecosystems": 29,
+    "Reproduction and Growth": 4,
+    "Photosynthesis and Respiration": 15,
+    "Microbiology and Biotechnology": 9,
+    "Homeostasis and Coordination": 3
+  },
+  "confidence_counts": {
+    "medium": 949,
+    "high": 284
+  },
+  "allowed_topics": [
+    "Scientific Method and Investigation",
+    "Ecology and Ecosystems",
+    "Food, Nutrition and Enzymes",
+    "Cell Structure and Cell Function",
+    "Photosynthesis and Respiration",
+    "Genetics, DNA and Evolution",
+    "Microbiology and Biotechnology",
+    "Plant Biology",
+    "Human Biology",
+    "Reproduction and Growth",
+    "Homeostasis and Coordination",
+    "Mixed"
+  ]
+}

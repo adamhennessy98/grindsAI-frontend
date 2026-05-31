@@ -1,0 +1,504 @@
+# Batch 3 Topic Classification Report
+
+Generated: 2026-05-29T13:47:41
+
+Batch 3 classified Batch 2 unclassified question chunks into the allowed broad Maths topic taxonomy.
+Batch 5 refactor now applies manual overrides from config before conservative fallback rules.
+The original unclassified chunks were not deleted or modified.
+
+## Summary
+
+- Unclassified chunks read: 416
+- Classified as topic_specific: 110
+- Classified as Mixed: 306
+- Flagged for review: 40
+- Manual overrides used: 40
+- Fallback classifications used: 376
+
+## Count By Topic
+
+- Algebra: 19
+- Functions & Graphs: 7
+- Calculus: 4
+- Sequences & Series: 9
+- Complex Numbers: 4
+- Financial Maths: 3
+- Coordinate Geometry: 5
+- Geometry & Proofs: 7
+- Trigonometry: 12
+- Probability: 22
+- Statistics: 8
+- Area, Volume & Measurement: 10
+- Mixed: 306
+
+## Output Files
+
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q01_trigonometry.md`: Trigonometry; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q02_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q03_area_volume_measurement.md`: Area, Volume & Measurement; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q04_mixed.md`: Mixed [Complex Numbers, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q05_mixed.md`: Mixed [Calculus, Functions & Graphs, Algebra]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q06_financial_maths.md`: Financial Maths; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q07_mixed.md`: Mixed [Trigonometry, Calculus, Financial Maths]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q08_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q09_mixed.md`: Mixed [Calculus, Trigonometry, Functions & Graphs, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q02_mixed.md`: Mixed [Statistics, Probability, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q03_mixed.md`: Mixed [Trigonometry, Geometry & Proofs, Sequences & Series, Coordinate Geometry]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q04_mixed.md`: Mixed [Algebra, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper2_q05_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q07_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q08_mixed.md`: Mixed [Sequences & Series, Probability]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q09_mixed.md`: Mixed [Trigonometry, Functions & Graphs, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q01_mixed.md`: Mixed [Functions & Graphs, Algebra, Complex Numbers, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q02_mixed.md`: Mixed [Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper1_q03_functions_graphs.md`: Functions & Graphs; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q04_mixed.md`: Mixed [Geometry & Proofs, Sequences & Series, Trigonometry, Area, Volume & Measurement]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper1_q05_functions_graphs.md`: Functions & Graphs; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q06_mixed.md`: Mixed [Trigonometry, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q08_mixed.md`: Mixed [Trigonometry, Algebra, Calculus, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q09_mixed.md`: Mixed [Trigonometry, Sequences & Series, Coordinate Geometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q01_mixed.md`: Mixed [Geometry & Proofs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q02_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q03_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q04_geometry_proofs.md`: Geometry & Proofs; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q05_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q06_mixed.md`: Mixed [Trigonometry, Probability, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q07_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q08_mixed.md`: Mixed [Functions & Graphs, Trigonometry, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q09_mixed.md`: Mixed [Statistics, Trigonometry, Probability, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper1_q01_functions_graphs.md`: Functions & Graphs; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q02_mixed.md`: Mixed [Complex Numbers, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper1_q03_calculus.md`: Calculus; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q04_mixed.md`: Mixed [Trigonometry, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q05_mixed.md`: Mixed [Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q06_mixed.md`: Mixed [Functions & Graphs, Area, Volume & Measurement, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q07_mixed.md`: Mixed [Trigonometry, Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q08_mixed.md`: Mixed [Financial Maths, Sequences & Series, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q09_mixed.md`: Mixed [Trigonometry, Functions & Graphs, Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q01_probability.md`: Probability; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q02_statistics.md`: Statistics; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q03_geometry_proofs.md`: Geometry & Proofs; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q04_mixed.md`: Mixed [Trigonometry, Coordinate Geometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q05_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q06_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q07_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q08_mixed.md`: Mixed [Probability, Statistics, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q09_mixed.md`: Mixed [Trigonometry, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper1_q01_algebra.md`: Algebra; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper1_q02_sequences_series.md`: Sequences & Series; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q03_mixed.md`: Mixed [Trigonometry, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q04_mixed.md`: Mixed [Trigonometry, Complex Numbers, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper1_q05_sequences_series.md`: Sequences & Series; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q06_mixed.md`: Mixed [Functions & Graphs, Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q07_mixed.md`: Mixed [Functions & Graphs, Calculus, Statistics, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q08_mixed.md`: Mixed [Functions & Graphs, Area, Volume & Measurement, Trigonometry, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q09_mixed.md`: Mixed [Sequences & Series, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q02_mixed.md`: Mixed [Statistics, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q03_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q04_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q05_mixed.md`: Mixed [Trigonometry, Calculus, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q06_geometry_proofs.md`: Geometry & Proofs; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q08_mixed.md`: Mixed [Statistics, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q09_mixed.md`: Mixed [Functions & Graphs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q01_mixed.md`: Mixed [Algebra, Sequences & Series, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q02_mixed.md`: Mixed [Functions & Graphs, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q03_mixed.md`: Mixed [Algebra, Calculus, Trigonometry, Area, Volume & Measurement]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q04_mixed.md`: Mixed [Functions & Graphs, Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q05_mixed.md`: Mixed [Complex Numbers, Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper1_q06_statistics.md`: Statistics; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper1_q07_sequences_series.md`: Sequences & Series; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q08_mixed.md`: Mixed [Trigonometry, Calculus, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q09_mixed.md`: Mixed [Functions & Graphs, Trigonometry, Coordinate Geometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper2_q01_probability.md`: Probability; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q02_mixed.md`: Mixed [Algebra, Sequences & Series, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q03_mixed.md`: Mixed [Calculus, Trigonometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper2_q04_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q05_mixed.md`: Mixed [Geometry & Proofs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper2_q06_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q08_mixed.md`: Mixed [Statistics, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q09_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q01_mixed.md`: Mixed [Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q02_mixed.md`: Mixed [Sequences & Series, Complex Numbers, Trigonometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2020_paper1_q03_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q04_mixed.md`: Mixed [Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q05_mixed.md`: Mixed [Financial Maths, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q06_mixed.md`: Mixed [Calculus, Functions & Graphs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q07_mixed.md`: Mixed [Sequences & Series, Trigonometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q08_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q09_mixed.md`: Mixed [Functions & Graphs, Trigonometry, Calculus, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q01_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q02_mixed.md`: Mixed [Algebra, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q03_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q04_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q05_mixed.md`: Mixed [Probability, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q06_mixed.md`: Mixed [Probability, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q08_mixed.md`: Mixed [Statistics, Probability, Calculus, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2020_paper2_q09_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q01_mixed.md`: Mixed [Complex Numbers, Trigonometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q02_mixed.md`: Mixed [Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q03_mixed.md`: Mixed [Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper1_q04_sequences_series.md`: Sequences & Series; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q05_mixed.md`: Mixed [Trigonometry, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q06_mixed.md`: Mixed [Functions & Graphs, Calculus, Algebra, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper1_q07_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q08_mixed.md`: Mixed [Functions & Graphs, Calculus, Trigonometry, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q09_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q10_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Statistics, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q02_mixed.md`: Mixed [Trigonometry, Geometry & Proofs, Statistics, Area, Volume & Measurement]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q03_mixed.md`: Mixed [Coordinate Geometry, Trigonometry, Geometry & Proofs, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper2_q04_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q05_mixed.md`: Mixed [Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper2_q06_geometry_proofs.md`: Geometry & Proofs; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q07_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q08_mixed.md`: Mixed [Statistics, Probability, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q09_mixed.md`: Mixed [Functions & Graphs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q10_mixed.md`: Mixed [Trigonometry, Probability, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q01_mixed.md`: Mixed [Algebra, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q02_mixed.md`: Mixed [Algebra, Area, Volume & Measurement, Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q03_mixed.md`: Mixed [Area, Volume & Measurement, Complex Numbers, Trigonometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q04_mixed.md`: Mixed [Sequences & Series, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q05_mixed.md`: Mixed [Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q06_mixed.md`: Mixed [Functions & Graphs, Calculus, Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q07_mixed.md`: Mixed [Functions & Graphs, Trigonometry, Calculus, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q08_mixed.md`: Mixed [Trigonometry, Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q09_mixed.md`: Mixed [Sequences & Series, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q10_mixed.md`: Mixed [Statistics, Trigonometry, Algebra, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2022_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2022_paper2_q02_coordinate_geometry.md`: Coordinate Geometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q03_mixed.md`: Mixed [Calculus, Trigonometry, Algebra, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q04_mixed.md`: Mixed [Trigonometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q05_mixed.md`: Mixed [Statistics, Probability, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q08_mixed.md`: Mixed [Statistics, Probability, Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q09_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q10_mixed.md`: Mixed [Statistics, Probability, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q01_mixed.md`: Mixed [Algebra, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2023_paper1_q02_functions_graphs.md`: Functions & Graphs; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q03_mixed.md`: Mixed [Statistics, Algebra, Geometry & Proofs, Area, Volume & Measurement]; confidence=low; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q04_mixed.md`: Mixed [Complex Numbers, Functions & Graphs, Trigonometry, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q05_mixed.md`: Mixed [Functions & Graphs, Calculus, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q06_mixed.md`: Mixed [Area, Volume & Measurement, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q07_mixed.md`: Mixed [Calculus, Trigonometry, Functions & Graphs, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q08_mixed.md`: Mixed [Financial Maths, Sequences & Series, Trigonometry, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q09_mixed.md`: Mixed [Calculus, Algebra, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q10_mixed.md`: Mixed [Area, Volume & Measurement, Sequences & Series, Trigonometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2023_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2023_paper2_q02_trigonometry.md`: Trigonometry; confidence=high; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q03_mixed.md`: Mixed [Area, Volume & Measurement, Coordinate Geometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q04_mixed.md`: Mixed [Algebra, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q05_mixed.md`: Mixed [Statistics, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q07_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Calculus, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q08_mixed.md`: Mixed [Statistics, Probability, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q09_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Calculus, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q10_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q01_mixed.md`: Mixed [Algebra, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q02_mixed.md`: Mixed [Complex Numbers, Trigonometry, Geometry & Proofs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q03_mixed.md`: Mixed [Calculus, Trigonometry, Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q04_mixed.md`: Mixed [Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q05_mixed.md`: Mixed [Sequences & Series, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q06_mixed.md`: Mixed [Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q07_mixed.md`: Mixed [Financial Maths, Calculus, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q08_mixed.md`: Mixed [Calculus, Functions & Graphs, Trigonometry, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q09_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Sequences & Series, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q10_mixed.md`: Mixed [Functions & Graphs, Calculus, Sequences & Series, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q01_mixed.md`: Mixed [Statistics, Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q02_mixed.md`: Mixed [Probability, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q03_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q04_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q05_mixed.md`: Mixed [Algebra, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2024_paper2_q06_probability.md`: Probability; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q07_mixed.md`: Mixed [Probability, Statistics, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q08_mixed.md`: Mixed [Area, Volume & Measurement, Geometry & Proofs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q09_mixed.md`: Mixed [Algebra, Trigonometry, Geometry & Proofs, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q10_mixed.md`: Mixed [Trigonometry, Sequences & Series, Area, Volume & Measurement, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q01_algebra.md`: Algebra; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q02_calculus.md`: Calculus; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q03_calculus.md`: Calculus; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q04_complex_numbers.md`: Complex Numbers; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q05_algebra.md`: Algebra; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q06_algebra.md`: Algebra; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q07_sequences_series.md`: Sequences & Series; confidence=high; source=manual_override
+- `output_question_chunks/higher/mixed/maths_higher_2025_paper1_q08_mixed.md`: Mixed [Financial Maths, Trigonometry, Calculus]; confidence=medium; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper1_q09_calculus.md`: Calculus; confidence=high; source=manual_override
+- `output_question_chunks/higher/mixed/maths_higher_2025_paper1_q10_mixed.md`: Mixed [Coordinate Geometry, Sequences & Series, Algebra]; confidence=medium; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q01_coordinate_geometry.md`: Coordinate Geometry; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q02_coordinate_geometry.md`: Coordinate Geometry; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q03_probability.md`: Probability; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q04_statistics.md`: Statistics; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q05_geometry_proofs.md`: Geometry & Proofs; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q06_trigonometry.md`: Trigonometry; confidence=high; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q07_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=manual_override
+- `output_question_chunks/higher/mixed/maths_higher_2025_paper2_q08_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Geometry & Proofs]; confidence=medium; source=manual_override
+- `output_question_chunks/higher/topic_specific/maths_higher_2025_paper2_q09_probability.md`: Probability; confidence=high; source=manual_override
+- `output_question_chunks/higher/mixed/maths_higher_2025_paper2_q10_mixed.md`: Mixed [Probability, Statistics]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q01_financial_maths.md`: Financial Maths; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q02_area_volume_measurement.md`: Area, Volume & Measurement; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q03_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q04_mixed.md`: Mixed [Area, Volume & Measurement, Functions & Graphs, Algebra]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q05_mixed.md`: Mixed [Functions & Graphs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q06_mixed.md`: Mixed [Trigonometry, Complex Numbers]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q07_sequences_series.md`: Sequences & Series; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q08_mixed.md`: Mixed [Functions & Graphs, Financial Maths, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q09_mixed.md`: Mixed [Trigonometry, Functions & Graphs, Sequences & Series, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q01_mixed.md`: Mixed [Probability]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q02_mixed.md`: Mixed [Geometry & Proofs, Coordinate Geometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q03_mixed.md`: Mixed [Coordinate Geometry, Trigonometry, Area, Volume & Measurement, Algebra]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q04_mixed.md`: Mixed [Area, Volume & Measurement, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q05_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q06_mixed.md`: Mixed [Statistics, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q07_mixed.md`: Mixed [Area, Volume & Measurement, Geometry & Proofs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q08_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q09_mixed.md`: Mixed [Statistics, Trigonometry, Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper1_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q02_mixed.md`: Mixed [Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q03_mixed.md`: Mixed [Area, Volume & Measurement, Algebra, Trigonometry, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q04_mixed.md`: Mixed [Algebra, Calculus, Area, Volume & Measurement, Functions & Graphs]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper1_q05_statistics.md`: Statistics; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q08_mixed.md`: Mixed [Statistics, Financial Maths, Calculus, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q09_mixed.md`: Mixed [Geometry & Proofs, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q02_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q03_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Algebra, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q04_mixed.md`: Mixed [Algebra, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper2_q05_statistics.md`: Statistics; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q08_mixed.md`: Mixed [Statistics, Financial Maths, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q09_mixed.md`: Mixed [Geometry & Proofs, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q01_mixed.md`: Mixed [Probability, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q02_mixed.md`: Mixed [Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q03_mixed.md`: Mixed [Trigonometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper1_q04_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q05_mixed.md`: Mixed [Statistics, Functions & Graphs, Trigonometry, Probability]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q06_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Sequences & Series, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q08_mixed.md`: Mixed [Area, Volume & Measurement, Geometry & Proofs, Algebra, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q09_mixed.md`: Mixed [Statistics, Sequences & Series, Trigonometry, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper2_q02_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q03_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Algebra, Coordinate Geometry]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper2_q04_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q05_mixed.md`: Mixed [Trigonometry, Statistics, Probability]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q06_mixed.md`: Mixed [Trigonometry, Statistics, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q07_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q08_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Geometry & Proofs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q09_mixed.md`: Mixed [Statistics, Trigonometry, Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q01_mixed.md`: Mixed [Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q02_mixed.md`: Mixed [Complex Numbers, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper1_q03_algebra.md`: Algebra; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper1_q04_sequences_series.md`: Sequences & Series; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper1_q05_functions_graphs.md`: Functions & Graphs; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement, Statistics, Algebra]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q07_mixed.md`: Mixed [Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q08_mixed.md`: Mixed [Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q09_mixed.md`: Mixed [Sequences & Series, Area, Volume & Measurement, Functions & Graphs, Algebra]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper2_q01_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q02_mixed.md`: Mixed [Coordinate Geometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q03_mixed.md`: Mixed [Probability, Functions & Graphs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q04_mixed.md`: Mixed [Algebra, Calculus, Coordinate Geometry, Trigonometry]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q05_mixed.md`: Mixed [Area, Volume & Measurement, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper2_q06_geometry_proofs.md`: Geometry & Proofs; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q07_mixed.md`: Mixed [Statistics, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q08_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q09_mixed.md`: Mixed [Area, Volume & Measurement, Probability, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q01_mixed.md`: Mixed [Financial Maths, Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q02_complex_numbers.md`: Complex Numbers; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q03_functions_graphs.md`: Functions & Graphs; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q04_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q05_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q06_mixed.md`: Mixed [Algebra, Area, Volume & Measurement, Trigonometry, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q07_mixed.md`: Mixed [Functions & Graphs, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q08_mixed.md`: Mixed [Financial Maths, Sequences & Series, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q09_mixed.md`: Mixed [Financial Maths, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper2_q01_probability.md`: Probability; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q02_mixed.md`: Mixed [Coordinate Geometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper2_q03_probability.md`: Probability; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q04_mixed.md`: Mixed [Statistics, Area, Volume & Measurement, Algebra, Trigonometry]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper2_q05_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q07_mixed.md`: Mixed [Statistics, Trigonometry, Calculus, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q08_mixed.md`: Mixed [Area, Volume & Measurement, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q09_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q01_mixed.md`: Mixed [Financial Maths, Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper1_q02_algebra.md`: Algebra; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q03_mixed.md`: Mixed [Complex Numbers, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper1_q04_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q05_mixed.md`: Mixed [Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q06_mixed.md`: Mixed [Calculus, Functions & Graphs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q07_mixed.md`: Mixed [Financial Maths, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q08_mixed.md`: Mixed [Trigonometry, Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q09_mixed.md`: Mixed [Sequences & Series, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper2_q01_probability.md`: Probability; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q02_mixed.md`: Mixed [Coordinate Geometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q03_mixed.md`: Mixed [Statistics, Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper2_q04_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q05_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q06_mixed.md`: Mixed [Trigonometry, Algebra, Geometry & Proofs, Area, Volume & Measurement]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q07_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q08_mixed.md`: Mixed [Statistics, Area, Volume & Measurement, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q09_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q01_mixed.md`: Mixed [Trigonometry, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q02_mixed.md`: Mixed [Complex Numbers, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q03_algebra.md`: Algebra; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q04_algebra.md`: Algebra; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q05_mixed.md`: Mixed [Calculus, Algebra, Area, Volume & Measurement, Functions & Graphs]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q06_sequences_series.md`: Sequences & Series; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q07_mixed.md`: Mixed [Calculus, Trigonometry, Area, Volume & Measurement, Sequences & Series]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q08_mixed.md`: Mixed [Functions & Graphs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q09_sequences_series.md`: Sequences & Series; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q10_mixed.md`: Mixed [Trigonometry, Geometry & Proofs, Area, Volume & Measurement, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper2_q01_probability.md`: Probability; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q02_mixed.md`: Mixed [Area, Volume & Measurement, Probability]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q03_mixed.md`: Mixed [Algebra, Geometry & Proofs, Coordinate Geometry, Area, Volume & Measurement]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q04_mixed.md`: Mixed [Algebra, Coordinate Geometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q05_mixed.md`: Mixed [Statistics, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q07_mixed.md`: Mixed [Statistics, Area, Volume & Measurement, Probability]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q08_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q09_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q10_mixed.md`: Mixed [Trigonometry, Coordinate Geometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2022_paper1_q01_complex_numbers.md`: Complex Numbers; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q02_mixed.md`: Mixed [Algebra, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q03_mixed.md`: Mixed [Financial Maths, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q04_mixed.md`: Mixed [Calculus, Trigonometry, Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2022_paper1_q05_functions_graphs.md`: Functions & Graphs; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q06_mixed.md`: Mixed [Sequences & Series, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q07_mixed.md`: Mixed [Functions & Graphs, Trigonometry, Statistics, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q08_mixed.md`: Mixed [Area, Volume & Measurement, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q09_mixed.md`: Mixed [Trigonometry, Statistics, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q10_mixed.md`: Mixed [Trigonometry, Functions & Graphs, Financial Maths, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q01_mixed.md`: Mixed [Geometry & Proofs, Algebra, Coordinate Geometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q02_mixed.md`: Mixed [Algebra, Trigonometry, Statistics, Area, Volume & Measurement]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2022_paper2_q03_statistics.md`: Statistics; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q04_mixed.md`: Mixed [Statistics, Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q05_mixed.md`: Mixed [Trigonometry, Geometry & Proofs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement, Sequences & Series]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q07_mixed.md`: Mixed [Probability, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q08_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q09_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q10_mixed.md`: Mixed [Trigonometry, Probability, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q01_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Statistics, Algebra]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q02_mixed.md`: Mixed [Complex Numbers, Statistics, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q03_mixed.md`: Mixed [Algebra, Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q04_mixed.md`: Mixed [Functions & Graphs, Calculus, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2023_paper1_q05_trigonometry.md`: Trigonometry; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2023_paper1_q06_algebra.md`: Algebra; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q07_mixed.md`: Mixed [Statistics, Probability, Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q08_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Financial Maths]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q09_mixed.md`: Mixed [Statistics, Functions & Graphs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q10_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q01_mixed.md`: Mixed [Coordinate Geometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q02_mixed.md`: Mixed [Statistics, Area, Volume & Measurement, Algebra, Sequences & Series]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q03_mixed.md`: Mixed [Statistics, Functions & Graphs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q04_mixed.md`: Mixed [Probability, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2023_paper2_q05_area_volume_measurement.md`: Area, Volume & Measurement; confidence=high; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q06_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q07_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q08_mixed.md`: Mixed [Area, Volume & Measurement, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q09_mixed.md`: Mixed [Statistics, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q10_mixed.md`: Mixed [Probability, Calculus, Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2024_paper1_q01_financial_maths.md`: Financial Maths; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q02_mixed.md`: Mixed [Complex Numbers, Area, Volume & Measurement]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q03_mixed.md`: Mixed [Trigonometry, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q04_mixed.md`: Mixed [Algebra, Area, Volume & Measurement, Trigonometry, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q05_mixed.md`: Mixed [Functions & Graphs, Calculus]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q06_mixed.md`: Mixed [Functions & Graphs, Area, Volume & Measurement, Calculus, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q07_mixed.md`: Mixed [Statistics, Functions & Graphs, Sequences & Series, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q08_mixed.md`: Mixed [Sequences & Series, Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q09_mixed.md`: Mixed [Financial Maths, Trigonometry, Statistics, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q10_mixed.md`: Mixed [Financial Maths, Area, Volume & Measurement, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q01_mixed.md`: Mixed [Statistics, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2024_paper2_q02_probability.md`: Probability; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q03_mixed.md`: Mixed [Coordinate Geometry, Functions & Graphs, Algebra]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q04_mixed.md`: Mixed [Trigonometry, Calculus, Coordinate Geometry, Statistics]; confidence=low; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q05_mixed.md`: Mixed [Probability, Statistics]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q06_mixed.md`: Mixed [Area, Volume & Measurement, Algebra, Geometry & Proofs, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q07_mixed.md`: Mixed [Statistics, Trigonometry]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q08_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q09_mixed.md`: Mixed [Area, Volume & Measurement, Probability, Geometry & Proofs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q10_mixed.md`: Mixed [Area, Volume & Measurement, Trigonometry, Functions & Graphs]; confidence=medium; source=fallback_rules
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper1_q01_mixed.md`: Mixed [Financial Maths, Algebra]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper1_q02_complex_numbers.md`: Complex Numbers; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper1_q03_algebra.md`: Algebra; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper1_q04_mixed.md`: Mixed [Algebra, Calculus, Functions & Graphs]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper1_q05_algebra.md`: Algebra; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper1_q06_mixed.md`: Mixed [Financial Maths, Algebra]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper1_q07_mixed.md`: Mixed [Financial Maths, Functions & Graphs]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper1_q08_mixed.md`: Mixed [Functions & Graphs, Calculus, Financial Maths]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper1_q09_mixed.md`: Mixed [Financial Maths, Sequences & Series]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper1_q10_mixed.md`: Mixed [Area, Volume & Measurement, Financial Maths, Algebra]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper2_q01_statistics.md`: Statistics; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper2_q02_trigonometry.md`: Trigonometry; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper2_q03_coordinate_geometry.md`: Coordinate Geometry; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper2_q04_coordinate_geometry.md`: Coordinate Geometry; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper2_q05_geometry_proofs.md`: Geometry & Proofs; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper2_q06_mixed.md`: Mixed [Probability, Statistics]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper2_q07_probability.md`: Probability; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2025_paper2_q08_statistics.md`: Statistics; confidence=high; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper2_q09_mixed.md`: Mixed [Geometry & Proofs, Area, Volume & Measurement]; confidence=medium; source=manual_override
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2025_paper2_q10_mixed.md`: Mixed [Trigonometry, Area, Volume & Measurement, Probability]; confidence=medium; source=manual_override
+
+## Review Needed Files
+
+- `review_needed/higher/maths_higher_2015_paper1_q05_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2015_paper1_q07_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2015_paper2_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2016_paper1_q04_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2019_paper1_q01_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2019_paper1_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2020_paper2_q05_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2021_paper2_q02_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2021_paper2_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/higher/maths_higher_2023_paper1_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2015_paper1_q04_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2015_paper2_q01_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2015_paper2_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q02_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q04_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q06_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2016_paper2_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2016_paper2_q06_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2017_paper2_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q01_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q02_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q06_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q09_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2018_paper2_q04_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2019_paper1_q06_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2019_paper2_q04_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2020_paper1_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2020_paper1_q07_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2020_paper2_q06_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q02_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q05_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q07_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q10_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2021_paper2_q03_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2022_paper2_q02_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2023_paper1_q01_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2023_paper2_q02_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2024_paper1_q04_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+- `review_needed/ordinary/maths_ordinary_2024_paper2_q04_mixed.md`: Fallback classifier found weak or close topic scores; manual review recommended.
+
+## Image Reference Check
+
+- No missing image references detected in classified outputs.
+
+## Assumptions
+
+- General Maths is not used as an individual question topic.
+- Mixed is used when a question naturally spans multiple broad topics.
+- Unseen questions without manual overrides use conservative keyword scoring.

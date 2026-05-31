@@ -1,0 +1,86 @@
+---
+subject: "Biology"
+subject_id: "biology"
+level: "Higher"
+year: 2016
+paper: "Paper 1"
+question_number: 42
+section: "5.   The semi-circular canals play a role in balance."
+topic: "Cell Structure and Cell Function"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/biology_higher_2016_paper_1_exam_page_013.png"
+source_exam_pages:
+  - "13"
+source_marking_scheme_pages:
+  - "7"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "Cell Structure and Cell Function"
+  - "Plant Biology"
+  - "Human Biology"
+  - "Reproduction and Growth"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+5.   The semi-circular canals play a role in balance.
+                      Suggest why there are three semi-circular canals in each ear.
+                                                                                                          (27)
+
+
+       (c)     (i)   Name the part of the eye that has a corresponding function to the cochlea of the ear.
+                 Explain your answer.
+
+                 (ii)   Light passes through the pupil in the eye.
+
+# Marking Scheme
+
+5.                                                   5(3) + 5(1)
+
+        (a)   A:  Stigma
+
+            B:  Pollen tube
+
+            C: Egg (or female gamete or ovum)
+
+       (b)    (i)  How D to A:   Wind
+
+                 (ii)  How D to A:    Insect (or animal)
+
+        (c)   How E from D:      Mitosis
+
+       (d)    (i)   Fate of Es:     (One) fuses with the egg (nucleus)
+
+                 (ii)   Fate of Es:     (The other) fuses with the (2) polar nuclei
+
+                        OR
+
+       (d)    (i)   Fate of Es     (One) forms gametes
+
+                 (ii)   Fate of Es:     (The other) disintegrates
+
+        (e)  Name F:            Ovule
+
+            Develops into:        Seed
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/biology_higher_2016_paper_1_exam.md
+- pages: [13]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/biology_higher_2016_paper_1_marking_scheme.md
+- pages: [7]
+
+# Notes
+

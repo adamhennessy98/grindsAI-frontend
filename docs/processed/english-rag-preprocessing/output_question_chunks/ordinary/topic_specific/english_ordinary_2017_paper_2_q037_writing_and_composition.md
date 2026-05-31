@@ -1,0 +1,71 @@
+---
+subject: "English"
+subject_id: "english"
+level: "Ordinary"
+year: 2017
+paper: "Paper 2"
+question_number: 37
+section: "1.    (a)   Identify an image in the above poem that made an impact on you, and explain why it"
+topic: "Writing and Composition"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2017_paper_2_exam_page_015.png"
+source_exam_pages:
+  - "15"
+source_marking_scheme_pages:
+  - "10"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "Writing and Composition"
+  - "Media and Visual Literacy"
+  - "Functional Writing"
+  - "Single Text Study"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+1.    (a)   Identify an image in the above poem that made an impact on you, and explain why it
+        made an impact on you.                                                              (10)
+
+      (b)  Describe a feeling or emotion that you feel in response to this poem. Support your answer
+          with reference to the poem.                                                          (10)
+
+      (c)   Explain what you think the Master means when he says, ‘And where’s our little
+          Ward‐of‐court?’                                                                      (10)
+
+# Marking Scheme
+
+1.  In TEXT 1, Donal Ryan tells us that he laughed his way through secondary school.
+
+  Write a short story which features a character who gets into troublebecause of his
+   or her sense of humour.
+
+Candidates should write a short story which features a character who gets into trouble
+because of his or her sense of humour. The writing should be shaped as a short story
+having some sense of a beginning – middle – end; a central character; a time‐line; a
+defining moment of experience followed by a change; a resolution, etc. Expect that
+candidates will respond in a variety of ways. Consideration should be given to the quality
+of all aspects of the composition.
+
+ Discrete Criteria ex 100   P = 30     C = 30         L = 30    M = 10
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/english_ordinary_2017_paper_2_exam.md
+- pages: [15]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/english_ordinary_2017_paper_1_marking_scheme.md
+- pages: [10]
+
+# Notes
+

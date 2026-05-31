@@ -1,0 +1,65 @@
+---
+subject: "History"
+subject_id: "history"
+level: "Ordinary"
+year: 2019
+paper: "Paper 1"
+question_number: 5
+section: "SECTION 2: IRELAND"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/history_ordinary_2019_paper_1_exam_page_004.png"
+source_exam_pages:
+  - 4
+source_marking_scheme_pages:
+  - 6
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+SECTION 2: IRELAND
+            Attempt the three sections, A, B and C, from one of the topics below.
+
+                                            Ireland: Topic 1
+                               Ireland and the Union, 1815‐1870
+
+                              A (30 marks)
+                     Recommended maximum time: 10 minutes
+
+In this edited extract the writer Frances Power Cobbe recalls the onset of the Famine in Ireland.
+Read it and answer the questions which follow.
+
+      I recall precisely the day, almost the hour, when the blight fell on the potatoes. A party of us
+were driving to a seven o’ clock dinner. As we passed a remarkably fine field of potatoes in
+blossom, the scent came through the open windows of the carriage and we remarked to each other
+how splendid the potato crop.
+   Three or four hours later, as we returned home in the dark, a dreadful smell came up from the
+same field, and we exclaimed: “something has happened to those potatoes.” Next morning every
+field was black and every root rendered unfit for human food.
+
+Source: Kinealy, King & Reilly (eds.), Women and the Great Hunger (Hamden, Connecticut:
+Quinnipiac University Press, 2016).
+
+# Marking Scheme
+
+2.     Comparison         (20 marks)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/history_ordinary_2019_paper_1_exam.md
+- pages: [4]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/history_ordinary_2019_paper_1_marking_scheme.md
+- pages: [6]
+
+# Notes
+

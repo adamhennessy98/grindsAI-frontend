@@ -1,0 +1,36 @@
+{
+  "total_chunks": 703,
+  "topic_specific": 421,
+  "mixed": 282,
+  "needs_review": 0,
+  "topic_counts": {
+    "People in Business": 218,
+    "Domestic Business Environment": 59,
+    "Finance and Accounting in Business": 33,
+    "International Business Environment": 44,
+    "Mixed": 282,
+    "Business Operations": 20,
+    "Marketing": 18,
+    "Business Communication": 16,
+    "Human Resource Management": 10,
+    "Business Ethics and Social Responsibility": 3
+  },
+  "confidence_counts": {
+    "medium": 557,
+    "high": 146
+  },
+  "allowed_topics": [
+    "People in Business",
+    "Enterprise and Entrepreneurship",
+    "Management and Leadership",
+    "Business Communication",
+    "Marketing",
+    "Finance and Accounting in Business",
+    "Human Resource Management",
+    "Business Operations",
+    "Domestic Business Environment",
+    "International Business Environment",
+    "Business Ethics and Social Responsibility",
+    "Mixed"
+  ]
+}
