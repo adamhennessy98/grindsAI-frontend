@@ -20,6 +20,13 @@ const PROCESSED_SUBJECTS: Record<
     intro:
       "Relevant Leaving Certificate Accounting past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, accounting layouts, workings, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
   },
+  "applied-maths": {
+    chunksRoot: path.join(process.cwd(), "docs", "processed", "applied_maths", "output_question_chunks"),
+    displayName: "Applied Maths",
+    contextLabel: "Applied Mathematics Past Paper Example",
+    intro:
+      "Relevant Leaving Certificate Applied Mathematics past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for terminology, modelling style, examiner expectations, worked-solution style, diagrams, and mark allocation. Do not infer Applied Mathematics content from Maths, and do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
+  },
   maths: {
     chunksRoot: path.join(process.cwd(), "docs", "processed", "maths", "leaving_cert", "output_question_chunks"),
     displayName: "Maths",
@@ -35,6 +42,7 @@ const STOP_WORDS = new Set([
   "after",
   "again",
   "answer",
+  "applied",
   "based",
   "before",
   "being",
@@ -48,6 +56,7 @@ const STOP_WORDS = new Set([
   "higher",
   "level",
   "maths",
+  "mathematics",
   "ordinary",
   "paper",
   "question",
@@ -398,4 +407,12 @@ export async function getAccountingProcessedPastPaperContext(input: {
   userMessage: string;
 }) {
   return getProcessedPastPaperContext({ ...input, subjectId: "accounting" });
+}
+
+export async function getAppliedMathsProcessedPastPaperContext(input: {
+  level: string;
+  topicId?: string;
+  userMessage: string;
+}) {
+  return getProcessedPastPaperContext({ ...input, subjectId: "applied-maths" });
 }
