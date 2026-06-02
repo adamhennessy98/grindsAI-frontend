@@ -1,0 +1,35 @@
+{
+  "total_chunks": 1056,
+  "topic_specific": 817,
+  "mixed": 239,
+  "needs_review": 0,
+  "topic_counts": {
+    "Mixed": 239,
+    "Single Text Study": 179,
+    "Media and Visual Literacy": 557,
+    "Shakespearean Drama": 4,
+    "Poetry": 1,
+    "Comprehension and Language Skills": 3,
+    "Oral and Aural Language": 2,
+    "Comparative Study": 8,
+    "Writing and Composition": 63
+  },
+  "confidence_counts": {
+    "medium": 881,
+    "high": 175
+  },
+  "allowed_topics": [
+    "Comprehension and Language Skills",
+    "Writing and Composition",
+    "Functional Writing",
+    "Comparative Study",
+    "Single Text Study",
+    "Shakespearean Drama",
+    "Poetry",
+    "Unseen Poetry",
+    "Media and Visual Literacy",
+    "Critical Literacy and Argument",
+    "Oral and Aural Language",
+    "Mixed"
+  ]
+}

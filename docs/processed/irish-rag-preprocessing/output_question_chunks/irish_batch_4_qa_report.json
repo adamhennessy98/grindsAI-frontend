@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-05-31T18:53:11",
+  "status": "PASS",
+  "total_files_checked": 781,
+  "counts": {
+    "by_level": {
+      "higher": 459,
+      "ordinary": 322
+    },
+    "by_classification_type": {
+      "mixed": 53,
+      "topic_specific": 728
+    },
+    "by_topic": {
+      "Mixed": 53,
+      "The Irish Language Around Us": 728
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

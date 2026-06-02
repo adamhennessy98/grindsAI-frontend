@@ -1,0 +1,59 @@
+---
+subject: "Irish"
+subject_id: "irish"
+level: "Ordinary"
+year: 2019
+paper: "Paper 2"
+question_number: 21
+section: "1.  Im spailp\u00edn f\u00e1nach at\u00e1im le fada"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/irish_ordinary_2019_paper_2_exam_page_010.png"
+source_exam_pages:
+  - 10
+source_marking_scheme_pages:
+  - 7
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+1.  Im spailpín fánach atáim le fada
+                          ag seasamh ar mo shláinte,
+                         ag siúl an drúchta go moch ar maidin
+                                       ʼs ag bailiú galair ráithe;
+                         ach glacfad fees ó rí na gcroppies,
+                                 cleith is píc chun sáite
+                                     ʼs go brách arís ní ghlaofar m’ainm
+                             sa tír seo, an spailpín fánach.
+
+# Marking Scheme
+
+1.      (a)  Cá bhfuil Óstán na Trá?                                             3 mharc
+
+           Sa Spidéal = 3 mharc
+             Gaillimh/I nGaillimh = 1 mharc
+
+        (b)  Cén t‐am a thosóidh an cruinniú seo?                                  3 mharc
+
+           Ar leathuair tar éis a hocht = 3 mharc
+            8.30 = 3 mharc
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/irish_ordinary_2019_paper_2_exam.md
+- pages: [10]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/irish_ordinary_2019_paper_1_marking_scheme.md
+- pages: [7]
+
+# Notes
+

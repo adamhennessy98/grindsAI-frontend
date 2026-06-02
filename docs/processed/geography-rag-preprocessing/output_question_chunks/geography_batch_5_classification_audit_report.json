@@ -1,0 +1,37 @@
+{
+  "total_chunks": 501,
+  "topic_specific": 318,
+  "mixed": 183,
+  "needs_review": 0,
+  "topic_counts": {
+    "Physical Geography": 240,
+    "Economic Geography": 16,
+    "Mixed": 183,
+    "Settlement and Urban Geography": 19,
+    "Regional Geography": 6,
+    "Human Geography": 11,
+    "Climate and Weather": 9,
+    "Population and Migration": 3,
+    "Environmental Geography": 5,
+    "Map, Photograph and Data Interpretation": 9
+  },
+  "confidence_counts": {
+    "medium": 456,
+    "high": 45
+  },
+  "allowed_topics": [
+    "Geographical Skills",
+    "Physical Geography",
+    "Regional Geography",
+    "Human Geography",
+    "Economic Geography",
+    "Population and Migration",
+    "Settlement and Urban Geography",
+    "Environmental Geography",
+    "Climate and Weather",
+    "Geoecology",
+    "Fieldwork and Geographical Investigation",
+    "Map, Photograph and Data Interpretation",
+    "Mixed"
+  ]
+}

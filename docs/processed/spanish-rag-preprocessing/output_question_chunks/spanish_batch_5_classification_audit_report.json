@@ -1,0 +1,36 @@
+{
+  "total_chunks": 492,
+  "topic_specific": 448,
+  "mixed": 44,
+  "needs_review": 0,
+  "topic_counts": {
+    "Spanish-Speaking Culture": 365,
+    "Mixed": 44,
+    "Listening Comprehension": 37,
+    "Written Production": 13,
+    "Grammar and Language Accuracy": 3,
+    "Personal Life and Identity": 4,
+    "Reading Comprehension": 21,
+    "Oral Communication": 1,
+    "School, Work and Future Plans": 3,
+    "Travel, Holidays and Daily Life": 1
+  },
+  "confidence_counts": {
+    "medium": 455,
+    "high": 37
+  },
+  "allowed_topics": [
+    "Oral Communication",
+    "Listening Comprehension",
+    "Reading Comprehension",
+    "Written Production",
+    "Grammar and Language Accuracy",
+    "Vocabulary and Idiom",
+    "Personal Life and Identity",
+    "School, Work and Future Plans",
+    "Travel, Holidays and Daily Life",
+    "Society, Culture and Current Issues",
+    "Spanish-Speaking Culture",
+    "Mixed"
+  ]
+}

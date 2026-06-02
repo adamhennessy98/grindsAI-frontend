@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-05-31T18:27:16",
+  "status": "PASS",
+  "total_files_checked": 345,
+  "counts": {
+    "by_level": {
+      "higher": 183,
+      "ordinary": 162
+    },
+    "by_classification_type": {
+      "mixed": 190,
+      "topic_specific": 155
+    },
+    "by_topic": {
+      "Mixed": 190,
+      "What Economics Is About": 66,
+      "National Income and Economic Growth": 59,
+      "Markets, Demand and Supply": 4,
+      "Government Intervention and Regulation": 6,
+      "Market Structures and Competition": 3,
+      "Employment and Unemployment": 5,
+      "Research Study and Economic Data": 6,
+      "Economic Decision Making": 6
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

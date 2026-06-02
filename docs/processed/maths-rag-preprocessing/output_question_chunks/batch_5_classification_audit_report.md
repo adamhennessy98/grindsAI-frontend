@@ -1,0 +1,552 @@
+# Batch 5 Classification Audit Report
+
+Generated: 2026-05-29T13:47:41
+
+## Summary
+
+- Total chunks classified: 416
+- Manual overrides used: 40
+- Fallback classifications used: 376
+- Topic-specific: 110
+- Mixed: 306
+- Needs review: 40
+
+## Topic Distribution
+
+- Algebra: 19
+- Area, Volume & Measurement: 10
+- Calculus: 4
+- Complex Numbers: 4
+- Coordinate Geometry: 5
+- Financial Maths: 3
+- Functions & Graphs: 7
+- Geometry & Proofs: 7
+- Mixed: 306
+- Probability: 22
+- Sequences & Series: 9
+- Statistics: 8
+- Trigonometry: 12
+
+## Confidence Distribution
+
+- high: 85
+- low: 40
+- medium: 291
+
+## Low-Confidence Files
+
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q05_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q07_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q03_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q04_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q01_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q03_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q05_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q02_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q03_mixed.md`
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q03_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q04_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q01_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q03_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q02_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q03_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q04_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q06_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q03_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q06_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q03_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q01_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q02_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q06_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q09_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q04_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q06_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q04_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q03_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q07_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q06_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q02_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q05_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q07_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q10_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q03_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q02_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q01_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q02_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q04_mixed.md`
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q04_mixed.md`
+
+## Review Needed Files
+
+- `review_needed/higher/maths_higher_2015_paper1_q05_mixed.md`
+- `review_needed/higher/maths_higher_2015_paper1_q07_mixed.md`
+- `review_needed/higher/maths_higher_2015_paper2_q03_mixed.md`
+- `review_needed/higher/maths_higher_2016_paper1_q04_mixed.md`
+- `review_needed/higher/maths_higher_2019_paper1_q01_mixed.md`
+- `review_needed/higher/maths_higher_2019_paper1_q03_mixed.md`
+- `review_needed/higher/maths_higher_2020_paper2_q05_mixed.md`
+- `review_needed/higher/maths_higher_2021_paper2_q02_mixed.md`
+- `review_needed/higher/maths_higher_2021_paper2_q03_mixed.md`
+- `review_needed/higher/maths_higher_2023_paper1_q03_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2015_paper1_q04_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2015_paper2_q01_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2015_paper2_q03_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q02_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q03_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q04_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2016_paper1_q06_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2016_paper2_q03_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2016_paper2_q06_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2017_paper2_q03_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q01_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q02_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q06_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2018_paper1_q09_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2018_paper2_q04_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2019_paper1_q06_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2019_paper2_q04_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2020_paper1_q03_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2020_paper1_q07_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2020_paper2_q06_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q02_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q05_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q07_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2021_paper1_q10_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2021_paper2_q03_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2022_paper2_q02_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2023_paper1_q01_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2023_paper2_q02_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2024_paper1_q04_mixed.md`
+- `review_needed/ordinary/maths_ordinary_2024_paper2_q04_mixed.md`
+
+## Fallback Used
+
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q01_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q02_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q03_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q04_mixed.md`: Mixed (candidates: Complex Numbers, Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q05_mixed.md`: Mixed (candidates: Calculus, Functions & Graphs, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper1_q06_financial_maths.md`: Financial Maths (candidates: Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q07_mixed.md`: Mixed (candidates: Trigonometry, Calculus, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper1_q09_mixed.md`: Mixed (candidates: Calculus, Trigonometry, Functions & Graphs, Sequences & Series)
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q02_mixed.md`: Mixed (candidates: Statistics, Probability, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q03_mixed.md`: Mixed (candidates: Trigonometry, Geometry & Proofs, Sequences & Series, Coordinate Geometry)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q04_mixed.md`: Mixed (candidates: Algebra, Coordinate Geometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2015_paper2_q05_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q07_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Coordinate Geometry)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q08_mixed.md`: Mixed (candidates: Sequences & Series, Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2015_paper2_q09_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q01_mixed.md`: Mixed (candidates: Functions & Graphs, Algebra, Complex Numbers, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q02_mixed.md`: Mixed (candidates: Functions & Graphs, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper1_q03_functions_graphs.md`: Functions & Graphs (candidates: Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q04_mixed.md`: Mixed (candidates: Geometry & Proofs, Sequences & Series, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper1_q05_functions_graphs.md`: Functions & Graphs (candidates: Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q06_mixed.md`: Mixed (candidates: Trigonometry, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q08_mixed.md`: Mixed (candidates: Trigonometry, Algebra, Calculus, Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper1_q09_mixed.md`: Mixed (candidates: Trigonometry, Sequences & Series, Coordinate Geometry, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q01_mixed.md`: Mixed (candidates: Geometry & Proofs, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q02_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q03_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q04_geometry_proofs.md`: Geometry & Proofs (candidates: Geometry & Proofs)
+- `output_question_chunks/higher/topic_specific/maths_higher_2016_paper2_q05_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q06_mixed.md`: Mixed (candidates: Trigonometry, Probability, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q07_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q08_mixed.md`: Mixed (candidates: Functions & Graphs, Trigonometry, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2016_paper2_q09_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Probability, Financial Maths)
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper1_q01_functions_graphs.md`: Functions & Graphs (candidates: Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q02_mixed.md`: Mixed (candidates: Complex Numbers, Trigonometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper1_q03_calculus.md`: Calculus (candidates: Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q04_mixed.md`: Mixed (candidates: Trigonometry, Statistics)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q05_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q06_mixed.md`: Mixed (candidates: Functions & Graphs, Area, Volume & Measurement, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q07_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q08_mixed.md`: Mixed (candidates: Financial Maths, Sequences & Series, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper1_q09_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q02_statistics.md`: Statistics (candidates: Statistics)
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q03_geometry_proofs.md`: Geometry & Proofs (candidates: Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q04_mixed.md`: Mixed (candidates: Trigonometry, Coordinate Geometry, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q05_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q06_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/topic_specific/maths_higher_2017_paper2_q07_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q08_mixed.md`: Mixed (candidates: Probability, Statistics, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2017_paper2_q09_mixed.md`: Mixed (candidates: Trigonometry, Financial Maths)
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper1_q01_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper1_q02_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q03_mixed.md`: Mixed (candidates: Trigonometry, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q04_mixed.md`: Mixed (candidates: Trigonometry, Complex Numbers, Geometry & Proofs)
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper1_q05_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q06_mixed.md`: Mixed (candidates: Functions & Graphs, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q07_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus, Statistics, Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q08_mixed.md`: Mixed (candidates: Functions & Graphs, Area, Volume & Measurement, Trigonometry, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper1_q09_mixed.md`: Mixed (candidates: Sequences & Series, Area, Volume & Measurement)
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q02_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q03_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q04_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q05_mixed.md`: Mixed (candidates: Trigonometry, Calculus, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2018_paper2_q06_geometry_proofs.md`: Geometry & Proofs (candidates: Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2018_paper2_q09_mixed.md`: Mixed (candidates: Functions & Graphs, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q01_mixed.md`: Mixed (candidates: Algebra, Sequences & Series, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q02_mixed.md`: Mixed (candidates: Functions & Graphs, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q03_mixed.md`: Mixed (candidates: Algebra, Calculus, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q04_mixed.md`: Mixed (candidates: Functions & Graphs, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q05_mixed.md`: Mixed (candidates: Complex Numbers, Trigonometry, Functions & Graphs)
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper1_q06_statistics.md`: Statistics (candidates: Statistics)
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper1_q07_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q08_mixed.md`: Mixed (candidates: Trigonometry, Calculus, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper1_q09_mixed.md`: Mixed (candidates: Functions & Graphs, Trigonometry, Coordinate Geometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q02_mixed.md`: Mixed (candidates: Algebra, Sequences & Series, Coordinate Geometry)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q03_mixed.md`: Mixed (candidates: Calculus, Trigonometry, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper2_q04_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q05_mixed.md`: Mixed (candidates: Geometry & Proofs, Trigonometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2019_paper2_q06_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2019_paper2_q09_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q01_mixed.md`: Mixed (candidates: Functions & Graphs, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q02_mixed.md`: Mixed (candidates: Sequences & Series, Complex Numbers, Trigonometry, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2020_paper1_q03_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q04_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q05_mixed.md`: Mixed (candidates: Financial Maths, Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q06_mixed.md`: Mixed (candidates: Calculus, Functions & Graphs, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q07_mixed.md`: Mixed (candidates: Sequences & Series, Trigonometry, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q08_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper1_q09_mixed.md`: Mixed (candidates: Functions & Graphs, Trigonometry, Calculus, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q01_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q02_mixed.md`: Mixed (candidates: Algebra, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q03_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q04_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q05_mixed.md`: Mixed (candidates: Probability, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q06_mixed.md`: Mixed (candidates: Probability, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2020_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Probability, Calculus, Trigonometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2020_paper2_q09_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q01_mixed.md`: Mixed (candidates: Complex Numbers, Trigonometry, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q02_mixed.md`: Mixed (candidates: Functions & Graphs, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q03_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper1_q04_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q05_mixed.md`: Mixed (candidates: Trigonometry, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q06_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus, Algebra, Trigonometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper1_q07_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q08_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus, Trigonometry, Statistics)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q09_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper1_q10_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Statistics, Calculus)
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q02_mixed.md`: Mixed (candidates: Trigonometry, Geometry & Proofs, Statistics, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q03_mixed.md`: Mixed (candidates: Coordinate Geometry, Trigonometry, Geometry & Proofs, Statistics)
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper2_q04_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q05_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Algebra)
+- `output_question_chunks/higher/topic_specific/maths_higher_2021_paper2_q06_geometry_proofs.md`: Geometry & Proofs (candidates: Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q07_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Probability, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q09_mixed.md`: Mixed (candidates: Functions & Graphs, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2021_paper2_q10_mixed.md`: Mixed (candidates: Trigonometry, Probability, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q01_mixed.md`: Mixed (candidates: Algebra, Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q02_mixed.md`: Mixed (candidates: Algebra, Area, Volume & Measurement, Functions & Graphs, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q03_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Complex Numbers, Trigonometry, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q04_mixed.md`: Mixed (candidates: Sequences & Series, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q05_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q06_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus, Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q07_mixed.md`: Mixed (candidates: Functions & Graphs, Trigonometry, Calculus, Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q08_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q09_mixed.md`: Mixed (candidates: Sequences & Series, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper1_q10_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Algebra, Functions & Graphs)
+- `output_question_chunks/higher/topic_specific/maths_higher_2022_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/topic_specific/maths_higher_2022_paper2_q02_coordinate_geometry.md`: Coordinate Geometry (candidates: Coordinate Geometry)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q03_mixed.md`: Mixed (candidates: Calculus, Trigonometry, Algebra, Coordinate Geometry)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q04_mixed.md`: Mixed (candidates: Trigonometry, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q05_mixed.md`: Mixed (candidates: Statistics, Probability, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Probability, Trigonometry, Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q09_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2022_paper2_q10_mixed.md`: Mixed (candidates: Statistics, Probability, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q01_mixed.md`: Mixed (candidates: Algebra, Sequences & Series)
+- `output_question_chunks/higher/topic_specific/maths_higher_2023_paper1_q02_functions_graphs.md`: Functions & Graphs (candidates: Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q03_mixed.md`: Mixed (candidates: Statistics, Algebra, Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q04_mixed.md`: Mixed (candidates: Complex Numbers, Functions & Graphs, Trigonometry, Sequences & Series)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q05_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q06_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q07_mixed.md`: Mixed (candidates: Calculus, Trigonometry, Functions & Graphs, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q08_mixed.md`: Mixed (candidates: Financial Maths, Sequences & Series, Trigonometry, Statistics)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q09_mixed.md`: Mixed (candidates: Calculus, Algebra, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper1_q10_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Sequences & Series, Trigonometry, Geometry & Proofs)
+- `output_question_chunks/higher/topic_specific/maths_higher_2023_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/topic_specific/maths_higher_2023_paper2_q02_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q03_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Coordinate Geometry, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q04_mixed.md`: Mixed (candidates: Algebra, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q05_mixed.md`: Mixed (candidates: Statistics, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q07_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Calculus, Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Probability, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q09_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Calculus, Geometry & Proofs)
+- `output_question_chunks/higher/mixed/maths_higher_2023_paper2_q10_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q01_mixed.md`: Mixed (candidates: Algebra, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q02_mixed.md`: Mixed (candidates: Complex Numbers, Trigonometry, Geometry & Proofs, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q03_mixed.md`: Mixed (candidates: Calculus, Trigonometry, Functions & Graphs, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q04_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q05_mixed.md`: Mixed (candidates: Sequences & Series, Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q06_mixed.md`: Mixed (candidates: Functions & Graphs, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q07_mixed.md`: Mixed (candidates: Financial Maths, Calculus, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q08_mixed.md`: Mixed (candidates: Calculus, Functions & Graphs, Trigonometry, Statistics)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q09_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Sequences & Series, Algebra)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper1_q10_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus, Sequences & Series, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q01_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Functions & Graphs)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q02_mixed.md`: Mixed (candidates: Probability, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q03_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q04_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q05_mixed.md`: Mixed (candidates: Algebra, Coordinate Geometry)
+- `output_question_chunks/higher/topic_specific/maths_higher_2024_paper2_q06_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q07_mixed.md`: Mixed (candidates: Probability, Statistics, Financial Maths)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Geometry & Proofs, Trigonometry)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q09_mixed.md`: Mixed (candidates: Algebra, Trigonometry, Geometry & Proofs, Coordinate Geometry)
+- `output_question_chunks/higher/mixed/maths_higher_2024_paper2_q10_mixed.md`: Mixed (candidates: Trigonometry, Sequences & Series, Area, Volume & Measurement, Coordinate Geometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q01_financial_maths.md`: Financial Maths (candidates: Financial Maths)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q02_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q03_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q04_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Functions & Graphs, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q05_mixed.md`: Mixed (candidates: Functions & Graphs, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q06_mixed.md`: Mixed (candidates: Trigonometry, Complex Numbers)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2015_paper1_q07_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q08_mixed.md`: Mixed (candidates: Functions & Graphs, Financial Maths, Calculus)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper1_q09_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs, Sequences & Series, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q01_mixed.md`: Mixed (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q02_mixed.md`: Mixed (candidates: Geometry & Proofs, Coordinate Geometry, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q03_mixed.md`: Mixed (candidates: Coordinate Geometry, Trigonometry, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q04_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Geometry & Proofs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q05_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q06_mixed.md`: Mixed (candidates: Statistics, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Geometry & Proofs, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q08_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2015_paper2_q09_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper1_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q02_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q03_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Algebra, Trigonometry, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q04_mixed.md`: Mixed (candidates: Algebra, Calculus, Area, Volume & Measurement, Functions & Graphs)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper1_q05_statistics.md`: Statistics (candidates: Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q08_mixed.md`: Mixed (candidates: Statistics, Financial Maths, Calculus, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper1_q09_mixed.md`: Mixed (candidates: Geometry & Proofs, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q02_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q03_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Algebra, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q04_mixed.md`: Mixed (candidates: Algebra, Functions & Graphs)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2016_paper2_q05_statistics.md`: Statistics (candidates: Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Financial Maths, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2016_paper2_q09_mixed.md`: Mixed (candidates: Geometry & Proofs, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q01_mixed.md`: Mixed (candidates: Probability, Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q02_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q03_mixed.md`: Mixed (candidates: Trigonometry, Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper1_q04_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q05_mixed.md`: Mixed (candidates: Statistics, Functions & Graphs, Trigonometry, Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q06_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Sequences & Series, Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Geometry & Proofs, Algebra, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper1_q09_mixed.md`: Mixed (candidates: Statistics, Sequences & Series, Trigonometry, Financial Maths)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper2_q02_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q03_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Algebra, Coordinate Geometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2017_paper2_q04_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q05_mixed.md`: Mixed (candidates: Trigonometry, Statistics, Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q06_mixed.md`: Mixed (candidates: Trigonometry, Statistics, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q07_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Geometry & Proofs, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2017_paper2_q09_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q01_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q02_mixed.md`: Mixed (candidates: Complex Numbers, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper1_q03_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper1_q04_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper1_q05_functions_graphs.md`: Functions & Graphs (candidates: Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement, Statistics, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q07_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q08_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper1_q09_mixed.md`: Mixed (candidates: Sequences & Series, Area, Volume & Measurement, Functions & Graphs, Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q02_mixed.md`: Mixed (candidates: Coordinate Geometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q03_mixed.md`: Mixed (candidates: Probability, Functions & Graphs, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q04_mixed.md`: Mixed (candidates: Algebra, Calculus, Coordinate Geometry, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q05_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Sequences & Series)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2018_paper2_q06_geometry_proofs.md`: Geometry & Proofs (candidates: Geometry & Proofs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q07_mixed.md`: Mixed (candidates: Statistics, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q08_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2018_paper2_q09_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Probability, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q01_mixed.md`: Mixed (candidates: Financial Maths, Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q02_complex_numbers.md`: Complex Numbers (candidates: Complex Numbers)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q03_functions_graphs.md`: Functions & Graphs (candidates: Functions & Graphs)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q04_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper1_q05_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q06_mixed.md`: Mixed (candidates: Algebra, Area, Volume & Measurement, Trigonometry, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q07_mixed.md`: Mixed (candidates: Functions & Graphs, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q08_mixed.md`: Mixed (candidates: Financial Maths, Sequences & Series, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper1_q09_mixed.md`: Mixed (candidates: Financial Maths, Trigonometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q02_mixed.md`: Mixed (candidates: Coordinate Geometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper2_q03_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q04_mixed.md`: Mixed (candidates: Statistics, Area, Volume & Measurement, Algebra, Trigonometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2019_paper2_q05_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q07_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Calculus, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2019_paper2_q09_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q01_mixed.md`: Mixed (candidates: Financial Maths, Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper1_q02_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q03_mixed.md`: Mixed (candidates: Complex Numbers, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper1_q04_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q05_mixed.md`: Mixed (candidates: Functions & Graphs, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q06_mixed.md`: Mixed (candidates: Calculus, Functions & Graphs, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q07_mixed.md`: Mixed (candidates: Financial Maths, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q08_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs, Calculus)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper1_q09_mixed.md`: Mixed (candidates: Sequences & Series, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q02_mixed.md`: Mixed (candidates: Coordinate Geometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q03_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2020_paper2_q04_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q05_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q06_mixed.md`: Mixed (candidates: Trigonometry, Algebra, Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q07_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q08_mixed.md`: Mixed (candidates: Statistics, Area, Volume & Measurement, Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2020_paper2_q09_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q01_mixed.md`: Mixed (candidates: Trigonometry, Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q02_mixed.md`: Mixed (candidates: Complex Numbers, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q03_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q04_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q05_mixed.md`: Mixed (candidates: Calculus, Algebra, Area, Volume & Measurement, Functions & Graphs)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q06_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q07_mixed.md`: Mixed (candidates: Calculus, Trigonometry, Area, Volume & Measurement, Sequences & Series)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q08_mixed.md`: Mixed (candidates: Functions & Graphs, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper1_q09_sequences_series.md`: Sequences & Series (candidates: Sequences & Series)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper1_q10_mixed.md`: Mixed (candidates: Trigonometry, Geometry & Proofs, Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2021_paper2_q01_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q02_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q03_mixed.md`: Mixed (candidates: Algebra, Geometry & Proofs, Coordinate Geometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q04_mixed.md`: Mixed (candidates: Algebra, Coordinate Geometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q05_mixed.md`: Mixed (candidates: Statistics, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q07_mixed.md`: Mixed (candidates: Statistics, Area, Volume & Measurement, Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q09_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2021_paper2_q10_mixed.md`: Mixed (candidates: Trigonometry, Coordinate Geometry, Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2022_paper1_q01_complex_numbers.md`: Complex Numbers (candidates: Complex Numbers)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q02_mixed.md`: Mixed (candidates: Algebra, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q03_mixed.md`: Mixed (candidates: Financial Maths, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q04_mixed.md`: Mixed (candidates: Calculus, Trigonometry, Functions & Graphs, Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2022_paper1_q05_functions_graphs.md`: Functions & Graphs (candidates: Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q06_mixed.md`: Mixed (candidates: Sequences & Series, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q07_mixed.md`: Mixed (candidates: Functions & Graphs, Trigonometry, Statistics, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q09_mixed.md`: Mixed (candidates: Trigonometry, Statistics, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper1_q10_mixed.md`: Mixed (candidates: Trigonometry, Functions & Graphs, Financial Maths, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q01_mixed.md`: Mixed (candidates: Geometry & Proofs, Algebra, Coordinate Geometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q02_mixed.md`: Mixed (candidates: Algebra, Trigonometry, Statistics, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2022_paper2_q03_statistics.md`: Statistics (candidates: Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q04_mixed.md`: Mixed (candidates: Statistics, Trigonometry, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q05_mixed.md`: Mixed (candidates: Trigonometry, Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement, Sequences & Series)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q07_mixed.md`: Mixed (candidates: Probability, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q09_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Geometry & Proofs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2022_paper2_q10_mixed.md`: Mixed (candidates: Trigonometry, Probability, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q01_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Statistics, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q02_mixed.md`: Mixed (candidates: Complex Numbers, Statistics, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q03_mixed.md`: Mixed (candidates: Algebra, Trigonometry, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q04_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus, Algebra)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2023_paper1_q05_trigonometry.md`: Trigonometry (candidates: Trigonometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2023_paper1_q06_algebra.md`: Algebra (candidates: Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q07_mixed.md`: Mixed (candidates: Statistics, Probability, Functions & Graphs, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q09_mixed.md`: Mixed (candidates: Statistics, Functions & Graphs, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper1_q10_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q01_mixed.md`: Mixed (candidates: Coordinate Geometry, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q02_mixed.md`: Mixed (candidates: Statistics, Area, Volume & Measurement, Algebra, Sequences & Series)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q03_mixed.md`: Mixed (candidates: Statistics, Functions & Graphs, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q04_mixed.md`: Mixed (candidates: Probability, Statistics)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2023_paper2_q05_area_volume_measurement.md`: Area, Volume & Measurement (candidates: Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q06_mixed.md`: Mixed (candidates: Geometry & Proofs, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q07_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q08_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Calculus)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q09_mixed.md`: Mixed (candidates: Statistics, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2023_paper2_q10_mixed.md`: Mixed (candidates: Probability, Calculus, Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2024_paper1_q01_financial_maths.md`: Financial Maths (candidates: Financial Maths)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q02_mixed.md`: Mixed (candidates: Complex Numbers, Area, Volume & Measurement)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q03_mixed.md`: Mixed (candidates: Trigonometry, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q04_mixed.md`: Mixed (candidates: Algebra, Area, Volume & Measurement, Trigonometry, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q05_mixed.md`: Mixed (candidates: Functions & Graphs, Calculus)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q06_mixed.md`: Mixed (candidates: Functions & Graphs, Area, Volume & Measurement, Calculus, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q07_mixed.md`: Mixed (candidates: Statistics, Functions & Graphs, Sequences & Series, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q08_mixed.md`: Mixed (candidates: Sequences & Series, Trigonometry, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q09_mixed.md`: Mixed (candidates: Financial Maths, Trigonometry, Statistics, Functions & Graphs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper1_q10_mixed.md`: Mixed (candidates: Financial Maths, Area, Volume & Measurement, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q01_mixed.md`: Mixed (candidates: Statistics, Functions & Graphs)
+- `output_question_chunks/ordinary/topic_specific/maths_ordinary_2024_paper2_q02_probability.md`: Probability (candidates: Probability)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q03_mixed.md`: Mixed (candidates: Coordinate Geometry, Functions & Graphs, Algebra)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q04_mixed.md`: Mixed (candidates: Trigonometry, Calculus, Coordinate Geometry, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q05_mixed.md`: Mixed (candidates: Probability, Statistics)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q06_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Algebra, Geometry & Proofs, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q07_mixed.md`: Mixed (candidates: Statistics, Trigonometry)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q08_mixed.md`: Mixed (candidates: Trigonometry, Area, Volume & Measurement, Geometry & Proofs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q09_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Probability, Geometry & Proofs)
+- `output_question_chunks/ordinary/mixed/maths_ordinary_2024_paper2_q10_mixed.md`: Mixed (candidates: Area, Volume & Measurement, Trigonometry, Functions & Graphs)
+
+## Manual Override Keys Used
+
+- higher_2025_paper1_q01
+- higher_2025_paper1_q02
+- higher_2025_paper1_q03
+- higher_2025_paper1_q04
+- higher_2025_paper1_q05
+- higher_2025_paper1_q06
+- higher_2025_paper1_q07
+- higher_2025_paper1_q08
+- higher_2025_paper1_q09
+- higher_2025_paper1_q10
+- higher_2025_paper2_q01
+- higher_2025_paper2_q02
+- higher_2025_paper2_q03
+- higher_2025_paper2_q04
+- higher_2025_paper2_q05
+- higher_2025_paper2_q06
+- higher_2025_paper2_q07
+- higher_2025_paper2_q08
+- higher_2025_paper2_q09
+- higher_2025_paper2_q10
+- ordinary_2025_paper1_q01
+- ordinary_2025_paper1_q02
+- ordinary_2025_paper1_q03
+- ordinary_2025_paper1_q04
+- ordinary_2025_paper1_q05
+- ordinary_2025_paper1_q06
+- ordinary_2025_paper1_q07
+- ordinary_2025_paper1_q08
+- ordinary_2025_paper1_q09
+- ordinary_2025_paper1_q10
+- ordinary_2025_paper2_q01
+- ordinary_2025_paper2_q02
+- ordinary_2025_paper2_q03
+- ordinary_2025_paper2_q04
+- ordinary_2025_paper2_q05
+- ordinary_2025_paper2_q06
+- ordinary_2025_paper2_q07
+- ordinary_2025_paper2_q08
+- ordinary_2025_paper2_q09
+- ordinary_2025_paper2_q10
+
+## Invalid Manual Override Entries
+
+- None.
+
+## Recommendations
+
+- Resolve files in review_needed/topic_review_queue.md before ingestion.
+- Review fallback classifications and add manual overrides for any uncertain cases.
+- After adding future years, run Batch 3/5 classification, then Batch 4 QA before ingestion.

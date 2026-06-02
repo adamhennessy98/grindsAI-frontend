@@ -1,0 +1,81 @@
+---
+subject: "Irish"
+subject_id: "irish"
+level: "Higher"
+year: 2018
+paper: "Paper 2"
+question_number: 15
+section: "5. D\u00e1 bhr\u00edomhaire \u00ed oidhreacht chult\u00fartha, \u00e1fach,"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/irish_higher_2018_paper_2_exam_page_007.png"
+source_exam_pages:
+  - 7
+source_marking_scheme_pages:
+  - 19
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+5. Dá bhríomhaire í oidhreacht chultúrtha, áfach,
+                                                        fearr ag na pobail i dtíortha an Aontais ar an
+ bíonn dúshláin ann i gcónaí. Is féidir leis an athrú
+                                                 tábhacht a bhaineann le caomhnú agus le forbairt
+ aeráide dul i gcion go fisiceach ar an oidhreacht
+                                               a n‐oidhreachta cultúrtha do na glúine atá le teacht
+ chultúrtha. Déantar dochar cois cósta nuair
+                                                      ina ndiaidh.
+ a éiríonn leibhéal na farraige. Creimeann an ghaoth
+                                                                Bunaithe ar eolas ó fhoinsí éagsúla
+
+Ceisteanna
+
+# Marking Scheme
+
+5.    (a)  Cén fhianaise atá i ndaonáireamh 2016 go bhfuil borradh faoi gheilleagar na hÉireann
+            arís? Tabhair dhá phointe eolais. (Alt 5)
+                                                (2 phointe eolais) {3 mharc: 2 mharc + 1 mharc}
+
+       An chéad phointe eolais atá ceart = 2 mharc; an dara pointe eolais atá ceart = 1 mharc
+
+            Tá méadú 3.2% ar líon na ndaoine a bhí ag obair an bhliain sin i gcomparáid leis an
+              mbliain 2011
+            D’fhág a lán Éireannach an tír nuair a tharla an cúlú eacnamaíochta ach is léir ó
+             dhaonáireamh 2016 go bhfuil go leor acu ag filleadh anois (toisc go bhfuil fostaíocht
+               ar fáil arís)
+             Is léir go bhfuil go leor Éireannach ag filleadh anois (toisc go bhfuil fostaíocht ar
+                  fáil) (cáiliú ag teastáil anseo mar atá léirithe)
+
+      (b)   (i) Cén t-eolas spéisiúil a d’fhoilsigh an Phríomh-Oifig Staidrimh faoin tslí a dtéann
+             daoine chuig a n-ionad oibre? (Alt 5)
+                                                                  (pointe amháin eolais) {2 mharc}
+           Tá méadú ar an líon oibrithe a bhaineann leas as an iompar poiblí mar mhodh taistil
+            chun na hoibre
+
+
+               (ii) Cén tábhacht do mhuintir na hÉireann a bhainfidh leis an daonáireamh a bheidh ar
+                 siúl i ngach ballstát den Aontas Eorpach sa bhliain 2021? (Alt 5)
+                                                                 (pointe amháin eolais) {2 mharc}
+
+           Beimid in ann pobal na tíre seo a chur i gcomparáid le pobail na dtíortha eile san
+             Aontas (agus beidh tuiscint níos fearr againn ar an Aontas Eorpach dá bharr)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/irish_higher_2018_paper_2_exam.md
+- pages: [7]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/irish_higher_2018_paper_1_marking_scheme.md
+- pages: [19]
+
+# Notes
+

@@ -1,44 +1,12 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { SUBJECT_TOPICS } from "@/lib/constants";
+import { getProcessedSubjectConfig } from "@/lib/processed-subjects";
 
 const MAX_CHUNKS = 4;
 
-const PROCESSED_SUBJECTS: Record<
-  string,
-  {
-    chunksRoot: string;
-    displayName: string;
-    contextLabel: string;
-    intro: string;
-  }
-> = {
-  accounting: {
-    chunksRoot: path.join(process.cwd(), "docs", "processed", "accounting", "leaving_cert", "output_question_chunks"),
-    displayName: "Accounting",
-    contextLabel: "Accounting Past Paper Example",
-    intro:
-      "Relevant Leaving Certificate Accounting past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, accounting layouts, workings, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
-  },
-  "applied-maths": {
-    chunksRoot: path.join(process.cwd(), "docs", "processed", "applied_maths", "output_question_chunks"),
-    displayName: "Applied Maths",
-    contextLabel: "Applied Mathematics Past Paper Example",
-    intro:
-      "Relevant Leaving Certificate Applied Mathematics past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for terminology, modelling style, examiner expectations, worked-solution style, diagrams, and mark allocation. Do not infer Applied Mathematics content from Maths, and do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
-  },
-  maths: {
-    chunksRoot: path.join(process.cwd(), "docs", "processed", "maths", "leaving_cert", "output_question_chunks"),
-    displayName: "Maths",
-    contextLabel: "Past Paper Example",
-    intro:
-      "Relevant Leaving Certificate Maths past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
-  },
-};
-
 const STOP_WORDS = new Set([
   "about",
-  "accounting",
   "after",
   "again",
   "answer",
@@ -62,12 +30,14 @@ const STOP_WORDS = new Set([
   "question",
   "show",
   "style",
+  "subject",
   "tell",
   "that",
   "their",
   "there",
   "these",
   "this",
+  "topic",
   "what",
   "when",
   "where",
@@ -92,8 +62,8 @@ type ChunkMetadata = {
   classification_type?: string;
   has_visual?: boolean;
   visual_assets?: string[];
-  source_exam_pages?: number[];
-  source_marking_scheme_pages?: number[];
+  source_exam_pages?: Array<string | number>;
+  source_marking_scheme_pages?: Array<string | number>;
 };
 
 type ExamQuestionChunk = {
@@ -108,6 +78,11 @@ type ExamQuestionChunk = {
 
 const chunkCache = new Map<string, Promise<ExamQuestionChunk[]>>();
 const warnedMissingChunks = new Set<string>();
+const warnedInvalidFrontmatter = new Set<string>();
+
+export function hasProcessedSubjectConfig(subjectId: string) {
+  return Boolean(getProcessedSubjectConfig(subjectId));
+}
 
 function normalizeLevel(level: string): "higher" | "ordinary" {
   const value = level.toLowerCase();
@@ -230,7 +205,7 @@ function levelAndCollectionFromPath(filePath: string): Pick<ExamQuestionChunk, "
 }
 
 async function loadChunks(subjectId: string) {
-  const subjectConfig = PROCESSED_SUBJECTS[subjectId];
+  const subjectConfig = getProcessedSubjectConfig(subjectId);
   if (!subjectConfig) return [];
 
   try {
@@ -242,7 +217,10 @@ async function loadChunks(subjectId: string) {
           if (!location) return null;
           const parsed = parseFrontmatter(await readFile(filePath, "utf8"));
           if (!parsed) {
-            console.warn(`[RAG] Skipping ${subjectConfig.displayName} chunk with invalid frontmatter: ${filePath}`);
+            if (!warnedInvalidFrontmatter.has(filePath)) {
+              console.warn(`[RAG] Skipping ${subjectConfig.displayName} chunk with invalid frontmatter: ${filePath}`);
+              warnedInvalidFrontmatter.add(filePath);
+            }
             return null;
           }
           const { questionText, markingSchemeText } = splitBody(parsed.body);
@@ -268,7 +246,10 @@ async function loadChunks(subjectId: string) {
     return chunks.filter((chunk): chunk is ExamQuestionChunk => Boolean(chunk));
   } catch (error) {
     if (!warnedMissingChunks.has(subjectId)) {
-      console.warn(`[RAG] ${subjectConfig.displayName} processed chunks are unavailable at ${subjectConfig.chunksRoot}.`, error);
+      console.warn(
+        `[RAG] ${subjectConfig.displayName} processed chunks are unavailable at ${subjectConfig.chunksRoot}.`,
+        error,
+      );
       warnedMissingChunks.add(subjectId);
     }
     return [];
@@ -316,16 +297,17 @@ function truncate(text: string, maxLength: number) {
   return `${text.slice(0, maxLength).trim()}...`;
 }
 
-function formatPages(pages: number[] | undefined) {
+function formatPages(pages: Array<string | number> | undefined) {
   return pages?.length ? pages.join(", ") : "not specified";
 }
 
-function formatChunk(chunk: ExamQuestionChunk, contextLabel: string) {
+function formatChunk(chunk: ExamQuestionChunk, subjectName: string) {
   const metadata = chunk.metadata;
   const secondaryTopics = metadata.secondary_topics?.length ? metadata.secondary_topics.join(", ") : "none";
   const visualAssets = metadata.visual_assets?.length ?? 0;
   return [
-    `[${contextLabel}]`,
+    "[Past Paper Example]",
+    `Subject: ${metadata.subject ?? subjectName}`,
     `Year: ${metadata.year ?? "Unknown"}`,
     `Level: ${metadata.level ?? chunk.levelFolder}`,
     `Paper: ${metadata.paper ?? "Unknown"}`,
@@ -367,7 +349,7 @@ export async function getProcessedPastPaperContext(input: {
   topicId?: string;
   userMessage: string;
 }) {
-  const subjectConfig = PROCESSED_SUBJECTS[input.subjectId];
+  const subjectConfig = getProcessedSubjectConfig(input.subjectId);
   if (!subjectConfig) return "";
 
   const levelFolder = normalizeLevel(input.level);
@@ -388,8 +370,8 @@ export async function getProcessedPastPaperContext(input: {
   if (!selected.length) return "";
 
   return [
-    subjectConfig.intro,
-    selected.map((chunk) => formatChunk(chunk, subjectConfig.contextLabel)).join("\n\n---\n\n"),
+    `Relevant Leaving Certificate ${subjectConfig.displayName} past-paper examples with paired marking schemes from processed per-question chunks. Use these as the primary ${subjectConfig.displayName} reference for exam style, marking-scheme expectations, terminology, worked-solution style, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.`,
+    selected.map((chunk) => formatChunk(chunk, subjectConfig.displayName)).join("\n\n---\n\n"),
   ].join("\n\n");
 }
 

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-05-31T18:54:56",
+  "status": "PASS",
+  "total_files_checked": 492,
+  "counts": {
+    "by_level": {
+      "higher": 312,
+      "ordinary": 180
+    },
+    "by_classification_type": {
+      "mixed": 44,
+      "topic_specific": 448
+    },
+    "by_topic": {
+      "Mixed": 44,
+      "Spanish-Speaking Culture": 365,
+      "Listening Comprehension": 37,
+      "Written Production": 13,
+      "Grammar and Language Accuracy": 3,
+      "Personal Life and Identity": 4,
+      "Reading Comprehension": 21,
+      "Oral Communication": 1,
+      "School, Work and Future Plans": 3,
+      "Travel, Holidays and Daily Life": 1
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

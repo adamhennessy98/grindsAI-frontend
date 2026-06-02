@@ -1,0 +1,39 @@
+{
+  "total_chunks": 209,
+  "topic_specific": 98,
+  "mixed": 111,
+  "needs_review": 0,
+  "topic_counts": {
+    "Mixed": 111,
+    "Acids, Bases and pH": 10,
+    "Water Chemistry and Environmental Chemistry": 15,
+    "Atomic Structure and Periodic Table": 35,
+    "Fuels and Heats of Reaction": 4,
+    "Rates of Reaction and Equilibrium": 8,
+    "Organic Chemistry": 12,
+    "Volumetric Analysis": 2,
+    "Stoichiometry and Chemical Calculations": 10,
+    "Chemical Bonding": 1,
+    "Industrial and Applied Chemistry": 1
+  },
+  "confidence_counts": {
+    "medium": 131,
+    "high": 78
+  },
+  "allowed_topics": [
+    "Atomic Structure and Periodic Table",
+    "Chemical Bonding",
+    "Stoichiometry and Chemical Calculations",
+    "Acids, Bases and pH",
+    "Volumetric Analysis",
+    "Organic Chemistry",
+    "Fuels and Heats of Reaction",
+    "Rates of Reaction and Equilibrium",
+    "Oxidation and Reduction",
+    "Water Chemistry and Environmental Chemistry",
+    "Electrochemistry",
+    "Industrial and Applied Chemistry",
+    "Laboratory Experiments and Practical Skills",
+    "Mixed"
+  ]
+}

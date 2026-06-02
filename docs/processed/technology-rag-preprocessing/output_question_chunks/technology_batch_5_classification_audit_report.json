@@ -1,0 +1,35 @@
+{
+  "total_chunks": 461,
+  "topic_specific": 266,
+  "mixed": 195,
+  "needs_review": 0,
+  "topic_counts": {
+    "Information and Communications Technology": 197,
+    "Technology, Society and the Environment": 11,
+    "Design Process": 9,
+    "Materials and Manufacturing": 8,
+    "Energy and Power": 16,
+    "Safety, Standards and Quality": 7,
+    "Mixed": 195,
+    "Electronics and Control Systems": 8,
+    "Project and Portfolio Work": 10
+  },
+  "confidence_counts": {
+    "medium": 445,
+    "high": 16
+  },
+  "allowed_topics": [
+    "Design Process",
+    "Project and Portfolio Work",
+    "Materials and Manufacturing",
+    "Mechanisms and Structures",
+    "Electronics and Control Systems",
+    "Energy and Power",
+    "Information and Communications Technology",
+    "Graphics and Communication",
+    "Systems and Problem Solving",
+    "Safety, Standards and Quality",
+    "Technology, Society and the Environment",
+    "Mixed"
+  ]
+}

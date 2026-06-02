@@ -1,0 +1,68 @@
+---
+subject: "German"
+subject_id: "german"
+level: "Higher"
+year: 2016
+paper: "Aural Paper"
+question_number: 1
+section: "1.    (i)   Is deont\u00f3ir fola \u00e9 Sven Asendorf le m\u00f3r\u00e1n           1.   (i)  Sven Asendorf has been a blood donor for"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/german_higher_2016_aural_paper_exam_page_002.png"
+source_exam_pages:
+  - 2
+source_marking_scheme_pages:
+  - 4
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+1.    (i)   Is deontóir fola é Sven Asendorf le mórán           1.   (i)  Sven Asendorf has been a blood donor for
+          blianta. Cad a deir sé faoi féin?                     many years. What does he say about himself?
+
+   ___________________________________________________________________________________
+
+   ___________________________________________________________________________________
+
+   ___________________________________________________________________________________
+
+      (ii) Cé mhéad uair a bhfuil fuil tugtha aige?                      (ii) How many times has he given blood?
+
+   ___________________________________________________________________________________
+
+# Marking Scheme
+
+1.     (6 marks: 2 + 1 marks; (ii) 3 marks)
+(i)    Sven Asendorf has been a blood donor for many years. What does he say about himself?
+
+         (Any two: 2 + 1 marks)
+            (a)   doesn’t consider himself a hero// is normal
+            (b)   54
+            (c)    lives near Munich
+            (d)   married
+            (e)   two daughters
+              (f)   works in a factory// makes car parts/ components
+
+(ii)   How many times has he given blood? (3 marks)
+           All or nothing:
+             200 times (3)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/german_higher_2016_aural_paper_exam.md
+- pages: [2]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/german_higher_2016_paper_1_marking_scheme.md
+- pages: [4]
+
+# Notes
+

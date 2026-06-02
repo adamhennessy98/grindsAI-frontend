@@ -1,0 +1,53 @@
+---
+subject: "English"
+subject_id: "english"
+level: "Ordinary"
+year: 2025
+paper: "Paper 2"
+question_number: 11
+section: "2.   You and a friend present a monthly podcast called \u2018Star Reads\u2019 in which you review"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2025_paper_2_exam_page_004.png"
+source_exam_pages:
+  - 4
+source_marking_scheme_pages:
+  - 12
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+2.   You and a friend present a monthly podcast called ‘Star Reads’ in which you review
+      and rate novels and plays. At the end of each podcast, the text you are discussing is given a
+        star rating, from one to five.
+                       A one‐star rating means – Give it a Miss!
+                      A five‐star rating means – Not to be Missed!
+       This month you will be discussing Hansberry’s play, A Raisin in the Sun.
+       Write the dialogue, for the podcast, between you and your friend, in which you discuss three
+       compelling reasons why you arrive at your star rating for Hansberry’s play.
+
+      Your response should demonstrate your knowledge of the text.
+
+# Marking Scheme
+
+2. How can you develop and maintain a strong, loving relationship?
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/english_ordinary_2025_paper_2_exam.md
+- pages: [4]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/english_ordinary_2025_paper_1_marking_scheme.md
+- pages: [12]
+
+# Notes
+

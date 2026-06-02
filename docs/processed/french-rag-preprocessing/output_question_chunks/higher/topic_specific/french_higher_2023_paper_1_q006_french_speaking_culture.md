@@ -1,0 +1,86 @@
+---
+subject: "French"
+subject_id: "french"
+level: "Higher"
+year: 2023
+paper: "Paper 1"
+question_number: 6
+section: "qu\u2019on habite une belle r\u00e9gion,    inoubliable. Proc\u00e9d\u00e9 gagnant-se concentre sur l\u2019essentiel :"
+topic: "French-Speaking Culture"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/french_higher_2023_paper_1_exam_page_004.png"
+source_exam_pages:
+  - "4"
+source_marking_scheme_pages:
+  - "12"
+  - "13"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "French-Speaking Culture"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+qu’on habite une belle région,    inoubliable. Procédé gagnant-se concentre sur l’essentiel :
+                                autant en profiter. »             gagnant, puisque lesce qu’on a vraiment envie de
+faire.                               4. Même programme            établissements évitent que
+C’est ce qui s’est passé pour      ressourçant pour Sandrine,      des chambres ne restent
+Sébastien, Pauline et leurs        qui habite dans une maison      inoccupées.
+deux enfants.                  avec jardin à Arras. Cette          Adapté de Aujourd’hui en France, le
+                                                                      14 août 2022
+
+# Marking Scheme
+
+Qu’est-ce que les lettres ouvertes par Nina et Adrien révèlent ? (Section 2)
+Appropriate direct quotation OR correct manipulation acceptable.
+
+One of:
+    •  Les vies ordinaires des habitants de leur ville et de leurs correspondants .............. 5 Marks
+    •  Les vies ordinaires des habitants de leur ville .......................................................... 5 Marks
+    −  Les vies ordinaires des habitants  ............................................................................. 4 Marks
+
+    •  Les vies ordinaires des correspondants .................................................................... 5 Marks
+    −  Les vies ordinaires de leurs correspondants ............................................................. 4 Marks
+
+    −  Les vies ordinaires ..................................................................................................... 3 Marks
+    −  Les vies ...................................................................................................................... 2 Marks
+
+   Note :
+   Omission of de leur ville = minus 1 Mark
+   Omission of ordinaires = minus 1 Mark
+
+
+
+
+
+                                           12
+
+<!-- PAGE 13 -->
+# Page 13
+
+![Page 13](../../../image_assets/marking_schemes/higher/french_higher_2023_paper_1_marking_scheme_page_013.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/french_higher_2023_paper_1_exam.md
+- pages: [4]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/french_higher_2023_paper_1_marking_scheme.md
+- pages: [12, 13]
+
+# Notes
+

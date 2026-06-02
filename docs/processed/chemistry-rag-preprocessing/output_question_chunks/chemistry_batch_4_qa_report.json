@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-05-31T18:17:29",
+  "status": "PASS",
+  "total_files_checked": 209,
+  "counts": {
+    "by_level": {
+      "higher": 106,
+      "ordinary": 103
+    },
+    "by_classification_type": {
+      "mixed": 111,
+      "topic_specific": 98
+    },
+    "by_topic": {
+      "Mixed": 111,
+      "Acids, Bases and pH": 10,
+      "Water Chemistry and Environmental Chemistry": 15,
+      "Atomic Structure and Periodic Table": 35,
+      "Fuels and Heats of Reaction": 4,
+      "Rates of Reaction and Equilibrium": 8,
+      "Organic Chemistry": 12,
+      "Volumetric Analysis": 2,
+      "Stoichiometry and Chemical Calculations": 10,
+      "Chemical Bonding": 1,
+      "Industrial and Applied Chemistry": 1
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

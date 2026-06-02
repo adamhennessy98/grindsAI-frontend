@@ -1,0 +1,78 @@
+---
+subject: "Irish"
+subject_id: "irish"
+level: "Higher"
+year: 2022
+paper: "Paper 2"
+question_number: 15
+section: "4. (a)   Scr\u00edobh s\u00edos dh\u00e1 phointe eolais faoi thraidisi\u00fan na p\u00edbe uilleann faoi na 1960id\u00ed. (Alt 4)"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/irish_higher_2022_paper_2_exam_page_007.png"
+source_exam_pages:
+  - 7
+source_marking_scheme_pages:
+  - 20
+  - 21
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+4. (a)   Scríobh síos dhá phointe eolais faoi thraidisiún na píbe uilleann faoi na 1960idí. (Alt 4)
+   (b)    (i)  Tabhair sampla amháin den bhaint a bhí ag Liam Óg Ó Floinn leis an bhfás mór a tháinig
+             ar cháil na píbe uilleann. (Alt 4)
+             (ii) Cén fáth a bhfuil an Phíobaireacht Uilleann agus an Chruitireacht aitheanta ag Eagraíocht
+            Oideachais, Eolaíochta agus Chultúir na Náisiún Aontaithe (UNESCO)? (Alt 4)
+                                                                                                  (7 marc)
+
+# Marking Scheme
+
+4.    (a)   Tabhair dhá shlí ina raibh tionchar mór ag uncail Mháire, an Moinsíneoir Pádraig de Brún,
+           ar a saol ó thaobh na Gaeilge de. (Alt 4)
+                                            (Dhá shlí) {3 mharc: 2 mharc + 1 mharc} {3 mharc}
+
+            Dúirt Máire gur trí mheán na Gaeilge a thug a huncail an t-eolas go léir ar chúrsaí léinn di
+            Thóg sé teach, ‘Tigh na Cille’, i nDún Chaoin i nGaeltacht Chorca Dhuibhne chun gurbh
+                fhéidir le clann a dheirféar, máthair Mháire, fás aníos ag labhairt Gaeilge
+
+      (b)    (i) Conas a chuir na tréimhsí a chaith Máire i gCorca Dhuibhne lena cumas filíochta? (Alt 4)
+                                                                                          {2 mharc}
+
+            (Ba i gCorca Dhuibhne a) fuair sí an saibhreas Gaeilge a chuir ar a cumas í féin a chur
+                in iúl (gan dua trí mheán na filíochta)
+           Ba é an paisean a bhí aici don teanga a mhúnlaigh a modh smaointeoireachta
+           Ba é an paisean a bhí aici don teanga a mhúnlaigh a meon
+
+                (ii) Luaigh rud amháin a dúirt Máire in agallamh san iris Comhar in 2012. (Alt 4)   {2 mharc}
+
+            Dúirt sí go raibh sí buartha i gcónaí go gcaillfí an chuid sin d’oidhreacht na hÉireann
+            a bhaineann leis an nGaeilge
+            Dúirt sí go raibh sí buartha go mbáfaí sinn ar deireadh thiar faoi ualach mór de Bhéarla
+             Mheiriceá
+
+                                                   18
+
+<!-- PAGE 21 -->
+# Page 21
+
+![Page 21](../../../image_assets/marking_schemes/higher/irish_higher_2022_paper_1_marking_scheme_page_021.png)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/irish_higher_2022_paper_2_exam.md
+- pages: [7]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/irish_higher_2022_paper_1_marking_scheme.md
+- pages: [20, 21]
+
+# Notes
+

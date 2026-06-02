@@ -1,0 +1,134 @@
+---
+subject: "English"
+subject_id: "english"
+level: "Ordinary"
+year: 2023
+paper: "Paper 2"
+question_number: 39
+section: "2.   (a)   (i) Name one of the texts on your comparative course and choose a relationship from it."
+topic: "Mixed"
+secondary_topics:
+  - "Media and Visual Literacy"
+  - "Single Text Study"
+classification_type: "mixed_topic"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2023_paper_2_exam_page_012.png"
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2023_paper_2_exam_page_011.png"
+source_exam_pages:
+  - "11"
+  - "12"
+source_marking_scheme_pages:
+  - "13"
+  - "14"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "Media and Visual Literacy"
+  - "Single Text Study"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+2.   (a)   (i) Name one of the texts on your comparative course and choose a relationship from it.
+             Describe a key moment which shows one character being kind or unkind to a
+            second character in the relationship. Explain how the kindness or lack of kindness
+            shown, affects the second character’s behaviour in the relationship.
+            Support your answer with reference to your chosen text.                         (15)
+
+                (ii) Name another text on your comparative course and choose a relationship from it.
+             Describe a key moment which shows one character being kind or unkind to a
+            second character in the relationship. Explain how the kindness or lack of kindness
+            shown, affects the second character’s behaviour in the relationship.
+            Support your answer with reference to your chosen text.                         (15)
+
+       (b)     Identify one relationship in each of at least two texts on your comparative course.
+           Compare the aspect or aspects evident in each of your chosen relationships which
+            helped these relationships to either flourish or fail. Support your answer with
+             reference to your chosen texts.                                                  (40)
+
+
+
+
+
+Leaving Certificate Examination 2023              11
+English – Ordinary Level – Paper 2
+
+<!-- PAGE 12 -->
+# Page 12
+
+![Page 12](../../../image_assets/exam_papers/ordinary/english_ordinary_2023_paper_2_exam_page_012.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+B   HERO, HEROINE, VILLAIN
+
+# Marking Scheme
+
+2.  In the speech in TEXT 2 the audience is encouraged to “try to be kinder”.
+
+   Write a short story in which a person carries out an act of kindness which has a
+    surprising or unexpected outcome.
+
+ Candidates should write a short story about a person who carries out an act of kindness which has
+ a surprising or unexpected outcome. The story may be serious or humorous or both.
+
+ Consideration should be given to the quality of all aspects of the composition with regard to the
+ Criteria for Assessment.
+
+ Mark ex 100 by reference to the Criteria for Assessment.
+
+ P:   Focus – a short story about a person who carries out an act of kindness which has a
+      surprising or unexpected outcome.
+      Understanding of genre – the writing should be shaped as a short story having some
+     sense of a beginning – middle – end; central characters; a time-line; a defining moment
+      of experience followed by a change; a resolution, etc.
+     Relevance
+       Originality and freshness, etc.
+ C:   The extent to which the narrative is successfully shaped, sustained and developed;
+     sequencing and management of ideas, etc.
+ L:    Quality and control of language e.g. style, vocabulary, syntax, punctuation, etc.
+M:  Accuracy of mechanics
+
+
+
+            01       02       03       04       05       06       07       08
+
+         100 - 90   89 - 80   79 - 70   69 - 60   59 - 50   49 - 40   39 - 30    29 - 0
+
+  30%    30 - 27      24       21       18       15       12       9      8 - 0
+
+  10%     10 - 9       8        7        6        5        4        3      2 - 0
+
+
+
+
+
+                                      13
+
+<!-- PAGE 14 -->
+# Page 14
+
+![Page 14](../../../image_assets/marking_schemes/ordinary/english_ordinary_2023_paper_1_marking_scheme_page_014.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/english_ordinary_2023_paper_2_exam.md
+- pages: [11, 12]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/english_ordinary_2023_paper_1_marking_scheme.md
+- pages: [13, 14]
+
+# Notes
+

@@ -1,0 +1,68 @@
+---
+subject: "German"
+subject_id: "german"
+level: "Ordinary"
+year: 2015
+paper: "Aural Paper"
+question_number: 4
+section: "4.  Conas a bh\u00ed Elyas \u00e1balta dul ar scoil agus a bheith       4.  How was Elyas able to combine school and acting?"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/german_ordinary_2015_aural_paper_exam_page_002.png"
+source_exam_pages:
+  - 2
+source_marking_scheme_pages:
+  - 4
+  - 5
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+4.  Conas a bhí Elyas ábalta dul ar scoil agus a bheith       4.  How was Elyas able to combine school and acting?
+    ag aisteoireacht ag an am céanna?
+
+
+    ___________________________________________________________________________________
+
+    ___________________________________________________________________________________
+
+# Marking Scheme
+
+4.     (6 marks)
+     How was Elyas able to combine school and acting?
+
+     Any ONE of the following details: (6 marks)
+        (a) The producer (3) understood/was understanding. (3)
+        (b) They filmed/acted (3) in the afternoons. (3)
+        (c) They filmed/acted (3) at weekends. (3)
+        (d) They filmed/acted (3) during the holidays. (3)
+
+
+
+
+                                                                            2
+
+<!-- PAGE 5 -->
+# Page 5
+
+![Page 5](../../../image_assets/marking_schemes/ordinary/german_ordinary_2015_paper_1_marking_scheme_page_005.png)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/german_ordinary_2015_aural_paper_exam.md
+- pages: [2]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/german_ordinary_2015_paper_1_marking_scheme.md
+- pages: [4, 5]
+
+# Notes
+

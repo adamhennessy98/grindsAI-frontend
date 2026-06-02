@@ -1,0 +1,47 @@
+---
+subject: "Geography"
+subject_id: "geography"
+level: "Ordinary"
+year: 2019
+paper: "Paper 1"
+question_number: 9
+section: "Question 9"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: false
+visual_assets: []
+source_exam_pages:
+  - 1
+source_marking_scheme_pages:
+  - 7
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+Question 9
+
+# Marking Scheme
+
+Q.9                   (i) 2007                 2m
+                         (ii) 10                  2m
+                          (iii) Croatia               2m
+                     (iv) Southern Europe         2m
+                   (v) Any valid advantage       2m               Total 10m
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/geography_ordinary_2019_paper_1_exam.md
+- pages: [1]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/geography_ordinary_2019_paper_1_marking_scheme.md
+- pages: [7]
+
+# Notes
+

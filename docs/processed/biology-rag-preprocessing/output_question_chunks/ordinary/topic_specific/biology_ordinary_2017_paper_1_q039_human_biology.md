@@ -1,0 +1,52 @@
+---
+subject: "Biology"
+subject_id: "biology"
+level: "Ordinary"
+year: 2017
+paper: "Paper 1"
+question_number: 39
+section: "3.    Brings blood to the heart muscle."
+topic: "Human Biology"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/biology_ordinary_2017_paper_1_exam_page_014.png"
+source_exam_pages:
+  - "14"
+source_marking_scheme_pages:
+  - "3"
+pairing_confidence: "high"
+topic_confidence: "medium"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "Human Biology"
+  - "Plant Biology"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+3.    Brings blood to the heart muscle.
+
+# Marking Scheme
+
+3. The scheme contains key words or phrases for which candidates may be awarded marks.
+    This does not usually preclude synonyms or phrases which convey the same meaning as
+   the answer in the marking scheme.
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/biology_ordinary_2017_paper_1_exam.md
+- pages: [14]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/biology_ordinary_2017_paper_1_marking_scheme.md
+- pages: [3]
+
+# Notes
+

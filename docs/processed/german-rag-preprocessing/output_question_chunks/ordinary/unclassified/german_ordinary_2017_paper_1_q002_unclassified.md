@@ -1,0 +1,82 @@
+---
+subject: "German"
+subject_id: "german"
+level: "Ordinary"
+year: 2017
+paper: "Paper 1"
+question_number: 2
+section: "2.  N\u00ed ceadmhach ar ch\u00fainse ar bith d\u2019ainm a scr\u00edobh ar an bhfreagarleabhar."
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: false
+visual_assets: []
+source_exam_pages:
+  - 1
+source_marking_scheme_pages:
+  - 4
+  - 5
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+2.  Ní ceadmhach ar chúinse ar bith d’ainm a scríobh ar an bhfreagarleabhar.
+
+# Marking Scheme
+
+2.       (11 marks: (i) 2 marks: 1, 1; (ii) 9 marks: 4, 4, 1)
+(i)    Why is this service used by so many people? Give two details.
+
+        Any two details: 2 marks: 1, 1
+            (a)    (Callers remain) anonymous / (callers are) not obliged to give their names.
+            (b)   The caller’s number can’t be seen/identified/remains hidden.
+            (c)   The information won’t be passed on / is confidential.
+            (d)   Anything/ problem(s) / issue(s) can be discussed.
+            (e)   They determine the length of the call.
+              (f)   They decide what is going to happen afterwards.
+            (g)   They know that there is somebody who listens to them.
+            (h)   They know that there is someone who makes time for them.
+
+(ii)    What issues do users raise? Give details.
+
+        Any three details: 9 marks: 4, 4, 1
+            (a)   Sensitive (issues)
+            (b)    First love
+            (c)   Sexuality
+            (d)   Lovesickness
+            (e)   Family conflicts
+              (f)   Arguments with friends
+            (g)   Drugs
+            (h)   Pressure to perform in school / get good grades
+              (i)   Anxiety about the future
+              (j)    Bullying
+
+
+
+
+                                        2
+
+<!-- PAGE 5 -->
+# Page 5
+
+![Page 5](../../../image_assets/marking_schemes/ordinary/german_ordinary_2017_paper_1_marking_scheme_page_005.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/german_ordinary_2017_paper_1_exam.md
+- pages: [1]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/german_ordinary_2017_paper_1_marking_scheme.md
+- pages: [4, 5]
+
+# Notes
+

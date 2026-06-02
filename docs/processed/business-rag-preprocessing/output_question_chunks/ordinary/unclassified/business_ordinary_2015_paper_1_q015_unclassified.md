@@ -1,0 +1,48 @@
+---
+subject: "Business"
+subject_id: "business"
+level: "Ordinary"
+year: 2015
+paper: "Paper 1"
+question_number: 15
+section: "2. Interest Groups              B.     Is involved with planning, organising and controlling"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/business_ordinary_2015_paper_1_exam_page_005.png"
+source_exam_pages:
+  - 5
+source_marking_scheme_pages:
+  - 5
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+2. Interest Groups              B.     Is involved with planning, organising and controlling
+                                               activities within a business on a daily basis.
+
+# Marking Scheme
+
+SECTION 2 – 300 MARKS
+                   PART 1
+              MINIMUM:        1 QUESTION (75 MARKS)
+             MAXIMUM:        2 QUESTIONS (150 MARKS)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/business_ordinary_2015_paper_1_exam.md
+- pages: [5]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/business_ordinary_2015_paper_1_marking_scheme.md
+- pages: [5]
+
+# Notes
+

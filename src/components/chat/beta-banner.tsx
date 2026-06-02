@@ -1,16 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { BETA_FEEDBACK_EMAIL, IS_BETA } from "@/lib/beta";
 
 const STORAGE_KEY = "grindsai-beta-banner-dismissed";
+const CHANGE_EVENT = "grindsai-beta-banner-change";
+
+function subscribe(onStoreChange: () => void) {
+  window.addEventListener(CHANGE_EVENT, onStoreChange);
+  return () => window.removeEventListener(CHANGE_EVENT, onStoreChange);
+}
+
+function getDismissed() {
+  return localStorage.getItem(STORAGE_KEY) === "1";
+}
 
 export function ChatBetaBanner() {
-  const [dismissed, setDismissed] = useState(true);
-
-  useEffect(() => {
-    setDismissed(localStorage.getItem(STORAGE_KEY) === "1");
-  }, []);
+  const dismissed = useSyncExternalStore(subscribe, getDismissed, () => true);
 
   if (!IS_BETA || dismissed) return null;
 
@@ -28,7 +34,7 @@ export function ChatBetaBanner() {
         type="button"
         onClick={() => {
           localStorage.setItem(STORAGE_KEY, "1");
-          setDismissed(true);
+          window.dispatchEvent(new Event(CHANGE_EVENT));
         }}
         className="text-amber-900 hover:text-amber-950 text-xs font-medium shrink-0"
       >

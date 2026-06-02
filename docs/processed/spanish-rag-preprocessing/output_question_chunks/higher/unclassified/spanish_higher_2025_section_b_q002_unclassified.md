@@ -1,0 +1,58 @@
+---
+subject: "Spanish"
+subject_id: "spanish"
+level: "Higher"
+year: 2025
+paper: "Section B"
+question_number: 2
+section: "1. No es de extra\u00f1ar que muchos j\u00f3venes espa\u00f1oles aspiren a ser"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: false
+visual_assets: []
+source_exam_pages:
+  - 1
+source_marking_scheme_pages:
+  - 5
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+1. No es de extrañar que muchos jóvenes españoles aspiren a ser
+   influencers en el mundo de la moda, la belleza, el estilo de vida o
+   el bienestar. Hoy en día hay más de 235.000 influencers en España,
+   y algunas universidades españolas ofrecen Cursos de Influencer.
+   Sin embargo, parece que pronto la figura del influencer humano
+  podría convertirse en una especie en peligro de extinción, porque
+   los influencers generados por Inteligencia Artificial (IA) ya están
+  entre nosotros y comienzan a ejercer un impacto significativo,
+  tanto en las redes sociales como en el mundo real.
+
+# Marking Scheme
+
+1. (a) Prescribed literature – Relato de un náufrago                                   (50 marks)
+
+Q. 1   3 × 3m = 9 marks
+      [No marks awarded if extra words are added. Exact transcription required]
+
+        (a) otra vez                                                                 (3m)
+        (b) vi                                                                      (3m)
+         (c) breves minutos                                                           (3m)
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/spanish_higher_2025_section_b_exam.md
+- pages: [1]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/spanish_higher_2025_paper_1_marking_scheme.md
+- pages: [5]
+
+# Notes
+

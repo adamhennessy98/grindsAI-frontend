@@ -1,0 +1,101 @@
+---
+subject: "German"
+subject_id: "german"
+level: "Ordinary"
+year: 2018
+paper: "Paper 1"
+question_number: 20
+section: "1.  Tugtar eolas sa sliocht seo faoi cheathrar            1. This text gives information about four"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/german_ordinary_2018_paper_1_exam_page_010.png"
+  - "../../../image_assets/exam_papers/ordinary/german_ordinary_2018_paper_1_exam_page_009.png"
+source_exam_pages:
+  - 9
+  - 10
+source_marking_scheme_pages:
+  - 4
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+1.  Tugtar eolas sa sliocht seo faoi cheathrar            1. This text gives information about four
+   a chuireann físeáin ar YouTube. Líon isteach          YouTubers.  Fill in the information
+    sa bhosca thíos an t‐eolas atá ag teastáil.              required in the box below.
+
+
+                             Julien Bam       Dagi Bee      MrWissen2go       Lisa Sophie
+
+ Aois?
+
+ Age?
+
+ An áit ar rugadh é/í?
+
+ Born in?
+
+ Áit chónaithe?
+
+ Lives in?
+
+ An fad atá sé/sí ag cur
+ físeán ar YouTube?
+
+ How long a YouTuber?
+
+
+ Sonraí faoina lucht
+ leanúna:
+
+ Details about his/her
+ followers:
+
+
+
+
+
+                                       9                  Scrúdú na hArdteistiméireachta, 2018
+                                                                                Gearmáinis – Gnáthleibhéal
+
+<!-- PAGE 10 -->
+# Page 10
+
+![Page 10](../../../image_assets/exam_papers/ordinary/german_ordinary_2018_paper_1_exam_page_010.png)
+
+# Marking Scheme
+
+1.     (7 marks: 3, 2, 2 marks)
+      Frau Dietsch has chosen an interesting occupation. Give details.
+
+      (Any three details: 7 marks: 3, 2, 2)
+        (a)  She works in / visits schools
+        (b)   (She works as a school) radio coach
+        (c)   (She has been working) for 10 years
+        (d)   (She works) for the Bavarian State Centre/Headquarters for new media /Bayrische
+            Landeszentrale für neue Medien / BLM.
+        (e)   (She provides) support
+         (f)   (She provides) information
+        (g)  She often spends a year in a school(s)
+        (h)   (She gives pupils/teachers/them) knowledge/expertise in journalism.
+         (i)   (She gives) technical help.
+         (j)   (She gives) practical advice/tips.
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/german_ordinary_2018_paper_1_exam.md
+- pages: [9, 10]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/german_ordinary_2018_paper_1_marking_scheme.md
+- pages: [4]
+
+# Notes
+

@@ -1,0 +1,369 @@
+---
+subject: "Economics"
+subject_id: "economics"
+level: "Higher"
+year: 2021
+paper: "Paper 1"
+question_number: 19
+section: "Question 15"
+topic: "National Income and Economic Growth"
+secondary_topics: []
+classification_type: "topic_specific"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_031.png"
+  - "../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_032.png"
+  - "../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_033.png"
+  - "../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_034.png"
+  - "../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_030.png"
+source_exam_pages:
+  - "30"
+  - "31"
+  - "32"
+  - "33"
+  - "34"
+source_marking_scheme_pages:
+  - "29"
+  - "30"
+  - "31"
+  - "32"
+pairing_confidence: "high"
+topic_confidence: "high"
+classification_source: "fallback_rules"
+candidate_topics:
+  - "National Income and Economic Growth"
+  - "What Economics Is About"
+  - "Economic Decision Making"
+  - "Government Intervention and Regulation"
+needs_review: false
+review_reason: ""
+---
+
+
+# Question
+
+Question 15
+(a)  Which measure is a more accurate indicator of Ireland’s economic welfare:
+     Gross Domestic Product (GDP) or Gross National Income (GNI)?
+      Justify your answer.
+
+ Answer:
+
+  Justification:
+
+
+
+
+
+Leaving Certificate 2021                       30
+Economics – Higher Level
+
+<!-- PAGE 31 -->
+# Page 31
+
+![Page 31](../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_031.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings; text contains visual keywords -->
+
+(b)    (i)   Define the term recession.
+
+
+
+
+
+        (ii)   Based upon the graph below, identify the years when both Ireland and the United
+           States were in recession. Explain your answer.
+
+          GNI Per Capita PPP (Constant 2017 International $)
+
+              70000
+              60000
+     $ 50000
+              40000                                   Dollars 30000
+          US 20000
+              10000
+                  0
+                                            1995  1996  1997  1998  1999  2000  2001  2002  2003  2004  2005  2006  2007  2008  2009  2010  2011  2012  2013  2014  2015  2016  2017  2018  2019  2020
+
+                                                         Years
+
+
+                         Ireland GNI per Capita (in US Dollars $)        United States GNI per Capita (in US Dollars $)
+
+                                                              Adapted from Statbank
+
+
+
+ Years:
+
+ Explanation:
+
+
+
+
+
+Leaving Certificate 2021                       31
+Economics – Higher Level
+
+<!-- PAGE 32 -->
+# Page 32
+
+![Page 32](../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_032.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+(iii)  With reference to GNI, why is it important to use per capita measures for comparisons
+         between countries?
+
+
+
+
+
+(c)     (i)    Explain the term multiplier.
+
+
+
+
+
+        (ii)  Assume that MPM is 0.25 and MPC is 0.65 and MPT is 0.10.
+           Calculate the multiplier. Show all your workings
+
+
+  Workings:
+
+
+
+
+
+ Answer:
+
+
+
+
+
+Leaving Certificate 2021                       32
+Economics – Higher Level
+
+<!-- PAGE 33 -->
+# Page 33
+
+![Page 33](../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_033.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+(iii)    Discuss two possible negative multiplier effects of large corporations such as Google
+            withdrawing from their rental property contracts in Dublin city during 2020.
+
+
+  1.
+
+
+
+
+
+ 2.
+
+
+
+
+
+                                                                        75 marks
+
+
+
+
+
+Leaving Certificate 2021                       33
+Economics – Higher Level
+
+<!-- PAGE 34 -->
+# Page 34
+
+![Page 34](../../../image_assets/exam_papers/higher/economics_higher_2021_paper_1_exam_page_034.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings; text contains visual keywords -->
+
+# Marking Scheme
+
+Question 15
+                                        Possible responses                           Max
+                                                                          Mark
+
+(a)    Which measure is a more accurate indicator of Ireland’s economic welfare:             7+7+7
+       Gross Domestic Product (GDP) or Gross National Income (GNI)?
+         Justify your answer.
+
+
+     Gross national income is a more accurate measure of economic welfare of Irish citizens
+      as it is income that is received by the permanent domestic residents of the country. It
+      excludes those incomes which are generated by the owners of a large part of the capital
+      stock who are non-residents. The level of GNI is over one-fifth lower than the level of
+     GDP.
+
+     Gross domestic product is a measure of the total incomes arising from the production of
+     goods and services in Ireland. The owners of a large part of the capital stock are non-
+      residents. A consequence of this is that a significant part of the income arising from the
+      production of goods and services in Ireland accrues to the foreign owners of capital assets
+       in Ireland. Hence GDP overstates the living standards of Irish residents.
+
+      GNI:
+     income to permanent domestic residents / excludes incomes to foreign owners of capital     [21]
+
+
+
+(b)          (i)     Define the term recession.                                               8
+                                                                                                   (4 + 4)
+            A recession refers to a period of negative economic growth lasting at least two
+                 quarters.
+
+
+
+               (ii)    Based upon the graph, identify the years when both Ireland and the United        8
+                 States were in recession. Explain your answer.                                    (4 + 4)
+
+
+           The period from 2007 to 2009 sees both countries experience an economic
+             recession.
+
+            During this period, it can be seen that the GNI of both countries is downward
+             sloping indicating that the size of their economies were shrinking i.e. experiencing
+           a recession.
+
+
+
+
+
+                                                                                                28 | P a g e
+
+<!-- PAGE 30 -->
+# Page 30
+
+![Page 30](../../../image_assets/marking_schemes/higher/economics_higher_2021_paper_1_marking_scheme_page_030.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+8
+               (iii)   With reference to GNI, why is it important to use per capita measures for
+                                                                                                   (4 + 4)
+               comparisons between countries?
+
+                                   Suggested responses:
+
+        GNI per capita is a more useful measure for comparing countries as it takes into
+        account the populations of the countries being compared.
+
+       Two countries with similar values GNI may have very different standards of living
+        because of variations in the size of their respective populations.
+
+                                               or
+
+              If GNI is compared on a nominal level only it may over-estimate the standard of living
+         of the citizens of a country / economic growth in the country.
+
+       An increase in nominal GNI may indicate a better standard of living when comparing
+          countries. However if the population of one country had increased it may mean that
+         the standard of living per person in that country has actually decreased.
+                                               or
+       Worked example:
+
+              If Country A had GNI of $400m in year 1 and it increases to $500m in year 2 it appears
+         that it has had stronger economic growth and a better standard of living than Country
+       B which had GNI of $100m in year 1 & it increased to $150m in year 2.
+
+        However, if the population of Country A is 4 million people then the income per
+        person is $100, if this population increases to 5 million people in year 2 then income
+         per person has not changed from $100.
+
+              If the population of Country B is 1,000 people, then income per person is $100,000. If
+         the population doesn’t change in year two, then income per person has increased to
+         $150,000. In order to accurately compare the productivity and standard of living in
+       two countries across a period of time per capita measures should be used.                [24]
+
+(c)     (i)    Explain the term Multiplier.                                                  8
+
+     The multiplier effect means that any injection into the circular flow of income leads to a
+     more than proportionate increase in National Income e.g. an initial injection of €100m
+       will lead to a €200m increase in the size of National Income if the multiplier is 2.
+
+
+         (ii)  Assume that MPM is 0.25 and MPC is 0.65 and MPT is 0.10.
+           Calculate the multiplier. Show all your workings                                  8
+
+                                         MPS = 1 – 0.65 = 0.35
+
+                          .        1                .                                 .         1_______
+              (1-MPC) + MPM + MPT              MPS + MPM + MPT
+
+                      .          1                  .                      _ 1 _         .
+                (1- 0.65) + 0.25 + 0.10                   0.35 + 0.25 + 0.10
+
+                  Multiplier = 1.43                         Multiplier =  1.43
+
+
+                                                                                                29 | P a g e
+
+<!-- PAGE 31 -->
+# Page 31
+
+![Page 31](../../../image_assets/marking_schemes/higher/economics_higher_2021_paper_1_marking_scheme_page_031.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+(c)
+        (iii)    Discuss two possible negative multiplier effects of large corporations such as         14
+           Google withdrawing from their rental property contracts in Dublin city during        (2 @ 7)
+           2020.                                                                                (3 + 4)
+
+        Lost rents
+       The owners of the property won’t receive rent. This reduces their income and
+       spending power - which will have a negative multiplier effect into the economy
+
+       Reduced demand for goods and services
+        Businesses in the area won’t benefit from the custom of Google’s employees anymore,
+         this will mean less revenue for, and less expenditure from these businesses.
+       Employment in these businesses will fall.
+
+       Reduced demand for public transport
+       Employees won’t need to use transport, public and private, to get to the premises and
+       so incomes are lost for transport companies with a possible reduction in employment.
+
+         Effect on government finances
+       With lost rents; reduced spending and a reduction in business activity taxation revenue
+        to the government will fall which may be compensated for by increased government
+        expenditure. Effect on multiplier depends will depend on the extent of increased
+       government expenditure to outweigh the reduction in government revenues.
+                                                                                                  [30]
+
+
+
+
+
+                                                                                               30 | P a g e
+
+<!-- PAGE 32 -->
+# Page 32
+
+![Page 32](../../../image_assets/marking_schemes/higher/economics_higher_2021_paper_1_marking_scheme_page_032.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings; text contains visual keywords -->
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/higher/economics_higher_2021_paper_1_exam.md
+- pages: [30, 31, 32, 33, 34]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/higher/economics_higher_2021_paper_1_marking_scheme.md
+- pages: [29, 30, 31, 32]
+
+# Notes
+

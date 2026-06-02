@@ -1,0 +1,37 @@
+{
+  "total_chunks": 505,
+  "topic_specific": 356,
+  "mixed": 149,
+  "needs_review": 0,
+  "topic_counts": {
+    "Mixed": 149,
+    "Final Accounts and Financial Statements": 80,
+    "Conceptual Framework and Accounting Principles": 51,
+    "Cost Accounting": 30,
+    "Company Accounting": 51,
+    "Cash Flow Statements": 23,
+    "Budgeting and Forecasting": 14,
+    "Incomplete Records and Control Accounts": 57,
+    "Club, Farm, Service and Non-Profit Accounts": 22,
+    "Published Accounts and Interpretation": 24,
+    "Marginal Costing and Decision Making": 4
+  },
+  "confidence_counts": {
+    "medium": 227,
+    "high": 278
+  },
+  "allowed_topics": [
+    "Conceptual Framework and Accounting Principles",
+    "Final Accounts and Financial Statements",
+    "Company Accounting",
+    "Published Accounts and Interpretation",
+    "Cash Flow Statements",
+    "Club, Farm, Service and Non-Profit Accounts",
+    "Incomplete Records and Control Accounts",
+    "Cost Accounting",
+    "Budgeting and Forecasting",
+    "Marginal Costing and Decision Making",
+    "Accounting Technology and Computer Applications",
+    "Mixed"
+  ]
+}

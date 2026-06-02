@@ -1,0 +1,116 @@
+---
+subject: "English"
+subject_id: "english"
+level: "Ordinary"
+year: 2019
+paper: "Paper 1"
+question_number: 10
+section: "2.     The word \u201cselfie\u201d received official        above, Parmigianino\u2019s Self\u2010Portrait in a"
+topic: "Unclassified"
+secondary_topics: []
+classification_type: "unclassified"
+source_type: "past_paper_with_marking_scheme"
+has_visual: true
+visual_assets:
+  - "../../../image_assets/exam_papers/ordinary/english_ordinary_2019_paper_1_exam_page_004.png"
+source_exam_pages:
+  - 4
+source_marking_scheme_pages:
+  - 13
+  - 14
+pairing_confidence: "high"
+needs_review: false
+review_reason: ""
+---
+
+# Question
+
+2.     The word “selfie” received official        above, Parmigianino’s Self‐Portrait in a
+ recognition in 2013 when it was declared        Convex Mirror (painted in 1524), might be
+ Word of the Year by Oxford Dictionaries.          called art’s first attempt at a selfie. This
+ Selfies have expanded our vocabularies.           picture displays many of the attributes of the
+ New words invented to describe variations          selfie: the awkward angle, the distorted arm,
+ of this phenomenon include helfie (a picture      the close‐up of the subject – in this case, the
+ of one’s hair) melfie (a selfie taken using a          artist himself, Parmigianino.
+ mirror) and drelfie (drunken selfie). Terms
+ have also been coined for photos with items       4.      Selfies are increasingly seen as an
+ of furniture such as shelfie and bookshelfie.       important social and historical record.
+ There is even an Olympic dimension to this       Astronaut Aki Hoshide’s iconic selfie, seen on
+ phenomenon – The Selfie Olympics – an         Page 5, shows the Sun behind him and the
+ informal social media competition that            Earth and fellow astronaut, Sunita Williams,
+ appears to arise every time there is a summer      reflected in his visor. The image provides a
+ or winter Games. The phenomenon first           striking visual record of this space mission.
+ appeared during the Sochi Games in Russia,       As yet academics are not paying much
+ with fans of the Olympics posting photographs     attention to selfies, but they will. Imagine
+ of themselves with the strangest of props,        what we could see if we had millions of these
+ including hoovers and mattresses – often         images from the streets of ancient Rome.
+ dragged into a bathroom.                  No doubt, in time, our enormous collection
+                                                   of selfies will provide an incredible record of
+
+# Marking Scheme
+
+2.   In TEXT 2, we are told that in time our selfies will provide a valuable historical
+     record.
+
+    Write a personal essay in which you discuss at least three aspects of life that are
+    considered unremarkable in 2019 that you think may appear strange or remarkable
+     to people in the future.
+
+Candidates should write in a reflective manner about at least three aspects of life
+that are considered unremarkable in 2019 that they think may appear strange or
+remarkable to people in the future.
+
+Consideration should be given to the quality of all aspects of the composition with regard
+to the Criteria for Assessment.
+
+Mark ex 100 by reference to the Criteria for Assessment.
+
+P:   Focus – a personal essay in which candidates discuss at least three aspects of life
+     that are considered unremarkable in 2019 that may appear strange or remarkable to
+     people in the future
+    The writing should be shaped as a personal essay e.g. written from the perspective
+     of the engaged ‘I’/personal register/ written in the first person/reflective
+     insights/confessional tone/individual observation/use of personal anecdotes/
+     includes pertinent personal details/strongly held personal views and opinions/use
+     of authentic personal voice, etc.
+    Relevance
+     Originality and freshness, etc.
+C:   The extent to which the perspective is successfully sustained and developed;
+      effective shaping of the personal essay; sequencing and management of ideas, etc
+L:    Quality and control of language e.g. style, clarity, vocabulary, syntax, punctuation,
+                                                                                           etc.
+M:  Accuracy of mechanics                                                          Etc.
+
+
+
+          01      02      03      04      05      06      07      08
+        100 ‐ 90  89 ‐ 80   79 ‐ 70   69 ‐ 60   59 ‐ 50   49 ‐ 40   39 ‐ 30   29 ‐ 0
+ 30%   30 ‐ 27    24      21      18      15      12       9      8 ‐ 0
+ 10%    10 ‐ 9     8       7       6       5       4       3      2 ‐ 0
+
+
+
+
+
+                                       13
+
+<!-- PAGE 14 -->
+# Page 14
+
+![Page 14](../../../image_assets/marking_schemes/ordinary/english_ordinary_2019_paper_1_marking_scheme_page_014.png)
+
+<!-- HAS_VISUAL: true -->
+<!-- VISUAL_REASON: page contains vector drawings -->
+
+# Source References
+
+Exam paper:
+- file: intermediate_markdown/exam_papers/ordinary/english_ordinary_2019_paper_1_exam.md
+- pages: [4]
+
+Marking scheme:
+- file: intermediate_markdown/marking_schemes/ordinary/english_ordinary_2019_paper_1_marking_scheme.md
+- pages: [13, 14]
+
+# Notes
+

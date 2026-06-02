@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-05-31T18:39:05",
+  "status": "PASS",
+  "total_files_checked": 1056,
+  "counts": {
+    "by_level": {
+      "higher": 289,
+      "ordinary": 767
+    },
+    "by_classification_type": {
+      "mixed": 239,
+      "topic_specific": 817
+    },
+    "by_topic": {
+      "Mixed": 239,
+      "Single Text Study": 179,
+      "Media and Visual Literacy": 557,
+      "Shakespearean Drama": 4,
+      "Poetry": 1,
+      "Comprehension and Language Skills": 3,
+      "Oral and Aural Language": 2,
+      "Comparative Study": 8,
+      "Writing and Composition": 63
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}

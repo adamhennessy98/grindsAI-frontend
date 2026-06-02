@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-05-31T18:56:07",
+  "status": "PASS",
+  "total_files_checked": 461,
+  "counts": {
+    "by_level": {
+      "higher": 244,
+      "ordinary": 217
+    },
+    "by_classification_type": {
+      "mixed": 195,
+      "topic_specific": 266
+    },
+    "by_topic": {
+      "Mixed": 195,
+      "Information and Communications Technology": 197,
+      "Technology, Society and the Environment": 11,
+      "Design Process": 9,
+      "Materials and Manufacturing": 8,
+      "Energy and Power": 16,
+      "Safety, Standards and Quality": 7,
+      "Electronics and Control Systems": 8,
+      "Project and Portfolio Work": 10
+    },
+    "needs_review": 0
+  },
+  "errors": [],
+  "warnings": []
+}
