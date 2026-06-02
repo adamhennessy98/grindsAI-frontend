@@ -167,6 +167,19 @@ export async function getPastPaperContext(input: {
     }
   }
 
+  if (input.subjectId === "applied-maths") {
+    try {
+      const [specificationContext, pastPaperContext] = await Promise.all([
+        getAppliedMathsSpecificationContext(input),
+        getAppliedMathsProcessedPastPaperContext(input),
+      ]);
+      return [specificationContext, pastPaperContext].filter(Boolean).join("\n\n");
+    } catch (err) {
+      console.warn("[RAG] Applied Mathematics processed context retrieval failed:", err);
+      return "";
+    }
+  }
+
   try {
     const filterSubject = RAG_SUBJECTS[input.subjectId];
     if (!filterSubject) return "";
