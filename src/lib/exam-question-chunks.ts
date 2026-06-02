@@ -5,38 +5,6 @@ import { getProcessedSubjectConfig } from "@/lib/processed-subjects";
 
 const MAX_CHUNKS = 4;
 
-const PROCESSED_SUBJECTS: Record<
-  string,
-  {
-    chunksRoot: string;
-    displayName: string;
-    contextLabel: string;
-    intro: string;
-  }
-> = {
-  accounting: {
-    chunksRoot: path.join(process.cwd(), "docs", "processed", "accounting", "leaving_cert", "output_question_chunks"),
-    displayName: "Accounting",
-    contextLabel: "Accounting Past Paper Example",
-    intro:
-      "Relevant Leaving Certificate Accounting past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, accounting layouts, workings, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
-  },
-  "applied-maths": {
-    chunksRoot: path.join(process.cwd(), "docs", "processed", "applied_maths", "output_question_chunks"),
-    displayName: "Applied Maths",
-    contextLabel: "Applied Mathematics Past Paper Example",
-    intro:
-      "Relevant Leaving Certificate Applied Mathematics past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for terminology, modelling style, examiner expectations, worked-solution style, diagrams, and mark allocation. Do not infer Applied Mathematics content from Maths, and do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
-  },
-  maths: {
-    chunksRoot: path.join(process.cwd(), "docs", "processed", "maths", "leaving_cert", "output_question_chunks"),
-    displayName: "Maths",
-    contextLabel: "Past Paper Example",
-    intro:
-      "Relevant Leaving Certificate Maths past-paper examples with paired marking schemes from processed per-question chunks. Use these as reference examples for style, examiner expectations, and mark allocation. Do not claim generated questions are actual past paper questions unless explicitly discussing the cited example.",
-  },
-};
-
 const STOP_WORDS = new Set([
   "about",
   "after",

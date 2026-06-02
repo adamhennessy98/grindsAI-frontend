@@ -1,6 +1,11 @@
 import OpenAI from "openai";
+import { getAppliedMathsSpecificationContext } from "@/lib/applied-maths-syllabus";
 import { getCurriculumContext } from "@/lib/curriculum-context";
-import { getProcessedPastPaperContext, hasProcessedSubjectConfig } from "@/lib/exam-question-chunks";
+import {
+  getAppliedMathsProcessedPastPaperContext,
+  getProcessedPastPaperContext,
+  hasProcessedSubjectConfig,
+} from "@/lib/exam-question-chunks";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const RAG_SUBJECTS: Record<string, string> = {
