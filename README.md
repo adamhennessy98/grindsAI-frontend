@@ -34,3 +34,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Auth Deployment
+
+Supabase email links and Google OAuth need the deployed app URL configured before beta testing. See [docs/auth-deployment.md](docs/auth-deployment.md) for required environment variables, Supabase redirect URLs, and local/beta test steps.

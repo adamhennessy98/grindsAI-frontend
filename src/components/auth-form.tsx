@@ -7,6 +7,7 @@ import { LogoIcon, GoogleIcon, EyeIcon } from "@/components/icons";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { BetaBadge } from "@/components/beta-badge";
 import { IS_BETA } from "@/lib/beta";
+import { getAuthCallbackUrl } from "@/lib/site-url";
 
 type Mode = "login" | "signup";
 
@@ -37,8 +38,11 @@ function mapAuthMessage(message: string): string {
   if (message.includes("Invalid login credentials")) return "Email or password is incorrect.";
   if (message.includes("Email not confirmed")) return "Confirm your email first — check your inbox for the link from GrindsAI.";
   if (message.includes("User already registered")) return "An account with this email already exists. Try signing in.";
+  if (message.includes("Unsupported provider")) return "Google sign-in is not enabled yet. Please use email and password.";
   return message;
 }
+
+const googleAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_GOOGLE_AUTH === "true";
 
 export function AuthForm({ initialMode, authError }: { initialMode: Mode; authError?: string }) {
   const router = useRouter();
@@ -81,7 +85,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
     setLoading(true);
     try {
       if (mode === "signup") {
-        const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+        const redirectTo = getAuthCallbackUrl(nextPath, window.location.origin);
         const { data, error: signErr } = await supabase.auth.signUp({
           email,
           password,
@@ -124,7 +128,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
       return;
     }
     setLoading(true);
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+    const redirectTo = getAuthCallbackUrl(nextPath, window.location.origin);
     const { error: oAuthErr } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo },
@@ -178,21 +182,25 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => void google()}
-          disabled={loading}
-          className="w-full h-[42px] flex items-center justify-center gap-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-60"
-        >
-          <GoogleIcon size={16} />
-          Continue with Google
-        </button>
+        {googleAuthEnabled && (
+          <>
+            <button
+              type="button"
+              onClick={() => void google()}
+              disabled={loading}
+              className="w-full h-[42px] flex items-center justify-center gap-2 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-60"
+            >
+              <GoogleIcon size={16} />
+              Continue with Google
+            </button>
 
-        <div className="flex items-center gap-3 my-5">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-[11px] text-gray-400 uppercase tracking-[0.06em] font-mono">or with email</span>
-          <div className="flex-1 h-px bg-gray-200" />
-        </div>
+            <div className="flex items-center gap-3 my-5">
+              <div className="flex-1 h-px bg-gray-200" />
+              <span className="text-[11px] text-gray-400 uppercase tracking-[0.06em] font-mono">or with email</span>
+              <div className="flex-1 h-px bg-gray-200" />
+            </div>
+          </>
+        )}
 
         <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-3">
           {mode === "signup" && (
