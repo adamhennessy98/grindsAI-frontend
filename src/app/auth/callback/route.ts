@@ -1,23 +1,31 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { getSiteUrl, safeNextPath } from "@/lib/site-url";
 
-function safeNextParam(next: string | null): string {
-  if (!next || !next.startsWith("/") || next.startsWith("//")) return "/chat";
-  return next;
+function errorRedirect(origin: string, reason: string) {
+  const url = new URL("/auth/auth-code-error", getSiteUrl(origin));
+  url.searchParams.set("reason", reason);
+  return NextResponse.redirect(url);
 }
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = safeNextParam(searchParams.get("next"));
+  const authError = searchParams.get("error") ?? searchParams.get("error_code");
+  const next = safeNextPath(searchParams.get("next"));
+
+  if (authError) {
+    console.warn("[auth] Supabase callback returned an error:", authError);
+    return errorRedirect(origin, "provider");
+  }
 
   if (code) {
     const cookieStore = await cookies();
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     if (!url || !key) {
-      return NextResponse.redirect(`${origin}/login?error=config`);
+      return NextResponse.redirect(new URL("/login?error=config", getSiteUrl(origin)));
     }
 
     const supabase = createServerClient(url, key, {
@@ -37,17 +45,10 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const forwardedHost = request.headers.get("x-forwarded-host");
-      const isLocal = process.env.NODE_ENV === "development";
-      if (isLocal) {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
-      if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      }
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(new URL(next, getSiteUrl(origin)));
     }
+    console.warn("[auth] Could not exchange Supabase auth code:", error.message);
   }
 
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  return errorRedirect(origin, "expired");
 }

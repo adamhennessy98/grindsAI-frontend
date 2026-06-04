@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function POST() {
   const supabase = await createClient();
@@ -20,7 +21,7 @@ export async function POST() {
     return NextResponse.json({ error: "Stripe is not configured." }, { status: 503 });
   }
 
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const site = getSiteUrl();
 
   try {
     const stripe = getStripe();

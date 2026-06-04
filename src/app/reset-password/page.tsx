@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { LogoIcon } from "@/components/icons";
 import { getBrowserSupabase } from "@/lib/supabase/client";
+import { getAuthCallbackUrl } from "@/lib/site-url";
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState("");
@@ -24,9 +25,8 @@ export default function ResetPasswordPage() {
       return;
     }
     setLoading(true);
-    const site = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${site}/auth/callback?next=/chat`,
+      redirectTo: getAuthCallbackUrl("/chat", window.location.origin),
     });
     setLoading(false);
     if (resetErr) {
