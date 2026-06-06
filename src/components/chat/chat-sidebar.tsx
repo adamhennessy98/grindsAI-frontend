@@ -9,6 +9,7 @@ import { SubjectIcon, LogoIcon, CloseIcon, SettingsIcon, MessageCircleIcon } fro
 interface SidebarProps {
   subjectId: string;
   level: string;
+  subjectIds?: string[] | null;
   userName: string;
   userEmail: string;
   userInitials: string;
@@ -20,6 +21,7 @@ interface SidebarProps {
   onSelectSubject: (id: string) => void;
   onSelectTopic: (id: string) => void;
   onSetLevel: (l: string) => void;
+  onOpenSettings?: () => void;
   mobilePanel: "subjects" | "topics";
   onMobilePanelChange: (panel: "subjects" | "topics") => void;
   open: boolean;
@@ -29,6 +31,7 @@ interface SidebarProps {
 export function ChatSidebar({
   subjectId,
   level,
+  subjectIds,
   userName,
   userEmail,
   userInitials,
@@ -40,12 +43,18 @@ export function ChatSidebar({
   onSelectSubject,
   onSelectTopic,
   onSetLevel,
+  onOpenSettings,
   mobilePanel,
   onMobilePanelChange,
   open,
   onClose,
 }: SidebarProps) {
   const activeSubject = SUBJECTS.find((subject) => subject.id === subjectId);
+  const visibleSubjects = useMemo(() => {
+    if (!subjectIds?.length) return SUBJECTS;
+    const allowed = new Set(subjectIds);
+    return SUBJECTS.filter((subject) => allowed.has(subject.id));
+  }, [subjectIds]);
   const topicConversations = useMemo(() => {
     const byTopic = new Map<string, ConversationSummary>();
     for (const topic of topics) {
@@ -82,10 +91,12 @@ export function ChatSidebar({
     >
       <SubjectColumn
         subjectId={subjectId}
+        subjects={visibleSubjects}
         userName={userName}
         userEmail={userEmail}
         userInitials={userInitials}
         onSelectSubject={selectSubject}
+        onOpenSettings={onOpenSettings}
         onClose={onClose}
         hiddenOnMobile={mobilePanel === "topics"}
       />
@@ -108,18 +119,22 @@ export function ChatSidebar({
 
 function SubjectColumn({
   subjectId,
+  subjects,
   userName,
   userEmail,
   userInitials,
   onSelectSubject,
+  onOpenSettings,
   onClose,
   hiddenOnMobile,
 }: {
   subjectId: string;
+  subjects: typeof SUBJECTS;
   userName: string;
   userEmail: string;
   userInitials: string;
   onSelectSubject: (id: string) => void;
+  onOpenSettings?: () => void;
   onClose: () => void;
   hiddenOnMobile: boolean;
 }) {
@@ -149,7 +164,7 @@ function SubjectColumn({
       <div className="px-3.5 flex-1 overflow-auto">
         <SectionLabel>Subjects</SectionLabel>
         <div className="flex flex-col gap-[3px]">
-          {SUBJECTS.map((subject) => {
+          {subjects.map((subject) => {
             const active = subjectId === subject.id;
             return (
               <button
@@ -191,7 +206,9 @@ function SubjectColumn({
               <div className="text-[11.5px] text-gray-400 truncate">{userEmail || "Signed in"}</div>
             </div>
             <button
-              aria-label="Settings"
+              type="button"
+              aria-label="Study profile settings"
+              onClick={onOpenSettings}
               className="w-[30px] h-[30px] rounded-lg text-gray-400 grid place-items-center hover:bg-black/[0.05] hover:text-gray-700 transition-all"
             >
               <SettingsIcon size={16} />
