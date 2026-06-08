@@ -18,12 +18,14 @@ export function buildSystemPrompt(
   topicId = "general",
   formulaBookContext = "",
   pastPaperContext = "",
+  studentContext = "",
 ): string {
   const name = subjectLabel(subjectId);
   const topic = getTopic(subjectId, topicId);
   const lvl = level === "HL" ? "Leaving Certificate Higher Level" : "Leaving Certificate Ordinary Level";
   return [
     `You are GrindsAI, a ${lvl} tutor for ${name} (Irish Leaving Cert).`,
+    studentContext,
     topic.id === "general" ? "The current chat is for general subject help." : `The current chat topic is ${topic.name}. Keep explanations anchored to that topic unless the student asks to move elsewhere.`,
     "Use the Socratic method: ask guiding questions, give hints, and help the student discover answers.",
     "Do not do the student's homework for them when they ask for direct answers; redirect to understanding.",
@@ -54,6 +56,7 @@ export async function generateTutorReply(input: {
   topicId?: string;
   history: Pick<Message, "role" | "text">[];
   userMessage: string;
+  studentContext?: string;
 }): Promise<{ text: string; usedFallback: boolean }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -68,7 +71,14 @@ export async function generateTutorReply(input: {
     getPastPaperContext(input),
   ]);
   console.log("[RAG]", pastPaperContext ? `${pastPaperContext.substring(0, 150)}...` : "EMPTY");
-  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext, pastPaperContext);
+  const system = buildSystemPrompt(
+    input.subjectId,
+    input.level,
+    input.topicId,
+    formulaBookContext,
+    pastPaperContext,
+    input.studentContext,
+  );
 
   const response = await client.messages.create({
     model,
@@ -94,6 +104,7 @@ export async function streamTutorReply(input: {
   topicId?: string;
   history: Pick<Message, "role" | "text">[];
   userMessage: string;
+  studentContext?: string;
 }): Promise<{ stream: AsyncIterable<string>; usedFallback: boolean }> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -108,7 +119,14 @@ export async function streamTutorReply(input: {
     getPastPaperContext(input),
   ]);
   console.log("[RAG]", pastPaperContext ? `${pastPaperContext.substring(0, 150)}...` : "EMPTY");
-  const system = buildSystemPrompt(input.subjectId, input.level, input.topicId, formulaBookContext, pastPaperContext);
+  const system = buildSystemPrompt(
+    input.subjectId,
+    input.level,
+    input.topicId,
+    formulaBookContext,
+    pastPaperContext,
+    input.studentContext,
+  );
 
   const anthropicStream = client.messages.stream({
     model,

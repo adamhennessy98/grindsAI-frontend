@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { conversationKey, getSubjectTopics, getTopic, SUBJECTS } from "@/lib/constants";
 import type { ConversationSummary, Message } from "@/lib/types";
@@ -14,6 +14,13 @@ import { ExamGeneratorPanel } from "@/components/exam-generator/exam-generator-p
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { ChatBetaBanner } from "@/components/chat/beta-banner";
 import { IS_BETA } from "@/lib/beta";
+import {
+  buildStudentContextPrompt,
+  getSubjectLevel,
+  readStudentProfile,
+  saveStudentProfile,
+  type StudentProfile,
+} from "@/lib/onboarding";
 
 type SidebarUser = {
   name: string;
@@ -74,6 +81,13 @@ export function ChatClient() {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [loadingConversations, setLoadingConversations] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
+  const [profileReady, setProfileReady] = useState(false);
+
+  const studentContext = useMemo(
+    () => (studentProfile ? buildStudentContextPrompt(studentProfile) : ""),
+    [studentProfile],
+  );
 
   const subject = SUBJECTS.find((s) => s.id === subjectId)!;
   const topics = getSubjectTopics(subjectId);
@@ -137,6 +151,17 @@ export function ChatClient() {
     } finally {
       setLoadingConversations(false);
     }
+  }, []);
+
+  useEffect(() => {
+    const profile = readStudentProfile();
+    setStudentProfile(profile);
+    if (profile?.subjects.length) {
+      const firstSubject = profile.subjects.includes("maths") ? "maths" : profile.subjects[0];
+      setSubjectId(firstSubject);
+      setLevel(getSubjectLevel(profile, firstSubject));
+    }
+    setProfileReady(true);
   }, []);
 
   useEffect(() => {
@@ -223,8 +248,9 @@ export function ChatClient() {
   const switchSubject = useCallback((id: string) => {
     if (id === subjectId) return;
     const nextTopicId = getSubjectTopics(id)[0]?.id ?? "general";
-    void openSelection(id, level, nextTopicId, false);
-  }, [level, openSelection, subjectId]);
+    const nextLevel = getSubjectLevel(studentProfile, id);
+    void openSelection(id, nextLevel, nextTopicId, false);
+  }, [openSelection, studentProfile, subjectId]);
 
   const switchTopic = useCallback((id: string) => {
     void openSelection(subjectId, level, id);
@@ -232,6 +258,15 @@ export function ChatClient() {
 
   const switchLevel = useCallback((nextLevel: string) => {
     void openSelection(subjectId, nextLevel, topicId, false);
+    setStudentProfile((profile) => {
+      if (!profile) return profile;
+      const updated = {
+        ...profile,
+        subjectLevels: { ...profile.subjectLevels, [subjectId]: nextLevel === "OL" ? "OL" as const : "HL" as const },
+      };
+      saveStudentProfile(updated);
+      return updated;
+    });
   }, [openSelection, subjectId, topicId]);
 
   const openMobileNavigation = useCallback(() => {
@@ -244,6 +279,10 @@ export function ChatClient() {
     await sb?.auth.signOut();
     router.push("/login");
     router.refresh();
+  }, [router]);
+
+  const openSettings = useCallback(() => {
+    router.push("/onboarding?edit=1");
   }, [router]);
 
   const send = useCallback(
@@ -260,7 +299,15 @@ export function ChatClient() {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ conversationId, subjectId, level, topicId, text: t, history }),
+          body: JSON.stringify({
+            conversationId,
+            subjectId,
+            level,
+            topicId,
+            text: t,
+            history,
+            studentContext: studentContext || undefined,
+          }),
         });
         if (!res.ok) {
           const data = (await res.json()) as { error?: string };
@@ -332,18 +379,25 @@ export function ChatClient() {
         setThinking(false);
       }
     },
-    [draft, conversationId, messages, subjectId, level, topicId, loadConversations],
+    [draft, conversationId, messages, subjectId, level, topicId, loadConversations, studentContext],
   );
 
   const useSuggestion = useCallback((q: string) => {
     setDraft(q);
   }, []);
 
+  if (!profileReady) {
+    return (
+      <div className="h-screen grid place-items-center bg-white text-gray-500 text-sm">Loading chat...</div>
+    );
+  }
+
   return (
     <div className="grid h-screen overflow-hidden bg-white" style={{ gridTemplateColumns: "auto 1fr" }}>
       <ChatSidebar
         subjectId={subjectId}
         level={level}
+        subjectIds={studentProfile?.subjects}
         userName={sidebarUser.name}
         userEmail={sidebarUser.email}
         userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
@@ -355,6 +409,7 @@ export function ChatClient() {
         onSelectSubject={switchSubject}
         onSelectTopic={switchTopic}
         onSetLevel={switchLevel}
+        onOpenSettings={openSettings}
         mobilePanel={mobileNavPanel}
         onMobilePanelChange={setMobileNavPanel}
         open={sidebarOpen}

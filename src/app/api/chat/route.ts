@@ -12,6 +12,7 @@ type ChatBody = {
   topicId?: string | null;
   text: string;
   history?: { role: "user" | "ai"; text: string }[];
+  studentContext?: string;
 };
 
 function isValidSubject(id: string) {
@@ -69,6 +70,9 @@ export async function POST(request: Request) {
     ? body.history.map((m) => ({ role: m.role === "ai" ? "ai" : "user", text: String(m.text) }))
     : [];
 
+  const studentContext =
+    typeof body.studentContext === "string" ? body.studentContext.trim().slice(0, 2000) : "";
+
   let conversationId = typeof body.conversationId === "string" ? body.conversationId : null;
 
   if (conversationId) {
@@ -116,7 +120,14 @@ export async function POST(request: Request) {
   let replyStream: AsyncIterable<string>;
   let usedFallback = false;
   try {
-    const out = await streamTutorReply({ subjectId, level, topicId, history, userMessage: text });
+    const out = await streamTutorReply({
+      subjectId,
+      level,
+      topicId,
+      history,
+      userMessage: text,
+      studentContext: studentContext || undefined,
+    });
     replyStream = out.stream;
     usedFallback = out.usedFallback;
   } catch (err) {

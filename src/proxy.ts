@@ -36,9 +36,26 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+  const onboardingComplete = request.cookies.get("grindsai_onboarding")?.value === "1";
 
   if (user && (pathname === "/login" || pathname === "/signup")) {
+    const destination = onboardingComplete ? "/chat" : "/onboarding";
+    return NextResponse.redirect(new URL(destination, request.url));
+  }
+
+  if (user && pathname.startsWith("/chat") && !onboardingComplete) {
+    return NextResponse.redirect(new URL("/onboarding", request.url));
+  }
+
+  if (user && pathname === "/onboarding" && onboardingComplete && !request.nextUrl.searchParams.has("edit")) {
     return NextResponse.redirect(new URL("/chat", request.url));
+  }
+
+  if (!user && pathname.startsWith("/onboarding")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
   }
 
   if (!user && pathname.startsWith("/chat")) {
