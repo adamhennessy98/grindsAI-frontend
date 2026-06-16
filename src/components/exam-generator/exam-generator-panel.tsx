@@ -60,12 +60,12 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
 
   return (
     <div className="flex-1 overflow-auto bg-white">
-      <div className="max-w-[960px] mx-auto px-6 max-sm:px-3 py-7 max-sm:py-5">
-        <div className="flex flex-col gap-1.5 mb-5">
+      <div className="max-w-[960px] mx-auto px-6 max-sm:px-3 py-7 max-sm:py-4">
+        <div className="flex flex-col gap-1.5 mb-5 max-sm:mb-4 min-w-0">
           <h2 className="m-0 text-[26px] max-sm:text-[22px] font-semibold tracking-[-0.02em]">
             Exam Question Generator
           </h2>
-          <p className="m-0 text-[14px] text-gray-500">
+          <p className="m-0 text-[14px] max-sm:text-[12.5px] text-gray-500 truncate">
             {subject.name} / {levelLabel(level)} / {topic.name}
           </p>
         </div>
@@ -83,7 +83,7 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
           onGenerate={() => void generate()}
         />
 
-        <div className="mt-6 flex flex-col gap-3.5">
+        <div className="mt-6 max-sm:mt-4 flex flex-col gap-3.5 max-sm:gap-3">
           {error && (
             <div className="border border-red-100 bg-red-50 rounded-[10px] px-4 py-3 text-[13.5px] text-red-800">
               {error}
@@ -91,9 +91,9 @@ export function ExamGeneratorPanel({ subject, level, topic }: ExamGeneratorPanel
           )}
 
           {generated.length === 0 ? (
-            <div className="border border-dashed border-gray-200 bg-gray-50 rounded-[10px] px-5 py-8 text-center">
+            <div className="border border-dashed border-gray-200 bg-gray-50 rounded-[10px] px-5 max-sm:px-4 py-8 max-sm:py-6 text-center">
               <p className="m-0 text-[15px] font-medium text-gray-800">Generate exam-style questions</p>
-              <p className="m-0 mt-1.5 text-[13.5px] text-gray-500">
+              <p className="m-0 mt-1.5 text-[13.5px] max-sm:text-[12.5px] text-gray-500">
                 Based on your selected subject, level, and topic.
               </p>
             </div>
@@ -135,11 +135,11 @@ function QuestionGeneratorControls({
   onGenerate: () => void;
 }) {
   return (
-    <div className="border border-gray-200 bg-white rounded-[10px] p-4 max-sm:p-3.5 shadow-[0_1px_2px_rgba(17,24,39,0.04)]">
-      <div className="grid grid-cols-[1.2fr_1fr_170px] max-lg:grid-cols-2 max-sm:grid-cols-1 gap-4">
+    <div className="border border-gray-200 bg-white rounded-[10px] p-4 max-sm:p-3 shadow-[0_1px_2px_rgba(17,24,39,0.04)]">
+      <div className="grid grid-cols-[1.2fr_1fr_170px] max-lg:grid-cols-2 max-sm:grid-cols-1 gap-4 max-sm:gap-3">
         <fieldset className="min-w-0">
           <ControlLabel>Question type</ControlLabel>
-          <div className="grid grid-cols-2 gap-2 max-sm:grid-cols-1">
+          <div className="grid grid-cols-2 gap-2 max-[380px]:grid-cols-1 max-sm:gap-1.5">
             {QUESTION_TYPES.map((option) => (
               <OptionButton
                 key={option.id}
@@ -154,21 +154,21 @@ function QuestionGeneratorControls({
 
         <fieldset className="min-w-0">
           <ControlLabel>Difficulty</ControlLabel>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 max-sm:gap-1.5">
             {DIFFICULTIES.map((option) => (
               <button
                 key={option.id}
                 type="button"
                 onClick={() => onDifficultyChange(option.id)}
                 className={[
-                  "text-left rounded-[8px] border px-3 py-2.5 transition-all",
+                  "text-left rounded-[8px] border px-3 py-2.5 max-sm:py-2 transition-all",
                   difficulty === option.id
                     ? "bg-emerald-50 border-emerald-200 text-emerald-900"
                     : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50",
                 ].join(" ")}
               >
-                <span className="block text-[13.5px] font-medium">{option.label}</span>
-                <span className="block text-[11.5px] text-gray-500 mt-0.5">{option.description}</span>
+                <span className="block text-[13.5px] max-sm:text-[13px] font-medium">{option.label}</span>
+                <span className="block text-[11.5px] max-sm:text-[11px] text-gray-500 mt-0.5">{option.description}</span>
               </button>
             ))}
           </div>
@@ -176,14 +176,14 @@ function QuestionGeneratorControls({
 
         <div className="min-w-0">
           <ControlLabel>Include</ControlLabel>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 max-sm:flex-row max-sm:flex-wrap max-sm:gap-x-4 max-sm:gap-y-2">
             <CheckRow checked={includeWorkedSolution} onChange={onWorkedSolutionChange} label="Worked solution" />
             <CheckRow checked={includeHints} onChange={onHintsChange} label="Hints" />
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex justify-end max-sm:justify-stretch">
+      <div className="mt-4 max-sm:mt-3 flex justify-end max-sm:justify-stretch">
         <button
           type="button"
           onClick={onGenerate}
@@ -204,7 +204,7 @@ function QuestionGeneratorControls({
 }
 
 function ControlLabel({ children }: { children: React.ReactNode }) {
-  return <div className="text-[11px] text-gray-400 uppercase tracking-[0.08em] font-mono mb-2">{children}</div>;
+  return <div className="text-[11px] max-sm:text-[10.5px] text-gray-400 uppercase tracking-[0.08em] font-mono mb-2 max-sm:mb-1.5">{children}</div>;
 }
 
 function OptionButton({ selected, onClick, children }: { selected: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -213,7 +213,7 @@ function OptionButton({ selected, onClick, children }: { selected: boolean; onCl
       type="button"
       onClick={onClick}
       className={[
-        "min-h-10 rounded-[8px] border px-3 py-2 text-left text-[13px] font-medium transition-all",
+        "min-h-10 max-sm:min-h-9 rounded-[8px] border px-3 py-2 max-sm:py-1.5 text-left text-[13px] max-sm:text-[12.5px] font-medium transition-all",
         selected
           ? "bg-gray-900 text-white border-gray-900"
           : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:text-gray-900",
@@ -226,7 +226,7 @@ function OptionButton({ selected, onClick, children }: { selected: boolean; onCl
 
 function CheckRow({ checked, onChange, label }: { checked: boolean; onChange: (checked: boolean) => void; label: string }) {
   return (
-    <label className="flex items-center gap-2 text-[13.5px] text-gray-700">
+    <label className="flex items-center gap-2 text-[13.5px] max-sm:text-[13px] text-gray-700">
       <input
         type="checkbox"
         checked={checked}
@@ -253,24 +253,24 @@ function GeneratedQuestionCard({
   };
 
   return (
-    <article className="border border-gray-200 bg-white rounded-[10px] p-4 shadow-[0_1px_2px_rgba(17,24,39,0.04)]">
+    <article className="border border-gray-200 bg-white rounded-[10px] p-4 max-sm:p-3 shadow-[0_1px_2px_rgba(17,24,39,0.04)]">
       <div className="flex items-start justify-between gap-3 max-sm:flex-col">
         <div className="min-w-0">
-          <h3 className="m-0 text-[16px] font-semibold text-gray-900">
+          <h3 className="m-0 text-[16px] max-sm:text-[15px] font-semibold text-gray-900">
             {question.title}
           </h3>
-          <p className="m-0 mt-1 text-[12.5px] text-gray-500">
+          <p className="m-0 mt-1 text-[12.5px] max-sm:text-[12px] text-gray-500 break-words">
             {question.subject} / {question.level} / {question.topic}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-gray-50 border border-gray-200 px-2.5 py-1 text-[12px] text-gray-600">
+        <span className="shrink-0 rounded-full bg-gray-50 border border-gray-200 px-2.5 py-1 text-[12px] max-sm:text-[11.5px] text-gray-600">
           Approx. {question.marks} marks
         </span>
       </div>
 
-      <MathMarkdown className="mt-4 text-[14.5px] leading-relaxed text-gray-800">{question.question}</MathMarkdown>
+      <MathMarkdown className="mt-4 max-sm:mt-3 text-[14.5px] max-sm:text-[13.5px] leading-relaxed text-gray-800">{question.question}</MathMarkdown>
 
-      <div className="mt-4 flex flex-col gap-3">
+      <div className="mt-4 max-sm:mt-3 flex flex-col gap-3 max-sm:gap-2.5">
         {question.hint && (
           <QuestionDetail
             title="Hint"
@@ -291,7 +291,7 @@ function GeneratedQuestionCard({
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 max-sm:mt-3 flex flex-wrap gap-2">
         <CardAction>Save</CardAction>
       </div>
     </article>
@@ -311,17 +311,17 @@ function QuestionDetail({
 }) {
   const lowerTitle = title.toLowerCase();
   return (
-    <section className="rounded-[8px] border border-gray-200 bg-gray-50 px-3 py-2.5">
+    <section className="rounded-[8px] border border-gray-200 bg-gray-50 px-3 max-sm:px-2.5 py-2.5 max-sm:py-2">
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-3 text-left text-[12.5px] font-semibold text-gray-700 hover:text-gray-900 transition-colors"
+        className="flex w-full items-center justify-between gap-3 text-left text-[12.5px] max-sm:text-[12px] font-semibold text-gray-700 hover:text-gray-900 transition-colors"
       >
         <span>{open ? `Hide ${lowerTitle}` : `Show ${lowerTitle}`}</span>
         <span className="text-[14px] leading-none text-gray-400">{open ? "-" : "+"}</span>
       </button>
-      {open && <MathMarkdown className="mt-2 text-[13.5px] leading-relaxed text-gray-600">{children}</MathMarkdown>}
+      {open && <MathMarkdown className="mt-2 text-[13.5px] max-sm:text-[13px] leading-relaxed text-gray-600">{children}</MathMarkdown>}
     </section>
   );
 }
