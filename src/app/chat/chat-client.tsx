@@ -393,7 +393,7 @@ export function ChatClient() {
   }
 
   return (
-    <div className="grid h-screen overflow-hidden bg-white" style={{ gridTemplateColumns: "auto 1fr" }}>
+    <div className="chat-shell grid h-screen h-dvh overflow-hidden bg-white">
       <ChatSidebar
         subjectId={subjectId}
         level={level}
@@ -424,7 +424,7 @@ export function ChatClient() {
         />
       )}
 
-      <main className="flex flex-col min-w-0 h-screen">
+      <main className="flex flex-col min-w-0 h-screen h-dvh">
         <ChatBetaBanner />
         {showCheckoutBanner && !IS_BETA && (
           <div className="px-6 py-2.5 text-sm text-emerald-900 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between gap-3 shrink-0">
@@ -453,11 +453,11 @@ export function ChatClient() {
 
         {toolMode === "chat" ? (
           <>
-            <div ref={threadRef} className="flex-1 overflow-auto py-8">
+            <div ref={threadRef} className="flex-1 overflow-auto py-8 max-sm:py-4">
               {messages.length === 0 ? (
                 <EmptyState subject={subject} level={level} topic={activeTopic} onPick={useSuggestion} />
               ) : (
-                <div className="max-w-[760px] mx-auto px-6 flex flex-col gap-[22px]">
+                <div className="max-w-[760px] mx-auto px-6 max-sm:px-3 flex flex-col gap-[22px] max-sm:gap-4">
                   {messages.map((m, i) => (
                     <ChatMessage key={i} msg={m} />
                   ))}

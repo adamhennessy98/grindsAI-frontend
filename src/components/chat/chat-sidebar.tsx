@@ -82,7 +82,7 @@ export function ChatSidebar({
   return (
     <aside
       className={[
-        "flex h-screen bg-gray-50 border-r border-gray-200 shrink-0",
+        "flex h-screen h-dvh bg-gray-50 border-r border-gray-200 shrink-0",
         "max-[860px]:fixed max-[860px]:top-0 max-[860px]:left-0 max-[860px]:bottom-0 max-[860px]:z-[90]",
         "max-[860px]:w-[286px] max-[860px]:flex-col",
         "max-[860px]:transition-transform max-[860px]:duration-[220ms]",
@@ -141,7 +141,7 @@ function SubjectColumn({
   return (
     <div
       className={[
-        "flex flex-col h-screen w-[220px] max-[860px]:w-full shrink-0",
+        "flex flex-col h-screen h-dvh w-[220px] max-[860px]:w-full shrink-0",
         hiddenOnMobile ? "max-[860px]:hidden" : "",
       ].join(" ")}
     >
@@ -286,7 +286,7 @@ function TopicColumn({
   return (
     <div
       className={[
-        "flex flex-col h-screen w-[230px] border-l border-gray-200 bg-white shrink-0",
+        "flex flex-col h-screen h-dvh w-[230px] border-l border-gray-200 bg-white shrink-0",
         "max-[860px]:w-full max-[860px]:border-l-0",
         visibleOnMobile ? "" : "max-[860px]:hidden",
       ].join(" ")}

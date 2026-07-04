@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getSubjectTopics, getTopic, SUBJECTS } from "@/lib/constants";
-import { getMathsFormulaBookContext } from "@/lib/formula-book";
+import { getFormulaBookContext } from "@/lib/formula-book";
 import { getPastPaperContext } from "@/lib/retrieve";
 import type {
   ExamGeneratorRequest,
@@ -81,8 +81,8 @@ function buildExamGeneratorPrompt(input: GenerationContext, formulaBookContext: 
     topicLine,
     `Generate exactly ${input.count} question${input.count === 1 ? "" : "s"}.`,
     "Write original exam-style or SEC-style questions. Do not claim that any question is an actual SEC past paper question.",
-    "Use available formula-book, syllabus, or retrieval context where relevant, especially for Maths.",
-    "For Maths notation and formulae, the Formulae and Tables book takes precedence over alternative notation.",
+    "Use available formula-book, syllabus, or retrieval context where relevant.",
+    "When Formulae and Tables excerpts are present, that notation and printed page reference take precedence over alternative notation.",
     "Write mathematical expressions using LaTeX. Use inline maths with $...$ and display maths with $$...$$ where appropriate. Do not overuse display maths for small expressions.",
     input.includeHints ? "Include a useful hint for every question." : "Do not include hints.",
     input.includeWorkedSolution ? "Include a worked solution for every question." : "Do not include worked solutions.",
@@ -90,7 +90,6 @@ function buildExamGeneratorPrompt(input: GenerationContext, formulaBookContext: 
     "Return only valid JSON. Do not wrap it in markdown.",
     "The JSON must match this shape exactly: {\"questions\":[{\"title\":\"Question 1\",\"subject\":\"Maths\",\"level\":\"Higher Level\",\"topic\":\"Algebra\",\"marks\":25,\"question\":\"...\",\"hint\":\"...\",\"workedSolution\":\"...\",\"markingScheme\":\"...\"}]}",
     "Omit hint, workedSolution, and markingScheme keys when they were not requested.",
-    formulaBookContext,
     pastPaperContext
       ? [
           "Past-paper retrieval context is provided for style and marking guidance only.",
@@ -98,6 +97,7 @@ function buildExamGeneratorPrompt(input: GenerationContext, formulaBookContext: 
           pastPaperContext,
         ].join("\n\n")
       : "",
+    formulaBookContext,
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -173,7 +173,7 @@ export async function generateExamQuestions(input: GenerationContext): Promise<E
 
   const brief = generationBrief(input);
   const [formulaBookContext, pastPaperContext] = await Promise.all([
-    getMathsFormulaBookContext({ subjectId: input.subjectId, topicId: input.topicId, userMessage: brief }),
+    getFormulaBookContext({ subjectId: input.subjectId, level: input.level, topicId: input.topicId, userMessage: brief }),
     getPastPaperContext({ subjectId: input.subjectId, level: input.level, topicId: input.topicId, userMessage: brief }),
   ]);
 

@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getTopic, SUBJECTS } from "@/lib/constants";
-import { getMathsFormulaBookContext } from "@/lib/formula-book";
+import { getFormulaBookContext } from "@/lib/formula-book";
 import { getPastPaperContext } from "@/lib/retrieve";
 import type { Message } from "@/lib/types";
 
@@ -31,10 +31,10 @@ export function buildSystemPrompt(
     "Do not do the student's homework for them when they ask for direct answers; redirect to understanding.",
     "Keep replies concise but warm. Use markdown sparingly (bold for key terms).",
     "If the student is stuck, break the problem into smaller steps.",
-    "For Maths notation and formulae, prefer the notation used in the Formulae and Tables book. Avoid introducing shorthand or alternative notation unless the student asks about it.",
+    "When Formulae and Tables excerpts are present, prefer that notation and cite the printed page shown there before relying on memory or alternative notation.",
     "Write mathematical expressions using LaTeX. Use inline maths with $...$ and display maths with $$...$$ where appropriate. Do not overuse display maths for small expressions.",
-    formulaBookContext,
     pastPaperContext,
+    formulaBookContext,
   ]
     .filter(Boolean)
     .join(" ");
@@ -67,7 +67,7 @@ export async function generateTutorReply(input: {
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
   const [formulaBookContext, pastPaperContext] = await Promise.all([
-    getMathsFormulaBookContext(input),
+    getFormulaBookContext(input),
     getPastPaperContext(input),
   ]);
   console.log("[RAG]", pastPaperContext ? `${pastPaperContext.substring(0, 150)}...` : "EMPTY");
@@ -115,7 +115,7 @@ export async function streamTutorReply(input: {
   const client = new Anthropic({ apiKey });
   const model = process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-20250514";
   const [formulaBookContext, pastPaperContext] = await Promise.all([
-    getMathsFormulaBookContext(input),
+    getFormulaBookContext(input),
     getPastPaperContext(input),
   ]);
   console.log("[RAG]", pastPaperContext ? `${pastPaperContext.substring(0, 150)}...` : "EMPTY");
