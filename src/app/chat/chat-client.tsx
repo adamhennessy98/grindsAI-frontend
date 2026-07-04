@@ -1,477 +1,121 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { conversationKey, getSubjectTopics, getTopic, SUBJECTS } from "@/lib/constants";
-import type { ConversationSummary, Message } from "@/lib/types";
-import { ChatSidebar } from "@/components/chat/chat-sidebar";
-import { ChatHeader } from "@/components/chat/chat-header";
-import { ChatMessage, ThinkingBubble } from "@/components/chat/chat-message";
-import { EmptyState } from "@/components/chat/empty-state";
-import { Composer } from "@/components/chat/composer";
-import { ModeSwitcher, type ToolMode } from "@/components/chat/mode-switcher";
-import { ExamGeneratorPanel } from "@/components/exam-generator/exam-generator-panel";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getBrowserSupabase } from "@/lib/supabase/client";
-import { ChatBetaBanner } from "@/components/chat/beta-banner";
-import { IS_BETA } from "@/lib/beta";
-import {
-  buildStudentContextPrompt,
-  getSubjectLevel,
-  readStudentProfile,
-  saveStudentProfile,
-  type StudentProfile,
-} from "@/lib/onboarding";
-
-type SidebarUser = {
-  name: string;
-  email: string;
-};
-
-type ConversationRow = {
-  id: string;
-  subject_id: string;
-  level: string;
-  topic_id?: string | null;
-  conversation_key?: string | null;
-  created_at: string;
-};
-
-type MessageRow = {
-  conversation_id: string;
-  role: string;
-  content: string;
-  created_at: string;
-};
+import { AppSidebar } from "@/components/app/sidebar";
+import { AppTopBar } from "@/components/app/topbar";
+import { CalendarRail } from "@/components/app/calendar-rail";
+import { HomeFeed } from "@/components/app/home-feed";
+import { ConversationView } from "@/components/app/conversation-view";
+import { PapersView } from "@/components/app/papers-view";
+import { ProgressView } from "@/components/app/progress-view";
+import type { Screen } from "@/components/app/types";
 
 function initialsFrom(name: string, email: string) {
   const source = name || email.split("@")[0] || "Student";
-  return source
-    .split(/[\s._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("") || "S";
-}
-
-function titleFrom(text?: string) {
-  const clean = text?.replace(/\s+/g, " ").trim();
-  if (!clean) return "New chat";
-  return clean.length > 42 ? `${clean.slice(0, 42)}...` : clean;
+  return (
+    source
+      .split(/[\s._-]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "S"
+  );
 }
 
 export function ChatClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [subjectId, setSubjectId] = useState("maths");
-  const [level, setLevel] = useState("HL");
-  const [topicId, setTopicId] = useState("general");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [draft, setDraft] = useState("");
-  const [thinking, setThinking] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mobileNavPanel, setMobileNavPanel] = useState<"subjects" | "topics">("subjects");
-  const [toolMode, setToolMode] = useState<ToolMode>("chat");
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [checkoutBannerDismissed, setCheckoutBannerDismissed] = useState(false);
-  const [subscriptionActive, setSubscriptionActive] = useState(false);
-  const [sidebarUser, setSidebarUser] = useState<SidebarUser>({
-    name: "Student",
-    email: "",
-  });
-  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
-  const [loadingConversations, setLoadingConversations] = useState(false);
-  const [conversationId, setConversationId] = useState<string | null>(null);
-  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
-  const [profileReady, setProfileReady] = useState(false);
-
-  const studentContext = useMemo(
-    () => (studentProfile ? buildStudentContextPrompt(studentProfile) : ""),
-    [studentProfile],
-  );
-
-  const subject = SUBJECTS.find((s) => s.id === subjectId)!;
-  const topics = getSubjectTopics(subjectId);
-  const activeTopic = getTopic(subjectId, topicId);
-  const threadRef = useRef<HTMLDivElement>(null);
-
-  const checkoutSuccess = searchParams.get("checkout") === "success";
-  const showCheckoutBanner = checkoutSuccess && !checkoutBannerDismissed;
-
-  const loadConversations = useCallback(async () => {
-    const sb = getBrowserSupabase();
-    if (!sb) return;
-    setLoadingConversations(true);
-    try {
-      const { data: convRows, error: convErr } = await sb
-        .from("conversations")
-        .select("id, subject_id, level, topic_id, conversation_key, created_at")
-        .order("created_at", { ascending: false })
-        .limit(20);
-
-      if (convErr || !convRows?.length) {
-        setConversations([]);
-        return;
-      }
-
-      const rows = convRows as ConversationRow[];
-      const ids = rows.map((row) => row.id);
-      const { data: msgRows } = await sb
-        .from("messages")
-        .select("conversation_id, role, content, created_at")
-        .in("conversation_id", ids)
-        .order("created_at", { ascending: true });
-
-      const messagesByConversation = new Map<string, MessageRow[]>();
-      for (const message of (msgRows ?? []) as MessageRow[]) {
-        const existing = messagesByConversation.get(message.conversation_id) ?? [];
-        existing.push(message);
-        messagesByConversation.set(message.conversation_id, existing);
-      }
-
-      const summaries = rows
-        .map((row) => {
-          const savedMessages = messagesByConversation.get(row.id) ?? [];
-          const firstUserMessage = savedMessages.find((message) => message.role === "user");
-          const lastMessage = savedMessages[savedMessages.length - 1];
-          const rowTopicId = row.topic_id ?? "general";
-          const rowKey = row.conversation_key ?? conversationKey(row.subject_id, row.level, rowTopicId);
-          return {
-            id: row.id,
-            subjectId: row.subject_id,
-            level: row.level,
-            topicId: rowTopicId,
-            conversationKey: rowKey,
-            title: titleFrom(firstUserMessage?.content),
-            updatedAt: lastMessage?.created_at ?? row.created_at,
-          };
-        })
-        .sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
-
-      setConversations(summaries);
-    } finally {
-      setLoadingConversations(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const profile = readStudentProfile();
-    setStudentProfile(profile);
-    if (profile?.subjects.length) {
-      const firstSubject = profile.subjects.includes("maths") ? "maths" : profile.subjects[0];
-      setSubjectId(firstSubject);
-      setLevel(getSubjectLevel(profile, firstSubject));
-    }
-    setProfileReady(true);
-  }, []);
+  const [screen, setScreen] = useState<Screen>("home");
+  const [prevScreen, setPrevScreen] = useState<Screen>("home");
+  const [subjectId, setSubjectId] = useState("all");
+  const [collapsed, setCollapsed] = useState(false);
+  const [stuck, setStuck] = useState(false);
+  const [userName, setUserName] = useState("Student");
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
     const sb = getBrowserSupabase();
     if (!sb) return;
     void (async () => {
-      const { data: authData } = await sb.auth.getUser();
-      const user = authData.user;
+      const { data } = await sb.auth.getUser();
+      const user = data.user;
       if (!user) return;
       const fullName = typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name.trim() : "";
-      const name = fullName || user.email?.split("@")[0] || "Student";
-      setSidebarUser({ name, email: user.email ?? "" });
-      const { data } = await sb.from("profiles").select("subscription_status").eq("id", user.id).maybeSingle();
-      if (data?.subscription_status === "active") {
-        setSubscriptionActive(true);
-      }
-      await loadConversations();
+      setUserName(fullName || user.email?.split("@")[0] || "Student");
+      setUserEmail(user.email ?? "");
     })();
-  }, [loadConversations]);
-
-  useEffect(() => {
-    threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, thinking]);
-
-  const findConversation = useCallback(
-    (nextSubjectId: string, nextLevel: string, nextTopicId: string) =>
-      conversations.find((conversation) => conversation.conversationKey === conversationKey(nextSubjectId, nextLevel, nextTopicId)),
-    [conversations],
-  );
-
-  const openConversation = useCallback(async (summary: ConversationSummary, closeSidebar = true) => {
-    const sb = getBrowserSupabase();
-    if (!sb) return;
-    setApiError(null);
-    setThinking(false);
-    setDraft("");
-    setConversationId(summary.id);
-    setSubjectId(summary.subjectId);
-    setLevel(summary.level === "OL" ? "OL" : "HL");
-    setTopicId(summary.topicId);
-    if (closeSidebar) setSidebarOpen(false);
-
-    const { data, error } = await sb
-      .from("messages")
-      .select("role, content")
-      .eq("conversation_id", summary.id)
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      setApiError("Could not load that conversation. Try again.");
-      return;
-    }
-
-    setMessages(
-      ((data ?? []) as { role: string; content: string }[]).map((message) => ({
-        role: message.role === "ai" ? "ai" : "user",
-        text: message.content,
-      })),
-    );
   }, []);
 
-  const openSelection = useCallback(
-    async (nextSubjectId: string, nextLevel: string, nextTopicId: string, closeSidebar = true) => {
-      const summary = findConversation(nextSubjectId, nextLevel, nextTopicId);
-      setSubjectId(nextSubjectId);
-      setLevel(nextLevel === "OL" ? "OL" : "HL");
-      setTopicId(nextTopicId);
-      setApiError(null);
-      setThinking(false);
-      setDraft("");
-
-      if (summary) {
-        await openConversation(summary, closeSidebar);
-        return;
-      }
-
-      setMessages([]);
-      setConversationId(null);
-      if (closeSidebar) setSidebarOpen(false);
+  const goToScreen = useCallback(
+    (next: Screen) => {
+      setPrevScreen((current) => (screen === "conversation" ? current : screen));
+      setScreen(next);
     },
-    [findConversation, openConversation],
+    [screen],
   );
 
-  const switchSubject = useCallback((id: string) => {
-    if (id === subjectId) return;
-    const nextTopicId = getSubjectTopics(id)[0]?.id ?? "general";
-    const nextLevel = getSubjectLevel(studentProfile, id);
-    void openSelection(id, nextLevel, nextTopicId, false);
-  }, [openSelection, studentProfile, subjectId]);
+  const openConvo = useCallback(() => {
+    setPrevScreen((current) => (screen === "conversation" ? current : screen));
+    setScreen("conversation");
+    setStuck(false);
+  }, [screen]);
 
-  const switchTopic = useCallback((id: string) => {
-    void openSelection(subjectId, level, id);
-  }, [level, openSelection, subjectId]);
+  const exitConvo = useCallback(() => {
+    setScreen(prevScreen);
+  }, [prevScreen]);
 
-  const switchLevel = useCallback((nextLevel: string) => {
-    void openSelection(subjectId, nextLevel, topicId, false);
-    setStudentProfile((profile) => {
-      if (!profile) return profile;
-      const updated = {
-        ...profile,
-        subjectLevels: { ...profile.subjectLevels, [subjectId]: nextLevel === "OL" ? "OL" as const : "HL" as const },
-      };
-      saveStudentProfile(updated);
-      return updated;
-    });
-  }, [openSelection, subjectId, topicId]);
-
-  const openMobileNavigation = useCallback(() => {
-    setMobileNavPanel("topics");
-    setSidebarOpen(true);
+  const selectSubject = useCallback((id: string) => {
+    setSubjectId(id);
+    setScreen((current) => (current === "conversation" ? "home" : current));
   }, []);
-
-  const signOut = useCallback(async () => {
-    const sb = getBrowserSupabase();
-    await sb?.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }, [router]);
 
   const openSettings = useCallback(() => {
     router.push("/onboarding?edit=1");
   }, [router]);
 
-  const send = useCallback(
-    async (text?: string) => {
-      const t = (text ?? draft).trim();
-      if (!t) return;
-      setApiError(null);
-      setDraft("");
-      // Snapshot history before adding the new user message
-      const history = messages;
-      setMessages((m) => [...m, { role: "user", text: t }]);
-      setThinking(true);
-      try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            conversationId,
-            subjectId,
-            level,
-            topicId,
-            text: t,
-            history,
-            studentContext: studentContext || undefined,
-          }),
-        });
-        if (!res.ok) {
-          const data = (await res.json()) as { error?: string };
-          setMessages((m) => m.slice(0, -1));
-          setDraft(t);
-          setApiError(data.error ?? "Could not reach the tutor. Try again.");
-          return;
-        }
-
-        const nextConversationId = res.headers.get("X-Conversation-Id");
-        if (nextConversationId) {
-          setConversationId(nextConversationId);
-        }
-
-        if (!res.body) {
-          setMessages((m) => m.slice(0, -1));
-          setDraft(t);
-          setApiError("The tutor response did not include a readable stream.");
-          return;
-        }
-
-        setThinking(false);
-        setMessages((m) => [...m, { role: "ai", text: "" }]);
-
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let reply = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunk = decoder.decode(value, { stream: true });
-          if (!chunk) continue;
-          reply += chunk;
-          setMessages((m) => {
-            const next = [...m];
-            const last = next[next.length - 1];
-            if (last?.role === "ai") {
-              next[next.length - 1] = { ...last, text: last.text + chunk };
-            }
-            return next;
-          });
-        }
-
-        const tail = decoder.decode();
-        if (tail) {
-          reply += tail;
-          setMessages((m) => {
-            const next = [...m];
-            const last = next[next.length - 1];
-            if (last?.role === "ai") {
-              next[next.length - 1] = { ...last, text: last.text + tail };
-            }
-            return next;
-          });
-        }
-
-        if (!reply.trim()) {
-          setMessages((m) => m.slice(0, -1));
-          setApiError("The tutor returned an empty response. Try again.");
-        } else {
-          await loadConversations();
-        }
-      } catch {
-        setMessages((m) => m.slice(0, -1));
-        setDraft(t);
-        setApiError("Network error. Check your connection and try again.");
-      } finally {
-        setThinking(false);
-      }
-    },
-    [draft, conversationId, messages, subjectId, level, topicId, loadConversations, studentContext],
-  );
-
-  const useSuggestion = useCallback((q: string) => {
-    setDraft(q);
-  }, []);
-
-  if (!profileReady) {
-    return (
-      <div className="h-screen grid place-items-center bg-white text-gray-500 text-sm">Loading chat...</div>
-    );
-  }
+  const showRail = screen === "home" || screen === "conversation";
 
   return (
-    <div className="grid h-screen overflow-hidden bg-white" style={{ gridTemplateColumns: "auto 1fr" }}>
-      <ChatSidebar
+    <div className="flex h-screen overflow-hidden bg-white">
+      <AppSidebar
+        screen={screen}
         subjectId={subjectId}
-        level={level}
-        subjectIds={studentProfile?.subjects}
-        userName={sidebarUser.name}
-        userEmail={sidebarUser.email}
-        userInitials={initialsFrom(sidebarUser.name, sidebarUser.email)}
-        conversations={conversations}
-        activeTopicId={topicId}
-        topics={topics}
-        loadingConversations={loadingConversations}
-        onSelectConversation={openConversation}
-        onSelectSubject={switchSubject}
-        onSelectTopic={switchTopic}
-        onSetLevel={switchLevel}
+        collapsed={collapsed}
+        userName={userName}
+        userEmail={userEmail}
+        userInitials={initialsFrom(userName, userEmail)}
+        onSelectAll={() => selectSubject("all")}
+        onSelectSubject={selectSubject}
+        onGoHome={() => goToScreen("home")}
+        onGoPapers={() => goToScreen("papers")}
+        onGoProgress={() => goToScreen("progress")}
         onOpenSettings={openSettings}
-        mobilePanel={mobileNavPanel}
-        onMobilePanelChange={setMobileNavPanel}
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
       />
 
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-gray-900/40 z-[80] min-[861px]:hidden"
-          onClick={() => setSidebarOpen(false)}
-          aria-hidden
-        />
-      )}
+      <main
+        className="flex-1 min-w-0 h-full flex flex-col relative bg-white"
+        style={{
+          backgroundImage:
+            "radial-gradient(120% 52% at 50% -8%, rgba(16,185,129,0.07), rgba(16,185,129,0) 62%), radial-gradient(circle at center, rgba(17,24,39,0.045) 1px, transparent 1.5px)",
+          backgroundSize: "100% 100%, 23px 23px",
+        }}
+      >
+        <AppTopBar screen={screen} onToggleSidebar={() => setCollapsed((c) => !c)} onExitConvo={exitConvo} />
 
-      <main className="flex flex-col min-w-0 h-screen">
-        <ChatBetaBanner />
-        {showCheckoutBanner && !IS_BETA && (
-          <div className="px-6 py-2.5 text-sm text-emerald-900 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between gap-3 shrink-0">
-            <span>Subscription active - thanks for supporting GrindsAI.</span>
-            <button
-              type="button"
-              onClick={() => setCheckoutBannerDismissed(true)}
-              className="text-emerald-800 hover:text-emerald-950 text-xs font-medium"
-            >
-              Dismiss
-            </button>
-          </div>
-        )}
-        {toolMode === "chat" && apiError && (
-          <div className="px-6 py-2.5 text-sm text-red-800 bg-red-50 border-b border-red-100 shrink-0">{apiError}</div>
-        )}
-        <ChatHeader
-          subject={subject}
-          level={level}
-          topic={activeTopic}
-          onOpenSidebar={openMobileNavigation}
-          subscriptionActive={subscriptionActive}
-          onSignOut={() => void signOut()}
-        />
-        <ModeSwitcher mode={toolMode} onChange={setToolMode} />
-
-        {toolMode === "chat" ? (
-          <>
-            <div ref={threadRef} className="flex-1 overflow-auto py-8">
-              {messages.length === 0 ? (
-                <EmptyState subject={subject} level={level} topic={activeTopic} onPick={useSuggestion} />
-              ) : (
-                <div className="max-w-[760px] mx-auto px-6 flex flex-col gap-[22px]">
-                  {messages.map((m, i) => (
-                    <ChatMessage key={i} msg={m} />
-                  ))}
-                  {thinking && <ThinkingBubble />}
-                </div>
-              )}
-            </div>
-
-            <Composer draft={draft} subject={subject} onChange={setDraft} onSend={() => void send()} />
-          </>
-        ) : (
-          <ExamGeneratorPanel subject={subject} level={level} topic={activeTopic} />
-        )}
+        <div className="flex-1 overflow-y-auto relative">
+          {screen === "home" && (
+            <HomeFeed subjectId={subjectId} onOpenConvo={openConvo} onGoProgress={() => goToScreen("progress")} />
+          )}
+          {screen === "conversation" && <ConversationView stuck={stuck} onRevealStuck={() => setStuck(true)} />}
+          {screen === "papers" && <PapersView subjectId={subjectId} onOpenConvo={openConvo} />}
+          {screen === "progress" && <ProgressView onOpenConvo={openConvo} />}
+        </div>
       </main>
+
+      {showRail && (
+        <CalendarRail dimmed={screen === "conversation"} onDismiss={exitConvo} onOpenConvo={openConvo} />
+      )}
     </div>
   );
 }

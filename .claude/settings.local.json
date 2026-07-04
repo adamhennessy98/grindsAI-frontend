@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:api.anthropic.com)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "WebFetch(domain:claude.ai)",
+      "Bash(npm -v)",
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s http://localhost:3000/chat)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/chat)",
+      "Bash(node -e ' *)",
+      "Bash(git status *)"
     ]
   }
 }
