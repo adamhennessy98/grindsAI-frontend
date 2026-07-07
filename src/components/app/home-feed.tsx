@@ -1,255 +1,207 @@
 "use client";
 
-import { subjectLabel } from "./subjects";
+import { subjectInitial } from "./subjects";
+import type { Subject } from "@/lib/types";
+import type { SubjectLevel } from "@/lib/onboarding";
 
 interface HomeFeedProps {
-  subjectId: string;
-  onOpenConvo: () => void;
-  onGoProgress: () => void;
+  subjects: Subject[];
+  subjectLevels?: Record<string, SubjectLevel>;
+  onSelectSubject: (id: string) => void;
+  onOpenTutor: () => void;
+  onOpenSettings: () => void;
 }
 
-export function HomeFeed({ subjectId, onOpenConvo, onGoProgress }: HomeFeedProps) {
-  const showExam = subjectId === "all" || subjectId === "maths";
-  const showWeak = subjectId === "all" || subjectId === "chemistry";
-  const showProg = subjectId === "all" || subjectId === "english";
-  const emptyFeed = !(showExam || showWeak || showProg);
+const SUBJECT_META: Record<string, { focus: string; next: string; score: string; trend: string }> = {
+  maths: {
+    focus: "Calculus and algebra",
+    next: "Mock paper practice",
+    score: "72%",
+    trend: "+8 pts",
+  },
+  english: {
+    focus: "Comparative and poetry",
+    next: "Essay planning",
+    score: "68%",
+    trend: "+6 pts",
+  },
+  chemistry: {
+    focus: "Stoichiometry",
+    next: "Class test prep",
+    score: "64%",
+    trend: "+4 pts",
+  },
+  biology: {
+    focus: "Genetics and ecology",
+    next: "Short questions",
+    score: "76%",
+    trend: "+5 pts",
+  },
+  physics: {
+    focus: "Mechanics",
+    next: "Experiment questions",
+    score: "70%",
+    trend: "+3 pts",
+  },
+  irish: {
+    focus: "Oral and prose",
+    next: "Grammar refresh",
+    score: "66%",
+    trend: "+4 pts",
+  },
+};
+
+export function HomeFeed({ subjects, subjectLevels, onSelectSubject, onOpenTutor, onOpenSettings }: HomeFeedProps) {
+  const hasProfileSubjects = Boolean(subjectLevels && Object.keys(subjectLevels).length > 0);
 
   return (
-    <div className="max-w-[760px] mx-auto px-7 pt-[34px] pb-16">
-      {/* opener */}
-      <div className="bg-white border border-gray-200 rounded-[18px] px-7 pt-7 pb-6 shadow-[0_1px_2px_rgba(17,24,39,.04),0_18px_40px_-30px_rgba(17,24,39,.4)]">
-        <div className="flex items-center gap-2.5 mb-3.5">
-          <div className="w-[34px] h-[34px] rounded-full bg-emerald-500 text-white flex items-center justify-center font-heading text-base font-semibold shrink-0">
-            S
-          </div>
-          <div className="text-[13px] text-gray-400">
-            <span className="text-emerald-600 font-semibold">Dia duit, Colm.</span> &nbsp;It&apos;s Saoirse — good to see you back.
-          </div>
-        </div>
-        <h1 className="font-heading text-[27px] leading-tight font-semibold text-gray-900 tracking-[-0.02em] mb-[18px]">
-          What would you like to focus on today?
-        </h1>
-        <div className="flex items-center gap-2.5 bg-gray-50 border border-gray-200 rounded-[13px] pl-4 pr-1.5 py-1.5">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0">
-            <path d="M12 5v14M5 12h14" stroke="#9CA3AF" strokeWidth="1.7" strokeLinecap="round" />
-          </svg>
-          <input
-            placeholder="Ask Saoirse anything, or tell her what you're working on…"
-            className="flex-1 border-none bg-transparent outline-none text-[14.5px] text-gray-700 py-2.5"
-            onKeyDown={(e) => e.key === "Enter" && onOpenConvo()}
-          />
-          <button
-            type="button"
-            onClick={onOpenConvo}
-            className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-[10px] px-4 py-2.5 text-sm font-semibold shrink-0 transition-colors"
-          >
-            Start
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </div>
-        <div className="flex gap-2.5 mt-3.5 flex-wrap">
-          <SuggestionChip icon="✎" label="Homework help" onClick={onOpenConvo} />
-          <SuggestionChip icon="◷" label="Mock prep" onClick={onOpenConvo} />
-          <SuggestionChip icon="◎" label="A topic I'm stuck on" onClick={onOpenConvo} />
-        </div>
-      </div>
-
-      {/* feed heading */}
-      <div className="flex items-center gap-3 mt-8 mb-4 mx-0.5">
-        <span className="font-heading text-[15px] font-semibold text-gray-500">From Saoirse</span>
-        <span className="text-xs text-gray-400">· {subjectLabel(subjectId)}</span>
-        <div className="flex-1 h-px bg-gray-200" />
-      </div>
-
-      <div className="flex flex-col gap-4">
-        {emptyFeed && (
-          <div className="bg-gray-50 border border-dashed border-gray-200 rounded-2xl px-7 py-[34px] text-center">
-            <div className="font-heading text-lg text-gray-700 mb-1.5">
-              Saoirse is still getting to know you in {subjectLabel(subjectId)}
+    <div className="mx-auto max-w-[1120px] px-5 pb-16 pt-[30px] sm:px-7">
+      <section className="mb-7 overflow-hidden rounded-[18px] border border-gray-200 bg-white shadow-[0_1px_2px_rgba(17,24,39,.04),0_18px_40px_-32px_rgba(17,24,39,.45)]">
+        <div className="grid gap-0 lg:grid-cols-[1.25fr_0.75fr]">
+          <div className="px-6 py-7 sm:px-8">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-[12.5px] font-semibold text-emerald-700">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Personal Leaving Cert workspace
             </div>
-            <p className="text-sm text-gray-400 max-w-[420px] mx-auto mb-4 leading-relaxed">
-              Your feed fills in as you work together. Start a session and she&apos;ll begin building a picture of your
-              strengths and the bits that trip you up.
+            <h1 className="font-heading mb-3 max-w-[680px] text-[30px] font-semibold leading-tight tracking-[-0.02em] text-gray-900 sm:text-[34px]">
+              Choose a subject, then work with the tutor around your exams.
+            </h1>
+            <p className="m-0 max-w-[650px] text-[14.5px] leading-relaxed text-gray-500">
+              Each subject keeps its own tutor session, practice questions, exam tracker, and progress view. The more
+              results and feedback you add, the more useful the guidance becomes.
             </p>
+            <div className="mt-5 flex flex-wrap gap-2.5">
+              <button
+                type="button"
+                onClick={() => subjects[0] && onSelectSubject(subjects[0].id)}
+                className="rounded-[10px] bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
+              >
+                Open first subject
+              </button>
+              <button
+                type="button"
+                onClick={onOpenTutor}
+                className="rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-500 hover:text-emerald-600"
+              >
+                Start tutor session
+              </button>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 bg-gray-50 px-6 py-6 lg:border-l lg:border-t-0">
+            <div className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+              Study profile
+            </div>
+            <div className="space-y-3">
+              <ProfileRow label="Subjects shown" value={`${subjects.length}`} />
+              <ProfileRow label="Levels" value={levelSummary(subjects, subjectLevels)} />
+              <ProfileRow label="Memory source" value="Tutor sessions + exam tracker" />
+            </div>
             <button
               type="button"
-              onClick={onOpenConvo}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-[10px] px-[18px] py-2.5 text-sm font-semibold transition-colors"
+              onClick={onOpenSettings}
+              className="mt-5 w-full rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50"
             >
-              Start a session
+              {hasProfileSubjects ? "Edit subjects and levels" : "Set up selected subjects"}
             </button>
           </div>
-        )}
+        </div>
+      </section>
 
-        {showExam && <ExamCard onOpenConvo={onOpenConvo} />}
-        {showWeak && <WeaknessCard onOpenConvo={onOpenConvo} onGoProgress={onGoProgress} />}
-        {showProg && <ProgressCard onOpenConvo={onOpenConvo} />}
+      <div className="mb-4 flex items-center gap-3">
+        <h2 className="font-heading m-0 text-[18px] font-semibold text-gray-900">
+          {hasProfileSubjects ? "Your subjects" : "Available subjects"}
+        </h2>
+        <div className="h-px flex-1 bg-gray-200" />
+        <button type="button" onClick={onOpenSettings} className="text-[13px] font-medium text-emerald-700 hover:text-emerald-800">
+          Request or edit subjects
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
+        {subjects.map((subject) => (
+          <SubjectCard
+            key={subject.id}
+            subject={subject}
+            level={subjectLevels?.[subject.id] ?? "HL"}
+            onOpen={() => onSelectSubject(subject.id)}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-function SuggestionChip({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+function SubjectCard({ subject, level, onOpen }: { subject: Subject; level: SubjectLevel; onOpen: () => void }) {
+  const meta = SUBJECT_META[subject.id] ?? {
+    focus: "Exam practice",
+    next: "Build a revision plan",
+    score: "New",
+    trend: "Ready",
+  };
+
   return (
     <button
       type="button"
-      onClick={onClick}
-      className="flex items-center gap-1.5 bg-white border border-gray-200 hover:border-emerald-500 hover:text-emerald-600 rounded-full px-3.5 py-2 text-[13px] font-medium text-gray-700 transition-colors"
+      onClick={onOpen}
+      className="group min-h-[188px] rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-[0_1px_2px_rgba(17,24,39,.04)] transition-colors hover:border-emerald-500"
     >
-      <span className="text-sm">{icon}</span> {label}
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-100 text-[13px] font-semibold text-gray-600">
+            {subjectInitial(subject.id)}
+          </span>
+          <span>
+            <span className="block font-heading text-[19px] font-semibold text-gray-900">{subject.name}</span>
+            <span className="text-[12.5px] text-gray-400">{level === "OL" ? "Ordinary Level" : "Higher Level"}</span>
+          </span>
+        </div>
+        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[12px] font-semibold text-emerald-700">
+          {meta.trend}
+        </span>
+      </div>
+
+      <div className="space-y-2.5">
+        <MiniMetric label="Current focus" value={meta.focus} />
+        <MiniMetric label="Next best step" value={meta.next} />
+      </div>
+
+      <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-4">
+        <span className="text-[12.5px] text-gray-400">
+          Average test score <span className="font-semibold text-gray-700">{meta.score}</span>
+        </span>
+        <span className="text-[13px] font-semibold text-emerald-600 transition-transform group-hover:translate-x-0.5">
+          Open workspace
+        </span>
+      </div>
     </button>
   );
 }
 
-function ExamCard({ onOpenConvo }: { onOpenConvo: () => void }) {
+function MiniMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl px-6 py-[22px] shadow-[0_1px_2px_rgba(17,24,39,.04),0_14px_34px_-28px_rgba(17,24,39,.45)]">
-      <div className="flex items-center gap-2.5 mb-3.5">
-        <span className="w-6 h-6 rounded-[7px] bg-emerald-500 text-white flex items-center justify-center text-[11px] font-bold">M</span>
-        <span className="text-[12.5px] font-semibold text-emerald-600">Maths (H)</span>
-        <span className="text-[12.5px] text-gray-400">· Christmas mock coming up</span>
-        <div className="flex-1" />
-        <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">in 18 days</span>
-      </div>
-      <h3 className="font-heading text-xl font-semibold text-gray-900 mb-4">Let&apos;s get you ready for the Maths mock</h3>
-
-      <div className="flex items-center mb-[18px]">
-        <TimelineStep dot="filled" label="Homework" labelColor="text-emerald-600" sub="on track" />
-        <div className="h-0.5 flex-[1.2] mb-[26px] bg-gradient-to-r from-emerald-500 to-gray-500" />
-        <TimelineStep dot="filled-muted" label="Class test" labelColor="text-gray-500" sub="last week" />
-        <div className="h-0.5 flex-[1.2] mb-[26px] bg-[repeating-linear-gradient(90deg,#D1D5DB,#D1D5DB_4px,transparent_4px,transparent_8px)]" />
-        <TimelineStep dot="ring" label="Mock" labelColor="text-gray-900" sub="15 Dec" />
-        <div className="h-0.5 flex-[1.2] mb-[26px] bg-[repeating-linear-gradient(90deg,#D1D5DB,#D1D5DB_4px,transparent_4px,transparent_8px)]" />
-        <TimelineStep dot="outline" label="Leaving Cert" labelColor="text-gray-400" sub="Jun 2027" />
-      </div>
-
-      <div className="flex gap-2.5 bg-gray-50 border border-gray-200 rounded-xl px-[15px] py-3.5 mb-4">
-        <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-heading text-[13px] shrink-0">
-          S
-        </div>
-        <p className="m-0 text-[13.5px] leading-relaxed text-gray-700">
-          &ldquo;In your last mock you dropped most marks on <strong className="text-gray-900 font-semibold">differentiation</strong> —
-          the chain rule questions in particular. Let&apos;s clear that up before the next one. I&apos;ve got the exact question you
-          missed ready to go.&rdquo;
-        </p>
-      </div>
-
-      <button
-        type="button"
-        onClick={onOpenConvo}
-        className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-[10px] px-[18px] py-[11px] text-sm font-semibold transition-colors"
-      >
-        Start prep with Saoirse
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <path d="M5 12h13M13 6l6 6-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
+    <div className="flex items-center justify-between gap-3 text-[13px]">
+      <span className="text-gray-400">{label}</span>
+      <span className="truncate font-medium text-gray-800">{value}</span>
     </div>
   );
 }
 
-function TimelineStep({
-  dot,
-  label,
-  labelColor,
-  sub,
-}: {
-  dot: "filled" | "filled-muted" | "ring" | "outline";
-  label: string;
-  labelColor: string;
-  sub: string;
-}) {
-  const dotClass =
-    dot === "filled"
-      ? "w-[13px] h-[13px] rounded-full bg-emerald-500"
-      : dot === "filled-muted"
-        ? "w-[13px] h-[13px] rounded-full bg-gray-500"
-        : dot === "ring"
-          ? "w-[15px] h-[15px] rounded-full bg-white border-[2.5px] border-emerald-500"
-          : "w-[13px] h-[13px] rounded-full bg-white border-2 border-gray-300";
+function ProfileRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center flex-1">
-      <div className={dotClass} />
-      <span className={`text-[11.5px] font-semibold mt-1.5 ${labelColor}`}>{label}</span>
-      <span className="text-[10.5px] text-gray-400">{sub}</span>
+    <div className="flex items-center justify-between gap-3 rounded-[11px] border border-gray-200 bg-white px-3.5 py-3">
+      <span className="text-[13px] text-gray-500">{label}</span>
+      <span className="text-[13px] font-semibold text-gray-900">{value}</span>
     </div>
   );
 }
 
-function WeaknessCard({ onOpenConvo, onGoProgress }: { onOpenConvo: () => void; onGoProgress: () => void }) {
-  return (
-    <div className="bg-white border border-gray-200 rounded-2xl px-6 py-5 shadow-[0_1px_2px_rgba(17,24,39,.04),0_14px_34px_-28px_rgba(17,24,39,.45)]">
-      <div className="flex items-center gap-2.5 mb-3">
-        <span className="w-6 h-6 rounded-[7px] bg-gray-500 text-white flex items-center justify-center text-[11px] font-bold">Ch</span>
-        <span className="text-[12.5px] font-semibold text-gray-500">Chemistry (H)</span>
-        <span className="text-[12.5px] text-gray-400">· this has come up before</span>
-      </div>
-      <h3 className="font-heading text-lg font-semibold text-gray-900 mb-2">Mole calculations are tripping you up again</h3>
-      <p className="m-0 mb-4 text-[13.5px] leading-relaxed text-gray-500">
-        You&apos;ve hit a wall on stoichiometry in <strong className="text-gray-700">3 of your last 5 sessions</strong>. It&apos;s
-        the conversion between moles, mass and volume — not the chemistry itself. Ten focused minutes should shift it.
-      </p>
-      <div className="flex gap-2.5">
-        <button
-          type="button"
-          onClick={onOpenConvo}
-          className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-[10px] px-4 py-2.5 text-[13.5px] font-semibold transition-colors"
-        >
-          Work on this together
-        </button>
-        <button
-          type="button"
-          onClick={onGoProgress}
-          className="bg-white border border-gray-200 hover:border-gray-300 text-gray-700 rounded-[10px] px-4 py-2.5 text-[13.5px] font-medium transition-colors"
-        >
-          See the pattern
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ProgressCard({ onOpenConvo }: { onOpenConvo: () => void }) {
-  return (
-    <div className="bg-white border border-gray-200 rounded-2xl px-6 py-5 shadow-[0_1px_2px_rgba(17,24,39,.04),0_14px_34px_-28px_rgba(17,24,39,.45)]">
-      <div className="flex items-center gap-2.5 mb-3">
-        <span className="w-6 h-6 rounded-[7px] bg-gray-500 text-white flex items-center justify-center text-[11px] font-bold">E</span>
-        <span className="text-[12.5px] font-semibold text-gray-500">English</span>
-        <span className="text-[12.5px] text-gray-400">· improving</span>
-        <div className="flex-1" />
-        <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-            <path d="M5 17l5-6 4 3 5-7" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          +13
-        </span>
-      </div>
-      <h3 className="font-heading text-lg font-semibold text-gray-900 mb-3.5">Your essay structure is really coming together</h3>
-      <div className="mb-2">
-        <div className="flex justify-between text-xs text-gray-400 mb-1.5">
-          <span>Comparative essay marks</span>
-          <span>
-            <strong className="text-emerald-600">71%</strong> · up from 58%
-          </span>
-        </div>
-        <div className="h-2 bg-gray-200 rounded-md overflow-hidden relative">
-          <div className="absolute inset-y-0 left-0 w-[58%] bg-gray-300" />
-          <div className="absolute inset-y-0 left-0 w-[71%] bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-md" />
-        </div>
-      </div>
-      <p className="mt-3.5 mb-4 text-[13.5px] leading-relaxed text-gray-500">
-        Your introductions used to wander — now you&apos;re landing a clear thesis in the first two sentences. Keep it up and
-        the marks follow.
-      </p>
-      <button
-        type="button"
-        onClick={onOpenConvo}
-        className="bg-white border border-gray-200 hover:border-emerald-500 hover:text-emerald-600 text-gray-700 rounded-[10px] px-4 py-2.5 text-[13.5px] font-medium transition-colors"
-      >
-        Push it to the next grade
-      </button>
-    </div>
-  );
+function levelSummary(subjects: Subject[], levels?: Record<string, SubjectLevel>) {
+  if (!levels) return "Higher by default";
+  const selected = subjects.map((subject) => levels[subject.id] ?? "HL");
+  const higher = selected.filter((level) => level === "HL").length;
+  const ordinary = selected.length - higher;
+  if (!ordinary) return "Higher Level";
+  if (!higher) return "Ordinary Level";
+  return `${higher} HL / ${ordinary} OL`;
 }

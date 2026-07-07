@@ -208,7 +208,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Aoife Murphy"
+                placeholder="Student name"
                 className={inputCls}
               />
             </Field>
