@@ -30,12 +30,12 @@ export function subjectLabel(subjectId: string): string {
 }
 
 const PAPER_TOPICS: Record<string, [string, string]> = {
-  maths: ["Algebra · Functions · Calculus", "Geometry · Trig · Probability"],
-  chemistry: ["Atomic theory · Bonding · Stoichiometry", "Organic · Rates · Equilibria"],
-  physics: ["Mechanics · Heat · Waves", "Electricity · Modern physics"],
-  english: ["Comprehending · Composing", "Single text · Comparative · Poetry"],
-  irish: ["Cluastuiscint · Léamhthuiscint", "Prós · Filíocht · Aiste"],
-  "computer-science": ["Computational thinking · Logic", "Algorithms · Data representation"],
+  maths: ["Algebra / Functions / Calculus", "Geometry / Trig / Probability"],
+  chemistry: ["Atomic theory / Bonding / Stoichiometry", "Organic / Rates / Equilibria"],
+  physics: ["Mechanics / Heat / Waves", "Electricity / Modern physics"],
+  english: ["Comprehending / Composing", "Single text / Comparative / Poetry"],
+  irish: ["Cluastuiscint / Leamhthuiscint", "Pros / Filiocht / Aiste"],
+  "computer-science": ["Computational thinking / Logic", "Algorithms / Data representation"],
 };
 
 export interface PaperEntry {

@@ -1,11 +1,11 @@
 import { IS_BETA } from "@/lib/beta";
 
 const quotes = [
-  { name: "Aoife M.", school: "6th Year, Galway", text: "It actually makes me think. My maths teacher noticed." },
-  { name: "Cian D.", school: "5th Year, Cork", text: "Asked it three times to just give me the answer. It kept asking better questions instead." },
+  { name: "6th Year student", school: "Galway", text: "It actually makes me think. My maths teacher noticed." },
+  { name: "5th Year student", school: "Cork", text: "Asked it three times to just give me the answer. It kept asking better questions instead." },
   {
-    name: "Saoirse K.",
-    school: "6th Year, Dublin",
+    name: "6th Year student",
+    school: "Dublin",
     text: IS_BETA
       ? "Using it for biology revision during the beta — helpful when I'm stuck on a concept."
       : "Replaced my EUR40/hr grinds for biology. I'm doing better in tests too.",

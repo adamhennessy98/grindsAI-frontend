@@ -37,12 +37,15 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
 
   useEffect(() => {
     if (!editMode) return;
-    const profile = readStudentProfile();
-    if (!profile) return;
-    setYearGroup(profile.yearGroup);
-    setSubjects(profile.subjects);
-    setSubjectLevels(profile.subjectLevels);
-    setExamTarget(profile.examTarget);
+    const timer = window.setTimeout(() => {
+      const profile = readStudentProfile();
+      if (!profile) return;
+      setYearGroup(profile.yearGroup);
+      setSubjects(profile.subjects);
+      setSubjectLevels(profile.subjectLevels);
+      setExamTarget(profile.examTarget);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [editMode]);
 
   const examOptions = useMemo(() => (yearGroup ? examOptionsForYear(yearGroup) : []), [yearGroup]);

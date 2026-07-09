@@ -1,143 +1,259 @@
 "use client";
 
+import { useState } from "react";
+import { subjectLabel } from "./subjects";
+
 interface ProgressViewProps {
+  subjectId: string;
+  level: string;
   onOpenConvo: () => void;
 }
 
-export function ProgressView({ onOpenConvo }: ProgressViewProps) {
+type ProgressSeed = {
+  average: string;
+  trend: string;
+  strongest: string;
+  weakest: string;
+  chartTitle: string;
+  skills: { label: string; pct: number }[];
+  recurring: { title: string; sub: string }[];
+};
+
+const PROGRESS: Record<string, ProgressSeed> = {
+  maths: {
+    average: "72%",
+    trend: "+11 pts this term",
+    strongest: "Algebra",
+    weakest: "Chain rule",
+    chartTitle: "Calculus accuracy",
+    skills: [
+      { label: "Algebra and functions", pct: 88 },
+      { label: "Coordinate geometry", pct: 76 },
+      { label: "Calculus", pct: 63 },
+    ],
+    recurring: [
+      { title: "Chain rule in differentiation", sub: "Seen in 4 sessions, improving slowly" },
+      { title: "Rates of change", sub: "Correct method, weaker setup" },
+      { title: "Showing method marks", sub: "Answers are better than written working" },
+    ],
+  },
+  chemistry: {
+    average: "64%",
+    trend: "+7 pts this term",
+    strongest: "Atomic theory",
+    weakest: "Stoichiometry",
+    chartTitle: "Stoichiometry accuracy",
+    skills: [
+      { label: "Atomic theory", pct: 82 },
+      { label: "Bonding", pct: 74 },
+      { label: "Stoichiometry", pct: 58 },
+    ],
+    recurring: [
+      { title: "Mass to mole conversions", sub: "Units are the main source of lost marks" },
+      { title: "Limiting reagent questions", sub: "Needs more structured setup" },
+      { title: "Volumetric analysis wording", sub: "Formula choice is sometimes rushed" },
+    ],
+  },
+};
+
+export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProps) {
+  const subject = subjectLabel(subjectId);
+  const seed = PROGRESS[subjectId] ?? {
+    average: "New",
+    trend: "Add tests to build a trend",
+    strongest: "Not enough data yet",
+    weakest: "Not enough data yet",
+    chartTitle: "Score trend",
+    skills: [
+      { label: "Exam technique", pct: 58 },
+      { label: "Topic recall", pct: 52 },
+      { label: "Written working", pct: 49 },
+    ],
+    recurring: [
+      { title: "No repeated mistake identified yet", sub: "Track more tests and sessions to surface patterns" },
+      { title: "Add teacher feedback", sub: "Teacher comments will sharpen the progress view" },
+    ],
+  };
+
+  const [struggles, setStruggles] = useState("");
+  const [easyAreas, setEasyAreas] = useState("");
+  const [savedNote, setSavedNote] = useState<{ struggles: string; easyAreas: string } | null>(null);
+
+  const saveNote = () => {
+    setSavedNote({
+      struggles: struggles.trim(),
+      easyAreas: easyAreas.trim(),
+    });
+  };
+
   return (
-    <div className="max-w-[920px] mx-auto px-7 pt-[30px] pb-16">
-      <div className="flex items-start gap-3.5 mb-[26px]">
-        <div className="w-[46px] h-[46px] rounded-full bg-emerald-500 text-white flex items-center justify-center font-heading text-xl font-semibold shrink-0">
-          S
-        </div>
+    <div className="mx-auto max-w-[1060px] px-5 pb-16 pt-[30px] sm:px-7">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold text-gray-900 mb-1">What Saoirse has learned about you</h1>
-          <p className="m-0 text-sm text-gray-400">Built from 18 sessions since September · across all your subjects</p>
+          <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-emerald-600">
+            {subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}
+          </div>
+          <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">My progress</h1>
+          <p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">
+            A visible summary of what the tutor knows for this subject: scores, strengths, repeated mistakes, and next
+            steps. More tracker data means better recommendations.
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={onOpenConvo}
+          className="rounded-[10px] bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
+        >
+          Work on weakest area
+        </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-3.5 mb-6">
-        <StatTile label="Overall trajectory" value="Climbing" valueColor="text-emerald-600" caption="+11% across your subjects this term" />
-        <StatTile label="Strongest area" value="Algebra" valueColor="text-gray-900" caption="Reliably 85%+ for two months" />
-        <StatTile label="Biggest turnaround" value="Differentiation" valueColor="text-gray-900" caption="41% → 68% since September" captionColor="text-emerald-600 font-semibold" />
+      <div className="mb-6 grid grid-cols-1 gap-3.5 md:grid-cols-3">
+        <StatTile label="Average test score" value={seed.average} valueColor="text-emerald-600" caption={seed.trend} />
+        <StatTile label="Strongest area" value={seed.strongest} valueColor="text-gray-900" caption="Based on recent results" />
+        <StatTile label="Main focus" value={seed.weakest} valueColor="text-gray-900" caption="Recommended next step" />
       </div>
 
-      <div className="grid grid-cols-[1.1fr_1fr] gap-4 items-start">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="flex flex-col gap-4">
-          <div className="bg-white border border-gray-200 rounded-2xl px-[22px] py-5">
-            <h3 className="font-heading text-base font-semibold text-gray-900 mb-3.5 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              What you&apos;re good at
-            </h3>
+          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
+            <h2 className="font-heading mb-3.5 flex items-center gap-2 text-base font-semibold text-gray-900">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Areas going well
+            </h2>
             <div className="flex flex-col gap-3.5">
-              <SkillBar label="Algebra & functions" subject="Maths" pct={88} />
-              <SkillBar label="Comparative essays" subject="English" pct={71} />
-              <SkillBar label="Mechanics" subject="Physics" pct={79} />
+              {seed.skills.map((skill) => (
+                <SkillBar key={skill.label} label={skill.label} pct={skill.pct} />
+              ))}
             </div>
-          </div>
+          </section>
 
-          <div className="bg-white border border-gray-200 rounded-2xl px-[22px] py-5">
-            <h3 className="font-heading text-base font-semibold text-gray-900 mb-1.5 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-gray-500" />
-              What keeps coming back
-            </h3>
-            <p className="m-0 mb-3.5 text-[12.5px] text-gray-400">Topics Saoirse has watched you stumble on more than once.</p>
+          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
+            <h2 className="font-heading mb-1.5 flex items-center gap-2 text-base font-semibold text-gray-900">
+              <span className="h-2 w-2 rounded-full bg-gray-500" />
+              Repeated mistakes
+            </h2>
+            <p className="m-0 mb-3.5 text-[12.5px] text-gray-400">Patterns pulled from tutor sessions and tracked tests.</p>
             <div className="flex flex-col gap-2.5">
-              <RecurringRow title="Chain rule in differentiation" sub="Seen in 4 sessions · improving slowly" tag="Maths" onClick={onOpenConvo} />
-              <RecurringRow title="Mole calculations" sub="Seen in 3 of last 5 sessions" tag="Chemistry" onClick={onOpenConvo} />
-              <RecurringRow title="An Aimsir Chaite — past tense" sub="Verb endings slipping under time pressure" tag="Gaeilge" onClick={onOpenConvo} />
+              {seed.recurring.map((item) => (
+                <RecurringRow key={item.title} title={item.title} sub={item.sub} onClick={onOpenConvo} />
+              ))}
             </div>
-          </div>
+          </section>
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="bg-white border border-gray-200 rounded-2xl px-[22px] py-5">
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="font-heading text-base font-semibold text-gray-900 m-0">Differentiation, over time</h3>
-              <span className="text-xs font-semibold text-emerald-600">▲ +27 pts</span>
+          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
+            <div className="mb-1 flex items-center justify-between">
+              <h2 className="font-heading m-0 text-base font-semibold text-gray-900">{seed.chartTitle}</h2>
+              <span className="text-xs font-semibold text-emerald-600">{seed.trend}</span>
             </div>
-            <p className="m-0 mb-4 text-[12.5px] text-gray-400">Your accuracy on chain-rule questions, session by session.</p>
-            <DifferentiationChart />
-          </div>
+            <p className="m-0 mb-4 text-[12.5px] text-gray-400">Illustrative trend from recent tracked assessments.</p>
+            <ProgressChart />
+          </section>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-2xl px-5 py-[18px]">
-            <div className="flex items-center gap-2 mb-2.5">
-              <div className="w-[26px] h-[26px] rounded-full bg-emerald-500 text-white flex items-center justify-center font-heading text-[13px]">
-                S
-              </div>
-              <span className="text-xs font-bold uppercase tracking-[0.04em] text-gray-500">Saoirse&apos;s note</span>
-            </div>
-            <p className="m-0 text-[13.5px] leading-relaxed text-gray-700">
-              &ldquo;Colm has put in steady, honest work this term. He&apos;s solid on the foundations and is finally turning
-              the corner on differentiation — the topic that worried him most. Mole calculations are next on our list. He&apos;s
-              exactly where a 6th year should be heading into the Christmas mocks.&rdquo;
+          <section className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-[18px]">
+            <h2 className="font-heading m-0 text-base font-semibold text-gray-900">Tell the tutor more</h2>
+            <p className="m-0 mb-4 mt-1 text-[13px] leading-relaxed text-gray-500">
+              Add your own view of what feels hard or easy. For now this saves visually in the current session only.
             </p>
-            <div className="text-[11.5px] text-gray-400 mt-2.5">A summary you can share with a parent or teacher.</div>
-          </div>
+            <div className="space-y-3">
+              <label className="block">
+                <span className="mb-1.5 block text-[12.5px] font-medium text-gray-700">I am struggling with</span>
+                <textarea
+                  value={struggles}
+                  onChange={(event) => setStruggles(event.target.value)}
+                  placeholder="Example: worded calculus questions, timing, remembering formulae"
+                  className={textareaCls}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-[12.5px] font-medium text-gray-700">I find easy</span>
+                <textarea
+                  value={easyAreas}
+                  onChange={(event) => setEasyAreas(event.target.value)}
+                  placeholder="Example: algebra basics, definitions, short questions"
+                  className={textareaCls}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={saveNote}
+                className="w-full rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-500 hover:text-emerald-600"
+              >
+                Save note
+              </button>
+            </div>
+            {savedNote && (savedNote.struggles || savedNote.easyAreas) && (
+              <div className="mt-4 rounded-[12px] border border-emerald-100 bg-emerald-50 px-4 py-3">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-emerald-600">Saved this session</div>
+                {savedNote.struggles && <p className="m-0 mt-2 text-[13px] text-gray-700">Struggling with: {savedNote.struggles}</p>}
+                {savedNote.easyAreas && <p className="m-0 mt-1 text-[13px] text-gray-700">Finds easy: {savedNote.easyAreas}</p>}
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </div>
   );
 }
+
+const textareaCls =
+  "min-h-[86px] w-full resize-none rounded-[10px] border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]";
 
 function StatTile({
   label,
   value,
   valueColor,
   caption,
-  captionColor = "text-gray-400",
 }: {
   label: string;
   value: string;
   valueColor: string;
   caption: string;
-  captionColor?: string;
 }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl px-5 py-[18px]">
-      <div className="text-[12.5px] text-gray-400 mb-2">{label}</div>
+    <div className="rounded-2xl border border-gray-200 bg-white px-5 py-[18px]">
+      <div className="mb-2 text-[12.5px] text-gray-400">{label}</div>
       <div className={`font-heading text-[27px] font-semibold ${valueColor}`}>{value}</div>
-      <div className={`text-xs mt-1 ${captionColor}`}>{caption}</div>
+      <div className="mt-1 text-xs text-gray-400">{caption}</div>
     </div>
   );
 }
 
-function SkillBar({ label, subject, pct }: { label: string; subject: string; pct: number }) {
+function SkillBar({ label, pct }: { label: string; pct: number }) {
   return (
     <div>
-      <div className="flex justify-between text-[13px] mb-1.5">
-        <span className="text-gray-700">
-          {label} <span className="text-gray-400">· {subject}</span>
-        </span>
-        <span className="text-emerald-600 font-semibold">{pct}%</span>
+      <div className="mb-1.5 flex justify-between text-[13px]">
+        <span className="text-gray-700">{label}</span>
+        <span className="font-semibold text-emerald-600">{pct}%</span>
       </div>
-      <div className="h-[7px] bg-gray-200 rounded-md overflow-hidden">
-        <div className="h-full bg-emerald-500 rounded-md" style={{ width: `${pct}%` }} />
+      <div className="h-[7px] overflow-hidden rounded-md bg-gray-200">
+        <div className="h-full rounded-md bg-emerald-500" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
 }
 
-function RecurringRow({ title, sub, tag, onClick }: { title: string; sub: string; tag: string; onClick: () => void }) {
+function RecurringRow({ title, sub, onClick }: { title: string; sub: string; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-3 w-full text-left bg-gray-50 border border-gray-200 hover:border-gray-500 rounded-[10px] px-3.5 py-[11px] transition-colors"
+      className="flex w-full items-center gap-3 rounded-[10px] border border-gray-200 bg-gray-50 px-3.5 py-[11px] text-left transition-colors hover:border-gray-500"
     >
       <span className="flex-1">
         <span className="block text-[13.5px] font-semibold text-gray-900">{title}</span>
         <span className="text-xs text-gray-400">{sub}</span>
       </span>
-      <span className="text-[11px] font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-xl shrink-0">{tag}</span>
+      <span className="shrink-0 rounded-xl bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">Practise</span>
     </button>
   );
 }
 
-function DifferentiationChart() {
+function ProgressChart() {
   return (
-    <svg viewBox="0 0 320 150" className="w-full h-auto block">
+    <svg viewBox="0 0 320 150" className="block h-auto w-full" aria-hidden="true">
       <line x1="34" y1="14" x2="34" y2="118" stroke="#E5E7EB" strokeWidth="1" />
       <line x1="34" y1="118" x2="312" y2="118" stroke="#E5E7EB" strokeWidth="1" />
       <line x1="34" y1="40" x2="312" y2="40" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="3 4" />
@@ -154,8 +270,8 @@ function DifferentiationChart() {
       <circle cx="300" cy="49" r="4.2" fill="#10B981" />
       <text x="48" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Sep</text>
       <text x="114" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Oct</text>
-      <text x="180" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Oct</text>
-      <text x="246" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Nov</text>
+      <text x="180" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Nov</text>
+      <text x="246" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Dec</text>
       <text x="300" y="134" textAnchor="middle" fontSize="9" fill="#10B981" fontWeight="600">Now</text>
     </svg>
   );

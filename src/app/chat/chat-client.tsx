@@ -1,7 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { SUBJECTS } from "@/lib/constants";
+import { filterSubjects, getSubjectLevel, readStudentProfile, type StudentProfile } from "@/lib/onboarding";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { AppSidebar } from "@/components/app/sidebar";
 import { AppTopBar } from "@/components/app/topbar";
@@ -10,6 +12,8 @@ import { HomeFeed } from "@/components/app/home-feed";
 import { ConversationView } from "@/components/app/conversation-view";
 import { PapersView } from "@/components/app/papers-view";
 import { ProgressView } from "@/components/app/progress-view";
+import { SubjectWorkspace } from "@/components/app/subject-workspace";
+import { ExamTrackerView } from "@/components/app/exam-tracker-view";
 import type { Screen } from "@/components/app/types";
 
 function initialsFrom(name: string, email: string) {
@@ -29,10 +33,17 @@ export function ChatClient() {
   const [screen, setScreen] = useState<Screen>("home");
   const [prevScreen, setPrevScreen] = useState<Screen>("home");
   const [subjectId, setSubjectId] = useState("all");
+  const [topicId, setTopicId] = useState("general");
   const [collapsed, setCollapsed] = useState(false);
   const [stuck, setStuck] = useState(false);
   const [userName, setUserName] = useState("Student");
   const [userEmail, setUserEmail] = useState("");
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setProfile(readStudentProfile()), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const sb = getBrowserSupabase();
@@ -47,49 +58,91 @@ export function ChatClient() {
     })();
   }, []);
 
-  const goToScreen = useCallback(
+  const subjects = useMemo(() => filterSubjects(profile?.subjects), [profile]);
+  const fallbackSubjectId = subjects[0]?.id ?? SUBJECTS[0]?.id ?? "maths";
+  const activeSubjectId = subjectId === "all" ? fallbackSubjectId : subjectId;
+  const activeLevel = getSubjectLevel(profile, activeSubjectId);
+
+  const ensureSubject = useCallback(() => {
+    if (subjectId !== "all") return subjectId;
+    setSubjectId(fallbackSubjectId);
+    return fallbackSubjectId;
+  }, [fallbackSubjectId, subjectId]);
+
+  const goHome = useCallback(() => {
+    setSubjectId("all");
+    setScreen("home");
+  }, []);
+
+  const goToWorkspace = useCallback(() => {
+    ensureSubject();
+    setScreen("workspace");
+  }, [ensureSubject]);
+
+  const goToTutor = useCallback(() => {
+    ensureSubject();
+    setTopicId("general");
+    setPrevScreen((current) => (screen === "conversation" ? current : screen === "home" ? "workspace" : screen));
+    setScreen("conversation");
+    setStuck(false);
+  }, [ensureSubject, screen]);
+
+  const goToSubjectTool = useCallback(
     (next: Screen) => {
+      ensureSubject();
       setPrevScreen((current) => (screen === "conversation" ? current : screen));
       setScreen(next);
     },
-    [screen],
+    [ensureSubject, screen],
   );
 
-  const openConvo = useCallback(() => {
-    setPrevScreen((current) => (screen === "conversation" ? current : screen));
+  const openConvo = useCallback((nextTopicId = "general") => {
+    ensureSubject();
+    setTopicId(nextTopicId);
+    setPrevScreen((current) => (screen === "conversation" ? current : screen === "home" ? "workspace" : screen));
     setScreen("conversation");
     setStuck(false);
-  }, [screen]);
+  }, [ensureSubject, screen]);
 
   const exitConvo = useCallback(() => {
     setScreen(prevScreen);
   }, [prevScreen]);
 
   const selectSubject = useCallback((id: string) => {
+    if (id === "all") {
+      setSubjectId("all");
+      setScreen("home");
+      return;
+    }
     setSubjectId(id);
-    setScreen((current) => (current === "conversation" ? "home" : current));
+    setTopicId("general");
+    setScreen("workspace");
   }, []);
 
   const openSettings = useCallback(() => {
     router.push("/onboarding?edit=1");
   }, [router]);
 
-  const showRail = screen === "home" || screen === "conversation";
+  const showRail = screen === "home" || screen === "workspace" || screen === "tracker" || screen === "conversation";
 
   return (
     <div className="flex h-screen overflow-hidden bg-white">
       <AppSidebar
         screen={screen}
         subjectId={subjectId}
+        subjects={subjects}
         collapsed={collapsed}
         userName={userName}
         userEmail={userEmail}
         userInitials={initialsFrom(userName, userEmail)}
         onSelectAll={() => selectSubject("all")}
         onSelectSubject={selectSubject}
-        onGoHome={() => goToScreen("home")}
-        onGoPapers={() => goToScreen("papers")}
-        onGoProgress={() => goToScreen("progress")}
+        onGoHome={goHome}
+        onGoWorkspace={goToWorkspace}
+        onGoTutor={goToTutor}
+        onGoGenerator={() => goToSubjectTool("generator")}
+        onGoTracker={() => goToSubjectTool("tracker")}
+        onGoProgress={() => goToSubjectTool("progress")}
         onOpenSettings={openSettings}
       />
 
@@ -101,20 +154,68 @@ export function ChatClient() {
           backgroundSize: "100% 100%, 23px 23px",
         }}
       >
-        <AppTopBar screen={screen} onToggleSidebar={() => setCollapsed((c) => !c)} onExitConvo={exitConvo} />
+        <AppTopBar
+          screen={screen}
+          subjectId={subjectId}
+          activeSubjectId={activeSubjectId}
+          onToggleSidebar={() => setCollapsed((c) => !c)}
+          onExitConvo={exitConvo}
+        />
 
         <div className="flex-1 overflow-y-auto relative">
           {screen === "home" && (
-            <HomeFeed subjectId={subjectId} onOpenConvo={openConvo} onGoProgress={() => goToScreen("progress")} />
+            <HomeFeed
+              subjects={subjects}
+              subjectLevels={profile?.subjectLevels}
+              onSelectSubject={selectSubject}
+              onOpenTutor={goToTutor}
+              onOpenSettings={openSettings}
+            />
           )}
-          {screen === "conversation" && <ConversationView stuck={stuck} onRevealStuck={() => setStuck(true)} />}
-          {screen === "papers" && <PapersView subjectId={subjectId} onOpenConvo={openConvo} />}
-          {screen === "progress" && <ProgressView onOpenConvo={openConvo} />}
+          {screen === "workspace" && (
+            <SubjectWorkspace
+              subjectId={activeSubjectId}
+              level={activeLevel}
+              onOpenTutor={goToTutor}
+              onOpenGenerator={() => goToSubjectTool("generator")}
+              onOpenTracker={() => goToSubjectTool("tracker")}
+              onOpenProgress={() => goToSubjectTool("progress")}
+            />
+          )}
+          {screen === "conversation" && (
+            <ConversationView
+              subjectId={activeSubjectId}
+              level={activeLevel}
+              topicId={topicId}
+              stuck={stuck}
+              onRevealStuck={() => setStuck(true)}
+              onOpenTopic={openConvo}
+            />
+          )}
+          {screen === "generator" && (
+            <PapersView
+              key={activeSubjectId}
+              subjectId={activeSubjectId}
+              level={activeLevel}
+              onOpenConvo={() => openConvo(topicId)}
+            />
+          )}
+          {screen === "tracker" && (
+            <ExamTrackerView subjectId={activeSubjectId} level={activeLevel} onOpenTutor={goToTutor} />
+          )}
+          {screen === "progress" && (
+            <ProgressView subjectId={activeSubjectId} level={activeLevel} onOpenConvo={() => openConvo(topicId)} />
+          )}
         </div>
       </main>
 
       {showRail && (
-        <CalendarRail dimmed={screen === "conversation"} onDismiss={exitConvo} onOpenConvo={openConvo} />
+        <CalendarRail
+          subjectId={subjectId === "all" ? undefined : activeSubjectId}
+          dimmed={screen === "conversation"}
+          onDismiss={exitConvo}
+          onOpenConvo={() => openConvo(topicId)}
+        />
       )}
     </div>
   );
