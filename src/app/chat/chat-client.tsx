@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import { SUBJECTS } from "@/lib/constants";
 import { filterSubjects, getSubjectLevel, readStudentProfile, type StudentProfile } from "@/lib/onboarding";
 import { getBrowserSupabase } from "@/lib/supabase/client";
-import { AppSidebar } from "@/components/app/sidebar";
 import { AppTopBar } from "@/components/app/topbar";
-import { CalendarRail } from "@/components/app/calendar-rail";
 import { HomeFeed } from "@/components/app/home-feed";
 import { ConversationView } from "@/components/app/conversation-view";
 import { PapersView } from "@/components/app/papers-view";
@@ -32,9 +30,8 @@ export function ChatClient() {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("home");
   const [prevScreen, setPrevScreen] = useState<Screen>("home");
-  const [subjectId, setSubjectId] = useState("all");
+  const [subjectId, setSubjectId] = useState("");
   const [topicId, setTopicId] = useState("general");
-  const [collapsed, setCollapsed] = useState(false);
   const [stuck, setStuck] = useState(false);
   const [userName, setUserName] = useState("Student");
   const [userEmail, setUserEmail] = useState("");
@@ -58,19 +55,19 @@ export function ChatClient() {
     })();
   }, []);
 
-  const subjects = useMemo(() => filterSubjects(profile?.subjects), [profile]);
+  const subjects = useMemo(() => (profile ? filterSubjects(profile.subjects) : []), [profile]);
   const fallbackSubjectId = subjects[0]?.id ?? SUBJECTS[0]?.id ?? "maths";
-  const activeSubjectId = subjectId === "all" ? fallbackSubjectId : subjectId;
+  const activeSubjectId = subjectId || fallbackSubjectId;
   const activeLevel = getSubjectLevel(profile, activeSubjectId);
 
   const ensureSubject = useCallback(() => {
-    if (subjectId !== "all") return subjectId;
+    if (subjectId) return subjectId;
     setSubjectId(fallbackSubjectId);
     return fallbackSubjectId;
   }, [fallbackSubjectId, subjectId]);
 
   const goHome = useCallback(() => {
-    setSubjectId("all");
+    setSubjectId("");
     setScreen("home");
   }, []);
 
@@ -109,11 +106,6 @@ export function ChatClient() {
   }, [prevScreen]);
 
   const selectSubject = useCallback((id: string) => {
-    if (id === "all") {
-      setSubjectId("all");
-      setScreen("home");
-      return;
-    }
     setSubjectId(id);
     setTopicId("general");
     setScreen("workspace");
@@ -123,52 +115,33 @@ export function ChatClient() {
     router.push("/onboarding?edit=1");
   }, [router]);
 
-  const showRail = screen === "home" || screen === "workspace" || screen === "tracker" || screen === "conversation";
-
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
-      <AppSidebar
-        screen={screen}
-        subjectId={subjectId}
-        subjects={subjects}
-        collapsed={collapsed}
-        userName={userName}
-        userEmail={userEmail}
-        userInitials={initialsFrom(userName, userEmail)}
-        onSelectAll={() => selectSubject("all")}
-        onSelectSubject={selectSubject}
-        onGoHome={goHome}
-        onGoWorkspace={goToWorkspace}
-        onGoTutor={goToTutor}
-        onGoGenerator={() => goToSubjectTool("generator")}
-        onGoTracker={() => goToSubjectTool("tracker")}
-        onGoProgress={() => goToSubjectTool("progress")}
-        onOpenSettings={openSettings}
-      />
-
+    <div className="h-screen min-h-screen bg-white">
       <main
-        className="flex-1 min-w-0 h-full flex flex-col relative bg-white"
-        style={{
-          backgroundImage:
-            "radial-gradient(120% 52% at 50% -8%, rgba(16,185,129,0.07), rgba(16,185,129,0) 62%), radial-gradient(circle at center, rgba(17,24,39,0.045) 1px, transparent 1.5px)",
-          backgroundSize: "100% 100%, 23px 23px",
-        }}
+        className="app-study-shell relative flex h-full min-h-0 flex-col bg-white"
       >
         <AppTopBar
           screen={screen}
           subjectId={subjectId}
           activeSubjectId={activeSubjectId}
-          onToggleSidebar={() => setCollapsed((c) => !c)}
-          onExitConvo={exitConvo}
+          userInitials={initialsFrom(userName, userEmail)}
+          onBack={screen === "workspace" ? goHome : screen === "conversation" ? exitConvo : goToWorkspace}
+          onHome={goHome}
+          onOpenSettings={openSettings}
         />
 
-        <div className="flex-1 overflow-y-auto relative">
+        <div
+          className={[
+            "relative min-h-0 flex-1",
+            screen === "conversation" ? "overflow-hidden" : "overflow-y-auto",
+          ].join(" ")}
+        >
           {screen === "home" && (
             <HomeFeed
+              hasProfile={Boolean(profile)}
               subjects={subjects}
               subjectLevels={profile?.subjectLevels}
               onSelectSubject={selectSubject}
-              onOpenTutor={goToTutor}
               onOpenSettings={openSettings}
             />
           )}
@@ -208,15 +181,6 @@ export function ChatClient() {
           )}
         </div>
       </main>
-
-      {showRail && (
-        <CalendarRail
-          subjectId={subjectId === "all" ? undefined : activeSubjectId}
-          dimmed={screen === "conversation"}
-          onDismiss={exitConvo}
-          onOpenConvo={() => openConvo(topicId)}
-        />
-      )}
     </div>
   );
 }

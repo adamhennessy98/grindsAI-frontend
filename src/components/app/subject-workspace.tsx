@@ -11,32 +11,46 @@ interface SubjectWorkspaceProps {
   onOpenProgress: () => void;
 }
 
-const WORKSPACE_COPY: Record<string, { focus: string; nextExam: string; weak: string; strong: string }> = {
+const WORKSPACE_COPY: Record<string, { focus: string; nextExam: string }> = {
   maths: {
     focus: "Calculus, algebra, and exam timing",
-    nextExam: "Class test on differentiation",
-    weak: "Chain rule questions",
-    strong: "Algebraic manipulation",
+    nextExam: "Differentiation class test",
   },
   chemistry: {
     focus: "Moles, acids and bases, and organic chemistry",
     nextExam: "Stoichiometry class test",
-    weak: "Mass to mole conversions",
-    strong: "Atomic theory",
   },
   english: {
     focus: "Comparative essays and poetry",
     nextExam: "Comparative essay checkpoint",
-    weak: "Linking paragraphs under time pressure",
-    strong: "Clear thesis statements",
   },
   biology: {
     focus: "Genetics, ecology, and experiment questions",
     nextExam: "Short-question practice",
-    weak: "Genetic crosses",
-    strong: "Ecology definitions",
   },
 };
+
+const ACTIONS = [
+  {
+    title: "Tutor",
+    body: "Get step-by-step help.",
+    cta: "Start",
+    accent: "cyan",
+  },
+  {
+    title: "Practice Questions",
+    body: "Generate exam-style questions.",
+    cta: "Practise",
+    accent: "lime",
+  },
+  {
+    title: "Exam Tracker",
+    body: "Log tests, mocks, and results.",
+    cta: "Track",
+    accent: "amber",
+  },
+  { title: "My Progress", body: "See strengths, weak areas, and next steps.", cta: "View", accent: "violet" },
+] as const;
 
 export function SubjectWorkspace({
   subjectId,
@@ -50,206 +64,110 @@ export function SubjectWorkspace({
   const copy = WORKSPACE_COPY[subjectId] ?? {
     focus: "Exam practice and revision planning",
     nextExam: "Next assessment",
-    weak: "Needs more tracker data",
-    strong: "Building a baseline",
   };
+  const handlers = [onOpenTutor, onOpenGenerator, onOpenTracker, onOpenProgress];
 
   return (
-    <div className="mx-auto max-w-[1040px] px-5 pb-16 pt-[30px] sm:px-7">
-      <div className="mb-6 flex flex-col gap-4 rounded-[18px] border border-gray-200 bg-white px-6 py-6 shadow-[0_1px_2px_rgba(17,24,39,.04),0_18px_40px_-32px_rgba(17,24,39,.45)] sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gray-200 bg-gray-100 font-heading text-lg font-semibold text-gray-700">
+    <div className="mx-auto max-w-[1040px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9">
+      <section className="mb-5 rounded-3xl border border-white/80 bg-white/88 px-5 py-5 shadow-[0_16px_42px_-34px_rgba(15,23,42,.55)] backdrop-blur-sm sm:px-6">
+        <div className="flex items-start gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cyan-100 bg-[linear-gradient(135deg,#ecfeff,#fef3c7)] font-heading text-lg font-semibold text-cyan-900 shadow-[0_14px_30px_-22px_rgba(34,211,238,.8)]">
             {subjectInitial(subjectId)}
           </div>
-          <div>
-            <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-emerald-600">
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-cyan-600">
               {level === "OL" ? "Ordinary Level" : "Higher Level"}
             </div>
-            <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">
-              {subject} workspace
+            <h1 className="font-heading m-0 text-[30px] font-semibold leading-tight tracking-[-0.02em] text-gray-900 sm:text-[34px]">
+              {subject}
             </h1>
-            <p className="m-0 mt-1 text-sm text-gray-500">{copy.focus}</p>
+            <p className="m-0 mt-1 text-[14px] leading-relaxed text-gray-500">{copy.focus}</p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onOpenTutor}
-          className="rounded-[10px] bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
-        >
-          Start with tutor
-        </button>
+      </section>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {ACTIONS.map((action, index) => (
+          <ActionCard
+            key={action.title}
+            title={action.title}
+            body={action.body}
+            cta={action.cta}
+            accent={action.accent}
+            onClick={handlers[index]}
+          />
+        ))}
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-3.5 md:grid-cols-2">
-        <WorkspaceTile
-          eyebrow="Socratic help"
-          title="Tutor"
-          body="Work through questions step by step. The tutor asks, hints, checks your reasoning, and keeps the focus on understanding."
-          stat="Guided session"
-          icon={<TutorIcon />}
-          onClick={onOpenTutor}
-        />
-        <WorkspaceTile
-          eyebrow="Exam practice"
-          title="Practice Questions"
-          body="Generate Leaving Cert-style questions by topic, level, type, and difficulty. Use hints or worked solutions when needed."
-          stat="Generator ready"
-          icon={<QuestionIcon />}
-          onClick={onOpenGenerator}
-        />
-        <WorkspaceTile
-          eyebrow="Assessment memory"
-          title="Exam Tracker"
-          body="Record class tests, past-paper attempts, mocks, and scanned corrections so patterns are visible over time."
-          stat="Topic + date required"
-          icon={<TrackerIcon />}
-          onClick={onOpenTracker}
-        />
-        <WorkspaceTile
-          eyebrow="Tutor memory"
-          title="My Progress"
-          body="See average scores, strengths, recurring mistakes, and recommended next steps for this subject."
-          stat="Updates with evidence"
-          icon={<ProgressIcon />}
-          onClick={onOpenProgress}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <section className="rounded-2xl border border-gray-200 bg-white px-5 py-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="font-heading m-0 text-lg font-semibold text-gray-900">Subject roadmap</h2>
-            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[12px] font-semibold text-gray-500">
-              Chronological
-            </span>
-          </div>
-          <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0">
-            <RoadmapDot tone="done" />
-            <RoadmapItem title="Last tracked result" meta="Past-paper attempt added" detail="This gives the tutor a first signal for strengths and gaps." />
-            <RoadmapLine />
-            <div />
-            <RoadmapDot tone="current" />
-            <RoadmapItem title={copy.nextExam} meta="Upcoming assessment" detail="Use the tracker to add topic and date, then practise related questions." />
-            <RoadmapLine />
-            <div />
-            <RoadmapDot tone="future" />
-            <RoadmapItem title="Leaving Cert revision block" meta="Long-term milestone" detail="Progress view should become more accurate as more tests are recorded." />
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-5">
-          <h2 className="font-heading m-0 mb-4 text-lg font-semibold text-gray-900">Current picture</h2>
-          <div className="space-y-3">
-            <InsightRow label="Doing well in" value={copy.strong} />
-            <InsightRow label="Needs work" value={copy.weak} />
-            <InsightRow label="Next best action" value="Add the next assessment to the tracker" />
-          </div>
-        </section>
-      </div>
+      <section className="mt-6 rounded-2xl border border-amber-100 bg-white/88 px-4 py-4 shadow-[0_14px_38px_-34px_rgba(245,158,11,.8)] backdrop-blur-sm sm:px-5">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="font-heading m-0 text-[17px] font-semibold text-gray-900">Upcoming in this subject</h2>
+          <span className="text-xs font-medium text-gray-400">Short view</span>
+        </div>
+        <div className="rounded-xl border border-amber-100 bg-[linear-gradient(135deg,#fffbeb,#ecfeff)] px-3.5 py-3">
+          <div className="text-[14px] font-semibold text-gray-900">{copy.nextExam}</div>
+          <p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">
+            Add the exact topic and date in Exam Tracker, then use Tutor or Practice Questions to prepare.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
 
-function WorkspaceTile({
-  eyebrow,
+function ActionCard({
   title,
   body,
-  stat,
-  icon,
+  cta,
+  accent,
   onClick,
 }: {
-  eyebrow: string;
   title: string;
   body: string;
-  stat: string;
-  icon: React.ReactNode;
+  cta: string;
+  accent: "cyan" | "lime" | "amber" | "violet";
   onClick: () => void;
 }) {
+  const accentClass = {
+    cyan: "border-cyan-100 hover:border-cyan-400 hover:bg-cyan-50 hover:shadow-[0_24px_54px_-30px_rgba(8,145,178,.95)] active:border-cyan-500 active:bg-cyan-100/70 focus-visible:border-cyan-500 focus-visible:ring-cyan-500/15 dark:hover:bg-cyan-400/12 dark:hover:border-cyan-300/80",
+    lime: "border-lime-100 hover:border-lime-400 hover:bg-lime-50 hover:shadow-[0_24px_54px_-30px_rgba(101,163,13,.9)] active:border-lime-500 active:bg-lime-100/70 focus-visible:border-lime-500 focus-visible:ring-lime-500/15 dark:hover:bg-lime-400/12 dark:hover:border-lime-300/80",
+    amber: "border-amber-100 hover:border-amber-400 hover:bg-amber-50 hover:shadow-[0_24px_54px_-30px_rgba(245,158,11,.95)] active:border-amber-500 active:bg-amber-100/70 focus-visible:border-amber-500 focus-visible:ring-amber-500/15 dark:hover:bg-amber-400/12 dark:hover:border-amber-300/80",
+    violet: "border-violet-100 hover:border-violet-400 hover:bg-violet-50 hover:shadow-[0_24px_54px_-30px_rgba(139,92,246,.95)] active:border-violet-500 active:bg-violet-100/70 focus-visible:border-violet-500 focus-visible:ring-violet-500/15 dark:hover:bg-violet-400/12 dark:hover:border-violet-300/80",
+  }[accent];
+  const pillClass = {
+    cyan: "bg-cyan-50 text-cyan-700 group-hover:bg-cyan-500 group-hover:text-white group-hover:shadow-[0_12px_26px_-18px_rgba(8,145,178,1)] dark:group-hover:bg-cyan-400 dark:group-hover:text-slate-950",
+    lime: "bg-lime-50 text-lime-700 group-hover:bg-lime-500 group-hover:text-white group-hover:shadow-[0_12px_26px_-18px_rgba(101,163,13,1)] dark:group-hover:bg-lime-400 dark:group-hover:text-slate-950",
+    amber: "bg-amber-50 text-amber-700 group-hover:bg-amber-500 group-hover:text-white group-hover:shadow-[0_12px_26px_-18px_rgba(245,158,11,1)] dark:group-hover:bg-amber-400 dark:group-hover:text-slate-950",
+    violet: "bg-violet-50 text-violet-700 group-hover:bg-violet-500 group-hover:text-white group-hover:shadow-[0_12px_26px_-18px_rgba(139,92,246,1)] dark:group-hover:bg-violet-400 dark:group-hover:text-slate-950",
+  }[accent];
+  const arrowClass = {
+    cyan: "text-cyan-600 group-hover:text-cyan-700 dark:group-hover:text-cyan-200",
+    lime: "text-lime-600 group-hover:text-lime-700 dark:group-hover:text-lime-200",
+    amber: "text-amber-600 group-hover:text-amber-700 dark:group-hover:text-amber-200",
+    violet: "text-violet-600 group-hover:text-violet-700 dark:group-hover:text-violet-200",
+  }[accent];
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group rounded-2xl border border-gray-200 bg-white p-5 text-left shadow-[0_1px_2px_rgba(17,24,39,.04)] transition-colors hover:border-emerald-500"
+      className={[
+        `feature-action-card feature-action-${accent}`,
+        "group min-h-[150px] rounded-2xl border bg-white/88 p-5 text-left text-gray-900 shadow-[0_14px_40px_-34px_rgba(15,23,42,.55)] backdrop-blur-sm transition-[border-color,transform,box-shadow,background-color]",
+        "hover:-translate-y-1 focus-visible:ring-4",
+        accentClass,
+      ].join(" ")}
     >
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-          {icon}
-        </div>
-        <span className="text-[12.5px] font-semibold text-emerald-600 transition-transform group-hover:translate-x-0.5">
-          Open
+      <div className="font-heading text-[22px] font-semibold">{title}</div>
+      <p className="m-0 mt-2 text-[14px] leading-relaxed text-gray-500">{body}</p>
+      <div className="mt-5 flex items-center justify-between">
+        <span className={["feature-action-pill rounded-xl px-3 py-1.5 text-[13px] font-semibold transition-[background-color,color,box-shadow,transform] group-hover:scale-[1.04]", pillClass].join(" ")}>
+          {cta}
+        </span>
+        <span aria-hidden="true" className={["transition-transform group-hover:translate-x-0.5", arrowClass].join(" ")}>
+          &rarr;
         </span>
       </div>
-      <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-400">{eyebrow}</div>
-      <h3 className="font-heading m-0 mb-2 text-xl font-semibold text-gray-900">{title}</h3>
-      <p className="m-0 min-h-[66px] text-[13.5px] leading-relaxed text-gray-500">{body}</p>
-      <div className="mt-4 border-t border-gray-100 pt-3 text-[12.5px] font-semibold text-gray-600">{stat}</div>
     </button>
-  );
-}
-
-function RoadmapDot({ tone }: { tone: "done" | "current" | "future" }) {
-  const cls =
-    tone === "done"
-      ? "bg-emerald-500"
-      : tone === "current"
-        ? "border-[3px] border-emerald-500 bg-white"
-        : "border-2 border-gray-300 bg-white";
-  return <span className={`mt-1.5 h-4 w-4 rounded-full ${cls}`} />;
-}
-
-function RoadmapLine() {
-  return <div className="ml-[7px] h-8 w-px bg-gray-200" />;
-}
-
-function RoadmapItem({ title, meta, detail }: { title: string; meta: string; detail: string }) {
-  return (
-    <div className="pb-4">
-      <div className="text-[14px] font-semibold text-gray-900">{title}</div>
-      <div className="text-[12.5px] text-gray-400">{meta}</div>
-      <p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">{detail}</p>
-    </div>
-  );
-}
-
-function InsightRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[12px] border border-gray-200 bg-white px-4 py-3">
-      <div className="text-[12px] font-semibold uppercase tracking-[0.07em] text-gray-400">{label}</div>
-      <div className="mt-1 text-[14px] font-semibold text-gray-900">{value}</div>
-    </div>
-  );
-}
-
-function TutorIcon() {
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 6.5A3.5 3.5 0 0 1 8.5 3h7A3.5 3.5 0 0 1 19 6.5v5a3.5 3.5 0 0 1-3.5 3.5h-3.2L8 19v-4.1A3.5 3.5 0 0 1 5 11.5z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M9 8h6M9 11h3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function QuestionIcon() {
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M6 3h8l4 4v14H6z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M14 3v4h4M9 13h6M9 17h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function TrackerIcon() {
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M7 4h10M7 20h10M8.5 4v4.5c0 1.6 1 2.5 2.2 3.5-1.2 1-2.2 1.9-2.2 3.5V20M15.5 4v4.5c0 1.6-1 2.5-2.2 3.5 1.2 1 2.2 1.9 2.2 3.5V20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ProgressIcon() {
-  return (
-    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 19V5M4 19h16M8 16l3.5-4 3 2.5L20 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }

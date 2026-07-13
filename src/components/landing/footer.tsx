@@ -1,28 +1,22 @@
 import Link from "next/link";
 import { LogoIcon } from "@/components/icons";
-import { BetaBadge } from "@/components/beta-badge";
-import { IS_BETA } from "@/lib/beta";
 
 export function Footer() {
   return (
-    <footer className="border-t border-gray-200 py-8 bg-white">
-      <div className="max-w-[1140px] mx-auto px-6 flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-2.5 text-gray-500 text-[13px] flex-wrap">
+    <footer className="border-t border-cyan-100 bg-[#eef4f2] py-8">
+      <div className="mx-auto flex max-w-[1140px] flex-wrap items-center justify-between gap-4 px-6">
+        <div className="flex flex-wrap items-center gap-2.5 text-[13px] text-gray-500">
           <LogoIcon size={20} />
-          <span>
-            Copyright 2026 GrindsAI / Made in Dublin
-            {IS_BETA && " · Free beta preview — not a finished product"}
-          </span>
-          <BetaBadge />
+          <span>Copyright 2026 GrindsAI / Made in Dublin</span>
         </div>
         <div className="flex gap-6 text-[13px] text-gray-500">
-          <Link href="/privacy" className="hover:text-gray-900 transition-colors">
+          <Link href="/privacy" className="transition-colors hover:text-gray-900">
             Privacy
           </Link>
-          <Link href="/terms" className="hover:text-gray-900 transition-colors">
+          <Link href="/terms" className="transition-colors hover:text-gray-900">
             Terms
           </Link>
-          <a href="mailto:hello@grindsai.ie" className="hover:text-gray-900 transition-colors">
+          <a href="mailto:hello@grindsai.ie" className="transition-colors hover:text-gray-900">
             Contact
           </a>
         </div>

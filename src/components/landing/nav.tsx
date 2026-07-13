@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LogoIcon } from "@/components/icons";
-import { BetaBadge } from "@/components/beta-badge";
-import { IS_BETA } from "@/lib/beta";
 
 export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -20,27 +18,22 @@ export function LandingNav() {
     <header
       className="sticky top-0 z-50 transition-all duration-200"
       style={{
-        background: scrolled ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.6)",
+        background: scrolled ? "rgba(244,248,246,0.9)" : "rgba(244,248,246,0.68)",
         backdropFilter: "saturate(180%) blur(10px)",
         WebkitBackdropFilter: "saturate(180%) blur(10px)",
-        borderBottom: scrolled ? "1px solid #e5e7eb" : "1px solid transparent",
+        borderBottom: scrolled ? "1px solid #dfe7e1" : "1px solid transparent",
       }}
     >
       <div className="max-w-[1140px] mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
           <LogoIcon size={28} />
           <span className="font-heading text-[17px] font-semibold tracking-[-0.01em]">GrindsAI</span>
-          <BetaBadge />
         </Link>
 
         <nav className="hidden md:flex gap-8 text-sm text-gray-500">
           <a href="#how" className="hover:text-gray-900 transition-colors">How it works</a>
           <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
-          {IS_BETA ? (
-            <a href="#beta" className="hover:text-gray-900 transition-colors">Beta access</a>
-          ) : (
-            <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
-          )}
+          <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
           <Link href="/chat" className="hover:text-gray-900 transition-colors">Demo</Link>
         </nav>
 
@@ -53,9 +46,9 @@ export function LandingNav() {
           </Link>
           <Link
             href="/signup"
-            className="inline-flex items-center h-10 px-4 rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)]"
+            className="inline-flex items-center h-10 px-4 rounded-lg text-sm font-medium text-white bg-[linear-gradient(135deg,#06b6d4,#84cc16)] hover:brightness-105 transition-[filter,transform] hover:-translate-y-0.5 shadow-[0_14px_30px_-20px_rgba(6,182,212,.9)]"
           >
-            {IS_BETA ? "Try the beta" : "Get started"}
+            Get started
           </Link>
         </div>
       </div>

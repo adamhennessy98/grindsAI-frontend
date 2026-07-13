@@ -110,10 +110,10 @@ export function ExamTrackerView({ subjectId, level, onOpenTutor }: ExamTrackerVi
   };
 
   return (
-    <div className="mx-auto max-w-[1060px] px-5 pb-16 pt-[30px] sm:px-7">
+    <div className="mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-emerald-600">
+          <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-amber-600">
             {subjectLabel(subjectId)} / {level === "OL" ? "Ordinary Level" : "Higher Level"}
           </div>
           <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">
@@ -127,14 +127,14 @@ export function ExamTrackerView({ subjectId, level, onOpenTutor }: ExamTrackerVi
         <button
           type="button"
           onClick={onOpenTutor}
-          className="rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-500 hover:text-emerald-600"
+          className="rounded-[10px] border border-amber-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-amber-500 hover:text-amber-700"
         >
           Prep with tutor
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[0.82fr_1.18fr]">
-        <form onSubmit={addMilestone} className="rounded-2xl border border-gray-200 bg-white px-5 py-5">
+        <form onSubmit={addMilestone} className="rounded-2xl border border-amber-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(245,158,11,.75)]">
           <h2 className="font-heading m-0 text-lg font-semibold text-gray-900">Create exam instance</h2>
           <p className="m-0 mb-5 mt-1 text-[13px] leading-relaxed text-gray-500">
             Required now: topic and date. Optional later: result, feedback, teacher feedback, and corrected PDF.
@@ -186,7 +186,7 @@ export function ExamTrackerView({ subjectId, level, onOpenTutor }: ExamTrackerVi
               />
             </Field>
 
-            <div className="rounded-[12px] border border-dashed border-gray-300 bg-gray-50 px-4 py-4">
+            <div className="rounded-[12px] border border-dashed border-amber-200 bg-amber-50/70 px-4 py-4 dark:bg-amber-400/10">
               <div className="text-[13px] font-semibold text-gray-700">Corrected test PDF</div>
               <p className="m-0 mt-1 text-[12.5px] leading-relaxed text-gray-400">
                 Upload and automatic scan analysis are planned for the next implementation pass.
@@ -196,20 +196,20 @@ export function ExamTrackerView({ subjectId, level, onOpenTutor }: ExamTrackerVi
             <button
               type="submit"
               disabled={!canAdd}
-              className="w-full rounded-[10px] bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:bg-gray-200 disabled:text-gray-400"
+              className="w-full rounded-[10px] bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-600 disabled:bg-gray-200 disabled:text-gray-400"
             >
-              Add to roadmap
+              Add test
             </button>
           </div>
         </form>
 
-        <section className="rounded-2xl border border-gray-200 bg-white px-5 py-5">
+        <section className="rounded-2xl border border-amber-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(245,158,11,.75)]">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="font-heading m-0 text-lg font-semibold text-gray-900">Chronological roadmap</h2>
               <p className="m-0 mt-1 text-[13px] text-gray-500">Past attempts, upcoming assessments, and future milestones.</p>
             </div>
-            <span className="rounded-full bg-gray-100 px-2.5 py-1 text-[12px] font-semibold text-gray-500">
+            <span className="rounded-full bg-amber-50 px-2.5 py-1 text-[12px] font-semibold text-amber-700">
               {milestones.length} milestones
             </span>
           </div>
@@ -229,7 +229,7 @@ export function ExamTrackerView({ subjectId, level, onOpenTutor }: ExamTrackerVi
 }
 
 const inputCls =
-  "w-full rounded-[10px] border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]";
+  "w-full rounded-[10px] border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-amber-500 focus:ring-4 focus:ring-amber-500/[0.1]";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -244,11 +244,11 @@ function MilestoneCard({ item }: { item: ExamMilestone }) {
   const hasResult = Boolean(item.result);
 
   return (
-    <article className="relative ml-10 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4">
+    <article className="relative ml-10 rounded-2xl border border-amber-100 bg-amber-50/60 px-4 py-4 dark:bg-amber-400/10">
       <span
         className={[
           "absolute -left-[33px] top-5 h-[15px] w-[15px] rounded-full border-[3px] border-white",
-          hasResult ? "bg-emerald-500" : "bg-gray-400",
+          hasResult ? "bg-amber-500" : "bg-gray-400",
         ].join(" ")}
       />
       <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
@@ -273,7 +273,7 @@ function MilestoneCard({ item }: { item: ExamMilestone }) {
       )}
 
       {item.source === "session" && (
-        <div className="mt-3 text-[11.5px] font-medium text-emerald-600">Added this session</div>
+        <div className="mt-3 text-[11.5px] font-medium text-amber-700">Added this session</div>
       )}
     </article>
   );
@@ -281,7 +281,7 @@ function MilestoneCard({ item }: { item: ExamMilestone }) {
 
 function Feedback({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[10px] border border-gray-200 bg-white px-3 py-2">
+    <div className="rounded-[10px] border border-amber-100 bg-white px-3 py-2">
       <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-gray-400">{label}</div>
       <div className="mt-1 text-[13px] leading-relaxed text-gray-700">{value}</div>
     </div>

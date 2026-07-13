@@ -87,38 +87,37 @@ export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProp
   };
 
   return (
-    <div className="mx-auto max-w-[1060px] px-5 pb-16 pt-[30px] sm:px-7">
+    <div className="mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-emerald-600">
+          <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-violet-600">
             {subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}
           </div>
           <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">My progress</h1>
           <p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">
-            A visible summary of what the tutor knows for this subject: scores, strengths, repeated mistakes, and next
-            steps. More tracker data means better recommendations.
+            A simple summary of what the tutor knows: scores, strengths, repeated mistakes, and the next area to work on.
           </p>
         </div>
         <button
           type="button"
           onClick={onOpenConvo}
-          className="rounded-[10px] bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
+          className="rounded-[10px] bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-600"
         >
           Work on weakest area
         </button>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 gap-3.5 md:grid-cols-3">
-        <StatTile label="Average test score" value={seed.average} valueColor="text-emerald-600" caption={seed.trend} />
+      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <StatTile label="Average test score" value={seed.average} valueColor="text-violet-600" caption={seed.trend} />
         <StatTile label="Strongest area" value={seed.strongest} valueColor="text-gray-900" caption="Based on recent results" />
         <StatTile label="Main focus" value={seed.weakest} valueColor="text-gray-900" caption="Recommended next step" />
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
+          <section className="rounded-2xl border border-violet-100 bg-white px-[22px] py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.65)]">
             <h2 className="font-heading mb-3.5 flex items-center gap-2 text-base font-semibold text-gray-900">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="h-2 w-2 rounded-full bg-violet-500" />
               Areas going well
             </h2>
             <div className="flex flex-col gap-3.5">
@@ -128,7 +127,7 @@ export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProp
             </div>
           </section>
 
-          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
+          <section className="rounded-2xl border border-violet-100 bg-white px-[22px] py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.65)]">
             <h2 className="font-heading mb-1.5 flex items-center gap-2 text-base font-semibold text-gray-900">
               <span className="h-2 w-2 rounded-full bg-gray-500" />
               Repeated mistakes
@@ -143,16 +142,16 @@ export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProp
         </div>
 
         <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
+          <section className="rounded-2xl border border-violet-100 bg-white px-[22px] py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.65)]">
             <div className="mb-1 flex items-center justify-between">
               <h2 className="font-heading m-0 text-base font-semibold text-gray-900">{seed.chartTitle}</h2>
-              <span className="text-xs font-semibold text-emerald-600">{seed.trend}</span>
+              <span className="text-xs font-semibold text-violet-600">{seed.trend}</span>
             </div>
             <p className="m-0 mb-4 text-[12.5px] text-gray-400">Illustrative trend from recent tracked assessments.</p>
             <ProgressChart />
           </section>
 
-          <section className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-[18px]">
+          <section className="rounded-2xl border border-violet-100 bg-violet-50/70 px-5 py-[18px] dark:bg-violet-400/10">
             <h2 className="font-heading m-0 text-base font-semibold text-gray-900">Tell the tutor more</h2>
             <p className="m-0 mb-4 mt-1 text-[13px] leading-relaxed text-gray-500">
               Add your own view of what feels hard or easy. For now this saves visually in the current session only.
@@ -179,14 +178,14 @@ export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProp
               <button
                 type="button"
                 onClick={saveNote}
-                className="w-full rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-500 hover:text-emerald-600"
+                className="w-full rounded-[10px] border border-violet-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-violet-500 hover:text-violet-600"
               >
                 Save note
               </button>
             </div>
             {savedNote && (savedNote.struggles || savedNote.easyAreas) && (
-              <div className="mt-4 rounded-[12px] border border-emerald-100 bg-emerald-50 px-4 py-3">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-emerald-600">Saved this session</div>
+              <div className="mt-4 rounded-[12px] border border-violet-100 bg-violet-50 px-4 py-3">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-violet-600">Saved this session</div>
                 {savedNote.struggles && <p className="m-0 mt-2 text-[13px] text-gray-700">Struggling with: {savedNote.struggles}</p>}
                 {savedNote.easyAreas && <p className="m-0 mt-1 text-[13px] text-gray-700">Finds easy: {savedNote.easyAreas}</p>}
               </div>
@@ -199,7 +198,7 @@ export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProp
 }
 
 const textareaCls =
-  "min-h-[86px] w-full resize-none rounded-[10px] border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]";
+  "min-h-[86px] w-full resize-none rounded-[10px] border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-violet-500 focus:ring-4 focus:ring-violet-500/[0.1]";
 
 function StatTile({
   label,
@@ -213,7 +212,7 @@ function StatTile({
   caption: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white px-5 py-[18px]">
+    <div className="rounded-2xl border border-violet-100 bg-white px-5 py-[18px] shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)]">
       <div className="mb-2 text-[12.5px] text-gray-400">{label}</div>
       <div className={`font-heading text-[27px] font-semibold ${valueColor}`}>{value}</div>
       <div className="mt-1 text-xs text-gray-400">{caption}</div>
@@ -226,10 +225,10 @@ function SkillBar({ label, pct }: { label: string; pct: number }) {
     <div>
       <div className="mb-1.5 flex justify-between text-[13px]">
         <span className="text-gray-700">{label}</span>
-        <span className="font-semibold text-emerald-600">{pct}%</span>
+        <span className="font-semibold text-violet-600">{pct}%</span>
       </div>
       <div className="h-[7px] overflow-hidden rounded-md bg-gray-200">
-        <div className="h-full rounded-md bg-emerald-500" style={{ width: `${pct}%` }} />
+        <div className="h-full rounded-md bg-violet-500" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -240,13 +239,13 @@ function RecurringRow({ title, sub, onClick }: { title: string; sub: string; onC
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-[10px] border border-gray-200 bg-gray-50 px-3.5 py-[11px] text-left transition-colors hover:border-gray-500"
+      className="flex w-full items-center gap-3 rounded-[10px] border border-violet-100 bg-violet-50/50 px-3.5 py-[11px] text-left transition-colors hover:border-violet-500 dark:bg-violet-400/10"
     >
       <span className="flex-1">
         <span className="block text-[13.5px] font-semibold text-gray-900">{title}</span>
         <span className="text-xs text-gray-400">{sub}</span>
       </span>
-      <span className="shrink-0 rounded-xl bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">Practise</span>
+      <span className="shrink-0 rounded-xl bg-white px-2 py-0.5 text-[11px] font-semibold text-violet-600">Practise</span>
     </button>
   );
 }
@@ -261,18 +260,18 @@ function ProgressChart() {
       <text x="26" y="44" textAnchor="end" fontSize="9" fill="#9CA3AF">80</text>
       <text x="26" y="83" textAnchor="end" fontSize="9" fill="#9CA3AF">50</text>
       <text x="26" y="121" textAnchor="end" fontSize="9" fill="#9CA3AF">20</text>
-      <path d="M48,96 L114,90 L180,70 L246,58 L300,49 L300,118 L48,118 Z" fill="#10B981" opacity="0.08" />
-      <path d="M48,96 L114,90 L180,70 L246,58 L300,49" fill="none" stroke="#10B981" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="48" cy="96" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="114" cy="90" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="180" cy="70" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="246" cy="58" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="300" cy="49" r="4.2" fill="#10B981" />
+      <path d="M48,96 L114,90 L180,70 L246,58 L300,49 L300,118 L48,118 Z" fill="#8B5CF6" opacity="0.1" />
+      <path d="M48,96 L114,90 L180,70 L246,58 L300,49" fill="none" stroke="#8B5CF6" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="48" cy="96" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
+      <circle cx="114" cy="90" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
+      <circle cx="180" cy="70" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
+      <circle cx="246" cy="58" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
+      <circle cx="300" cy="49" r="4.2" fill="#8B5CF6" />
       <text x="48" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Sep</text>
       <text x="114" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Oct</text>
       <text x="180" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Nov</text>
       <text x="246" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Dec</text>
-      <text x="300" y="134" textAnchor="middle" fontSize="9" fill="#10B981" fontWeight="600">Now</text>
+      <text x="300" y="134" textAnchor="middle" fontSize="9" fill="#8B5CF6" fontWeight="600">Now</text>
     </svg>
   );
 }
