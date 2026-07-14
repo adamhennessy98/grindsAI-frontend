@@ -1,278 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { getSubjectTopics } from "@/lib/constants";
 import { subjectLabel } from "./subjects";
 
-interface ProgressViewProps {
+interface ProgressResultsViewProps {
   subjectId: string;
   level: string;
   onOpenConvo: () => void;
+  onOpenGenerator: () => void;
 }
 
-type ProgressSeed = {
-  average: string;
-  trend: string;
-  strongest: string;
-  weakest: string;
-  chartTitle: string;
-  skills: { label: string; pct: number }[];
-  recurring: { title: string; sub: string }[];
+type ResultEntry = {
+  id: string;
+  topic: string;
+  score: string;
+  wentWell: string;
+  difficult: string;
+  teacherNote: string;
 };
 
-const PROGRESS: Record<string, ProgressSeed> = {
-  maths: {
-    average: "72%",
-    trend: "+11 pts this term",
-    strongest: "Algebra",
-    weakest: "Chain rule",
-    chartTitle: "Calculus accuracy",
-    skills: [
-      { label: "Algebra and functions", pct: 88 },
-      { label: "Coordinate geometry", pct: 76 },
-      { label: "Calculus", pct: 63 },
-    ],
-    recurring: [
-      { title: "Chain rule in differentiation", sub: "Seen in 4 sessions, improving slowly" },
-      { title: "Rates of change", sub: "Correct method, weaker setup" },
-      { title: "Showing method marks", sub: "Answers are better than written working" },
-    ],
-  },
-  chemistry: {
-    average: "64%",
-    trend: "+7 pts this term",
-    strongest: "Atomic theory",
-    weakest: "Stoichiometry",
-    chartTitle: "Stoichiometry accuracy",
-    skills: [
-      { label: "Atomic theory", pct: 82 },
-      { label: "Bonding", pct: 74 },
-      { label: "Stoichiometry", pct: 58 },
-    ],
-    recurring: [
-      { title: "Mass to mole conversions", sub: "Units are the main source of lost marks" },
-      { title: "Limiting reagent questions", sub: "Needs more structured setup" },
-      { title: "Volumetric analysis wording", sub: "Formula choice is sometimes rushed" },
-    ],
-  },
-};
-
-export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProps) {
+export function ProgressResultsView({ subjectId, level, onOpenConvo, onOpenGenerator }: ProgressResultsViewProps) {
   const subject = subjectLabel(subjectId);
-  const seed = PROGRESS[subjectId] ?? {
-    average: "New",
-    trend: "Add tests to build a trend",
-    strongest: "Not enough data yet",
-    weakest: "Not enough data yet",
-    chartTitle: "Score trend",
-    skills: [
-      { label: "Exam technique", pct: 58 },
-      { label: "Topic recall", pct: 52 },
-      { label: "Written working", pct: 49 },
-    ],
-    recurring: [
-      { title: "No repeated mistake identified yet", sub: "Track more tests and sessions to surface patterns" },
-      { title: "Add teacher feedback", sub: "Teacher comments will sharpen the progress view" },
-    ],
+  const topics = useMemo(() => getSubjectTopics(subjectId), [subjectId]);
+  const [focusDraft, setFocusDraft] = useState("");
+  const [focusAreas, setFocusAreas] = useState<string[]>([]);
+  const [resultTopic, setResultTopic] = useState(topics[0]?.name ?? "General");
+  const [score, setScore] = useState("");
+  const [wentWell, setWentWell] = useState("");
+  const [difficult, setDifficult] = useState("");
+  const [teacherNote, setTeacherNote] = useState("");
+  const [results, setResults] = useState<ResultEntry[]>([]);
+
+  const addFocusArea = () => {
+    const value = focusDraft.trim();
+    if (!value || focusAreas.includes(value)) return;
+    setFocusAreas((current) => [...current, value]);
+    setFocusDraft("");
   };
 
-  const [struggles, setStruggles] = useState("");
-  const [easyAreas, setEasyAreas] = useState("");
-  const [savedNote, setSavedNote] = useState<{ struggles: string; easyAreas: string } | null>(null);
-
-  const saveNote = () => {
-    setSavedNote({
-      struggles: struggles.trim(),
-      easyAreas: easyAreas.trim(),
-    });
+  const addResult = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!score.trim() && !wentWell.trim() && !difficult.trim() && !teacherNote.trim()) return;
+    setResults((current) => [{ id: `result-${Date.now()}`, topic: resultTopic, score: score.trim(), wentWell: wentWell.trim(), difficult: difficult.trim(), teacherNote: teacherNote.trim() }, ...current]);
+    setScore("");
+    setWentWell("");
+    setDifficult("");
+    setTeacherNote("");
   };
 
-  return (
-    <div className="mx-auto max-w-[1060px] px-5 pb-16 pt-[30px] sm:px-7">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-emerald-600">
-            {subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}
-          </div>
-          <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">My progress</h1>
-          <p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">
-            A visible summary of what the tutor knows for this subject: scores, strengths, repeated mistakes, and next
-            steps. More tracker data means better recommendations.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onOpenConvo}
-          className="rounded-[10px] bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600"
-        >
-          Work on weakest area
-        </button>
-      </div>
+  return <div className="mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9">
+    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-violet-600">{subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}</div><h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900 dark:text-white">Progress & Results</h1><p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">Keep a simple record of what is difficult, what went well, and what to do next.</p></div></div>
 
-      <div className="mb-6 grid grid-cols-1 gap-3.5 md:grid-cols-3">
-        <StatTile label="Average test score" value={seed.average} valueColor="text-emerald-600" caption={seed.trend} />
-        <StatTile label="Strongest area" value={seed.strongest} valueColor="text-gray-900" caption="Based on recent results" />
-        <StatTile label="Main focus" value={seed.weakest} valueColor="text-gray-900" caption="Recommended next step" />
-      </div>
+    <section className="mb-4 rounded-2xl border border-violet-100 bg-[linear-gradient(135deg,rgba(245,243,255,.95),rgba(255,255,255,.9))] px-4 py-4 shadow-[0_14px_38px_-34px_rgba(139,92,246,.7)] dark:!border-violet-900 dark:!bg-none dark:!bg-violet-400/10 sm:px-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-violet-600">Next recommended action</div><h2 className="font-heading m-0 mt-1 text-[18px] font-semibold text-gray-900 dark:text-white">{focusAreas.length ? `Work through ${focusAreas[0]} with your Tutor` : "Tell us what feels difficult"}</h2><p className="m-0 mt-1 text-[13px] text-gray-500">{focusAreas.length ? "Use the Tutor for a hint, then try one Exam Question." : "Adding a focus area will help shape future personalised support."}</p></div><div className="flex shrink-0 gap-2"><button type="button" onClick={onOpenConvo} className="rounded-xl bg-violet-500 px-3.5 py-2.5 text-[13px] font-semibold text-white hover:bg-violet-600">Ask your Tutor</button><button type="button" onClick={onOpenGenerator} className="rounded-xl border border-violet-200 bg-white px-3.5 py-2.5 text-[13px] font-semibold text-violet-700 hover:border-violet-500 dark:!border-violet-800 dark:!bg-slate-900 dark:text-violet-200">Exam Question</button></div></div></section>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.08fr_0.92fr]">
-        <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
-            <h2 className="font-heading mb-3.5 flex items-center gap-2 text-base font-semibold text-gray-900">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Areas going well
-            </h2>
-            <div className="flex flex-col gap-3.5">
-              {seed.skills.map((skill) => (
-                <SkillBar key={skill.label} label={skill.label} pct={skill.pct} />
-              ))}
-            </div>
-          </section>
+    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.05fr_.95fr]">
+      <section className="rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Things I&apos;m finding hard</h2><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">Add the exact areas you want your future study support to remember.</p><div className="mt-4 flex gap-2"><input value={focusDraft} onChange={(event) => setFocusDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addFocusArea(); } }} placeholder="e.g. timing on long questions" className="min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white" /><button type="button" onClick={addFocusArea} className="rounded-xl bg-violet-500 px-3.5 py-2.5 text-[13px] font-semibold text-white hover:bg-violet-600">Add</button></div>{focusAreas.length ? <div className="mt-4 flex flex-wrap gap-2">{focusAreas.map((area) => <span key={area} className="inline-flex max-w-full items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-[13px] font-medium text-violet-800 dark:bg-violet-400/10 dark:text-violet-200"><span className="truncate">{area}</span><button type="button" onClick={() => setFocusAreas((current) => current.filter((item) => item !== area))} className="shrink-0 rounded-lg bg-white px-2 py-1 text-[11px] font-semibold text-violet-700 hover:bg-violet-100 dark:bg-slate-900 dark:text-violet-200">Mark comfortable</button></span>)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 bg-violet-50/60 px-4 py-4 text-[13px] leading-relaxed text-gray-500 dark:bg-violet-400/10">Nothing added yet. Start with one topic or exam skill you want to feel more confident with.</div>}</section>
 
-          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
-            <h2 className="font-heading mb-1.5 flex items-center gap-2 text-base font-semibold text-gray-900">
-              <span className="h-2 w-2 rounded-full bg-gray-500" />
-              Repeated mistakes
-            </h2>
-            <p className="m-0 mb-3.5 text-[12.5px] text-gray-400">Patterns pulled from tutor sessions and tracked tests.</p>
-            <div className="flex flex-col gap-2.5">
-              {seed.recurring.map((item) => (
-                <RecurringRow key={item.title} title={item.title} sub={item.sub} onClick={onOpenConvo} />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border border-gray-200 bg-white px-[22px] py-5">
-            <div className="mb-1 flex items-center justify-between">
-              <h2 className="font-heading m-0 text-base font-semibold text-gray-900">{seed.chartTitle}</h2>
-              <span className="text-xs font-semibold text-emerald-600">{seed.trend}</span>
-            </div>
-            <p className="m-0 mb-4 text-[12.5px] text-gray-400">Illustrative trend from recent tracked assessments.</p>
-            <ProgressChart />
-          </section>
-
-          <section className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-[18px]">
-            <h2 className="font-heading m-0 text-base font-semibold text-gray-900">Tell the tutor more</h2>
-            <p className="m-0 mb-4 mt-1 text-[13px] leading-relaxed text-gray-500">
-              Add your own view of what feels hard or easy. For now this saves visually in the current session only.
-            </p>
-            <div className="space-y-3">
-              <label className="block">
-                <span className="mb-1.5 block text-[12.5px] font-medium text-gray-700">I am struggling with</span>
-                <textarea
-                  value={struggles}
-                  onChange={(event) => setStruggles(event.target.value)}
-                  placeholder="Example: worded calculus questions, timing, remembering formulae"
-                  className={textareaCls}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-[12.5px] font-medium text-gray-700">I find easy</span>
-                <textarea
-                  value={easyAreas}
-                  onChange={(event) => setEasyAreas(event.target.value)}
-                  placeholder="Example: algebra basics, definitions, short questions"
-                  className={textareaCls}
-                />
-              </label>
-              <button
-                type="button"
-                onClick={saveNote}
-                className="w-full rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-emerald-500 hover:text-emerald-600"
-              >
-                Save note
-              </button>
-            </div>
-            {savedNote && (savedNote.struggles || savedNote.easyAreas) && (
-              <div className="mt-4 rounded-[12px] border border-emerald-100 bg-emerald-50 px-4 py-3">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-emerald-600">Saved this session</div>
-                {savedNote.struggles && <p className="m-0 mt-2 text-[13px] text-gray-700">Struggling with: {savedNote.struggles}</p>}
-                {savedNote.easyAreas && <p className="m-0 mt-1 text-[13px] text-gray-700">Finds easy: {savedNote.easyAreas}</p>}
-              </div>
-            )}
-          </section>
-        </div>
-      </div>
+      <form onSubmit={addResult} className="rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Add a result or reflection</h2><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">Log only what you have. A score is optional.</p><div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2"><Field label="Topic"><select value={resultTopic} onChange={(event) => setResultTopic(event.target.value)} className={inputClass}>{topics.map((topic) => <option key={topic.id}>{topic.name}</option>)}</select></Field><Field label="Score or result"><input value={score} onChange={(event) => setScore(event.target.value)} placeholder="72%, H3, 42/60" className={inputClass} /></Field></div><div className="mt-3 space-y-3"><Field label="What went well"><textarea value={wentWell} onChange={(event) => setWentWell(event.target.value)} placeholder="Optional" className={textareaClass} /></Field><Field label="What was difficult"><textarea value={difficult} onChange={(event) => setDifficult(event.target.value)} placeholder="Optional" className={textareaClass} /></Field><Field label="Teacher comment"><textarea value={teacherNote} onChange={(event) => setTeacherNote(event.target.value)} placeholder="Optional" className={textareaClass} /></Field></div><button type="submit" className="mt-4 w-full rounded-xl border border-violet-100 bg-violet-50 px-4 py-2.5 text-sm font-semibold text-violet-700 hover:border-violet-500 hover:bg-violet-500 hover:text-white">Add to results</button></form>
     </div>
-  );
+
+    <section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div className="flex items-center justify-between gap-3"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Previous results & notes</h2><p className="m-0 mt-1 text-[13px] text-gray-500">A simple history for this subject.</p></div><span className="rounded-full bg-violet-50 px-2.5 py-1 text-[12px] font-semibold text-violet-700 dark:bg-violet-400/10 dark:text-violet-200">{results.length} logged</span></div>{results.length ? <div className="mt-4 space-y-3">{results.map((result) => <article key={result.id} className="rounded-xl border border-violet-100 bg-violet-50/55 px-4 py-3 dark:bg-violet-400/10"><div className="flex flex-wrap items-center justify-between gap-2"><span className="font-semibold text-gray-900 dark:text-white">{result.topic}</span><span className="rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-violet-700 dark:bg-slate-900 dark:text-violet-200">{result.score || "Reflection"}</span></div>{result.wentWell && <ResultLine label="Went well" value={result.wentWell} />}{result.difficult && <ResultLine label="Difficult" value={result.difficult} />}{result.teacherNote && <ResultLine label="Teacher" value={result.teacherNote} />}</article>)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 px-4 py-5 text-[13px] leading-relaxed text-gray-500">No results logged yet. Add a test, mock, or a quick reflection after practice to build your history.</div>}</section>
+    <p className="m-0 mt-4 text-center text-[11.5px] text-gray-400">Progress & Results is currently saved only in this browser session. Persistent student context will be connected when backend storage is ready.</p>
+  </div>;
 }
 
-const textareaCls =
-  "min-h-[86px] w-full resize-none rounded-[10px] border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]";
+const inputClass = "w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white";
+const textareaClass = `${inputClass} min-h-[70px] resize-none py-3`;
 
-function StatTile({
-  label,
-  value,
-  valueColor,
-  caption,
-}: {
-  label: string;
-  value: string;
-  valueColor: string;
-  caption: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white px-5 py-[18px]">
-      <div className="mb-2 text-[12.5px] text-gray-400">{label}</div>
-      <div className={`font-heading text-[27px] font-semibold ${valueColor}`}>{value}</div>
-      <div className="mt-1 text-xs text-gray-400">{caption}</div>
-    </div>
-  );
-}
-
-function SkillBar({ label, pct }: { label: string; pct: number }) {
-  return (
-    <div>
-      <div className="mb-1.5 flex justify-between text-[13px]">
-        <span className="text-gray-700">{label}</span>
-        <span className="font-semibold text-emerald-600">{pct}%</span>
-      </div>
-      <div className="h-[7px] overflow-hidden rounded-md bg-gray-200">
-        <div className="h-full rounded-md bg-emerald-500" style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-}
-
-function RecurringRow({ title, sub, onClick }: { title: string; sub: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-[10px] border border-gray-200 bg-gray-50 px-3.5 py-[11px] text-left transition-colors hover:border-gray-500"
-    >
-      <span className="flex-1">
-        <span className="block text-[13.5px] font-semibold text-gray-900">{title}</span>
-        <span className="text-xs text-gray-400">{sub}</span>
-      </span>
-      <span className="shrink-0 rounded-xl bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">Practise</span>
-    </button>
-  );
-}
-
-function ProgressChart() {
-  return (
-    <svg viewBox="0 0 320 150" className="block h-auto w-full" aria-hidden="true">
-      <line x1="34" y1="14" x2="34" y2="118" stroke="#E5E7EB" strokeWidth="1" />
-      <line x1="34" y1="118" x2="312" y2="118" stroke="#E5E7EB" strokeWidth="1" />
-      <line x1="34" y1="40" x2="312" y2="40" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="3 4" />
-      <line x1="34" y1="79" x2="312" y2="79" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="3 4" />
-      <text x="26" y="44" textAnchor="end" fontSize="9" fill="#9CA3AF">80</text>
-      <text x="26" y="83" textAnchor="end" fontSize="9" fill="#9CA3AF">50</text>
-      <text x="26" y="121" textAnchor="end" fontSize="9" fill="#9CA3AF">20</text>
-      <path d="M48,96 L114,90 L180,70 L246,58 L300,49 L300,118 L48,118 Z" fill="#10B981" opacity="0.08" />
-      <path d="M48,96 L114,90 L180,70 L246,58 L300,49" fill="none" stroke="#10B981" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="48" cy="96" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="114" cy="90" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="180" cy="70" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="246" cy="58" r="3.4" fill="#fff" stroke="#10B981" strokeWidth="2" />
-      <circle cx="300" cy="49" r="4.2" fill="#10B981" />
-      <text x="48" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Sep</text>
-      <text x="114" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Oct</text>
-      <text x="180" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Nov</text>
-      <text x="246" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Dec</text>
-      <text x="300" y="134" textAnchor="middle" fontSize="9" fill="#10B981" fontWeight="600">Now</text>
-    </svg>
-  );
-}
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="block"><span className="mb-1.5 block text-[12.5px] font-medium text-gray-700 dark:text-slate-200">{label}</span>{children}</label>; }
+function ResultLine({ label, value }: { label: string; value: string }) { return <p className="m-0 mt-2 text-[13px] leading-relaxed text-gray-600 dark:text-slate-300"><span className="font-semibold text-violet-700 dark:text-violet-200">{label}:</span> {value}</p>; }

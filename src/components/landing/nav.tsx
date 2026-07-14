@@ -3,62 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LogoIcon } from "@/components/icons";
-import { BetaBadge } from "@/components/beta-badge";
-import { IS_BETA } from "@/lib/beta";
 
 export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <header
-      className="sticky top-0 z-50 transition-all duration-200"
-      style={{
-        background: scrolled ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.6)",
-        backdropFilter: "saturate(180%) blur(10px)",
-        WebkitBackdropFilter: "saturate(180%) blur(10px)",
-        borderBottom: scrolled ? "1px solid #e5e7eb" : "1px solid transparent",
-      }}
-    >
-      <div className="max-w-[1140px] mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <LogoIcon size={28} />
-          <span className="font-heading text-[17px] font-semibold tracking-[-0.01em]">GrindsAI</span>
-          <BetaBadge />
-        </Link>
-
-        <nav className="hidden md:flex gap-8 text-sm text-gray-500">
-          <a href="#how" className="hover:text-gray-900 transition-colors">How it works</a>
-          <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
-          {IS_BETA ? (
-            <a href="#beta" className="hover:text-gray-900 transition-colors">Beta access</a>
-          ) : (
-            <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
-          )}
-          <Link href="/chat" className="hover:text-gray-900 transition-colors">Demo</Link>
-        </nav>
-
-        <div className="flex items-center gap-2">
-          <Link
-            href="/login"
-            className="hidden md:inline-flex items-center h-10 px-4 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="inline-flex items-center h-10 px-4 rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)]"
-          >
-            {IS_BETA ? "Try the beta" : "Get started"}
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
+  useEffect(() => { const onScroll = () => setScrolled(window.scrollY > 8); onScroll(); window.addEventListener("scroll", onScroll, { passive: true }); return () => window.removeEventListener("scroll", onScroll); }, []);
+  return <header className="sticky top-0 z-50 transition-all duration-200" style={{ background: scrolled ? "rgba(244,248,246,.9)" : "rgba(244,248,246,.65)", backdropFilter: "saturate(180%) blur(10px)", borderBottom: scrolled ? "1px solid #e5e7eb" : "1px solid transparent" }}><div className="mx-auto flex h-16 max-w-[1140px] items-center justify-between px-6"><Link href="/" className="flex items-center gap-2.5"><LogoIcon size={28} /><span className="font-heading text-[17px] font-semibold tracking-[-.01em]">GrindsAI</span></Link><nav className="hidden gap-8 text-sm text-gray-500 md:flex"><a href="#how" className="transition-colors hover:text-gray-900">How it works</a><a href="#features" className="transition-colors hover:text-gray-900">Features</a><a href="#pricing" className="transition-colors hover:text-gray-900">Pricing</a><Link href="/chat" className="transition-colors hover:text-gray-900">Demo</Link></nav><div className="flex items-center gap-2"><Link href="/login" className="hidden h-10 items-center rounded-lg px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 md:inline-flex">Sign in</Link><Link href="/signup" className="inline-flex h-10 items-center rounded-lg bg-emerald-500 px-4 text-sm font-medium text-white shadow-[inset_0_-1px_0_rgba(0,0,0,.15),0_1px_2px_rgba(16,185,129,.25)] transition-colors hover:bg-emerald-600">Get started</Link></div></div></header>;
 }

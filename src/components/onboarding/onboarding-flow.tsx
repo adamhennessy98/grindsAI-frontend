@@ -17,7 +17,6 @@ import {
   type SubjectLevel,
   type YearGroup,
 } from "@/lib/onboarding";
-import { BetaBadge } from "@/components/beta-badge";
 
 const TOTAL_STEPS = 5;
 
@@ -104,7 +103,6 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
       <Link href="/" className="flex items-center gap-2.5 mb-6">
         <LogoIcon size={32} />
         <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
-        <BetaBadge />
       </Link>
 
       <div

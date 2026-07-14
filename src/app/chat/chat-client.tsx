@@ -5,36 +5,30 @@ import { useRouter } from "next/navigation";
 import { SUBJECTS } from "@/lib/constants";
 import { filterSubjects, getSubjectLevel, readStudentProfile, type StudentProfile } from "@/lib/onboarding";
 import { getBrowserSupabase } from "@/lib/supabase/client";
-import { AppSidebar } from "@/components/app/sidebar";
 import { AppTopBar } from "@/components/app/topbar";
-import { CalendarRail } from "@/components/app/calendar-rail";
 import { HomeFeed } from "@/components/app/home-feed";
 import { ConversationView } from "@/components/app/conversation-view";
 import { PapersView } from "@/components/app/papers-view";
-import { ProgressView } from "@/components/app/progress-view";
+import { ProgressResultsView } from "@/components/app/progress-view";
 import { SubjectWorkspace } from "@/components/app/subject-workspace";
-import { ExamTrackerView } from "@/components/app/exam-tracker-view";
 import type { Screen } from "@/components/app/types";
 
 function initialsFrom(name: string, email: string) {
   const source = name || email.split("@")[0] || "Student";
-  return (
-    source
-      .split(/[\s._-]+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join("") || "S"
-  );
+  return source
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "S";
 }
 
 export function ChatClient() {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("home");
-  const [prevScreen, setPrevScreen] = useState<Screen>("home");
-  const [subjectId, setSubjectId] = useState("all");
+  const [previousScreen, setPreviousScreen] = useState<Screen>("workspace");
+  const [subjectId, setSubjectId] = useState("");
   const [topicId, setTopicId] = useState("general");
-  const [collapsed, setCollapsed] = useState(false);
   const [stuck, setStuck] = useState(false);
   const [userName, setUserName] = useState("Student");
   const [userEmail, setUserEmail] = useState("");
@@ -46,10 +40,10 @@ export function ChatClient() {
   }, []);
 
   useEffect(() => {
-    const sb = getBrowserSupabase();
-    if (!sb) return;
+    const supabase = getBrowserSupabase();
+    if (!supabase) return;
     void (async () => {
-      const { data } = await sb.auth.getUser();
+      const { data } = await supabase.auth.getUser();
       const user = data.user;
       if (!user) return;
       const fullName = typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name.trim() : "";
@@ -58,19 +52,19 @@ export function ChatClient() {
     })();
   }, []);
 
-  const subjects = useMemo(() => filterSubjects(profile?.subjects), [profile]);
+  const subjects = useMemo(() => (profile ? filterSubjects(profile.subjects) : []), [profile]);
   const fallbackSubjectId = subjects[0]?.id ?? SUBJECTS[0]?.id ?? "maths";
-  const activeSubjectId = subjectId === "all" ? fallbackSubjectId : subjectId;
+  const activeSubjectId = subjectId || fallbackSubjectId;
   const activeLevel = getSubjectLevel(profile, activeSubjectId);
 
   const ensureSubject = useCallback(() => {
-    if (subjectId !== "all") return subjectId;
+    if (subjectId) return subjectId;
     setSubjectId(fallbackSubjectId);
     return fallbackSubjectId;
   }, [fallbackSubjectId, subjectId]);
 
   const goHome = useCallback(() => {
-    setSubjectId("all");
+    setSubjectId("");
     setScreen("home");
   }, []);
 
@@ -80,96 +74,62 @@ export function ChatClient() {
   }, [ensureSubject]);
 
   const goToTutor = useCallback(() => {
-    ensureSubject();
-    setTopicId("general");
-    setPrevScreen((current) => (screen === "conversation" ? current : screen === "home" ? "workspace" : screen));
+    const nextSubjectId = ensureSubject();
+    const lastTopicId = window.localStorage.getItem(`grindsai-last-tutor-topic:${nextSubjectId}`) ?? "general";
+    setTopicId(lastTopicId);
+    setPreviousScreen(screen === "home" ? "workspace" : screen === "conversation" ? previousScreen : screen);
     setScreen("conversation");
     setStuck(false);
-  }, [ensureSubject, screen]);
+  }, [ensureSubject, previousScreen, screen]);
 
-  const goToSubjectTool = useCallback(
-    (next: Screen) => {
+  const goToTool = useCallback(
+    (next: Exclude<Screen, "home" | "workspace" | "conversation">) => {
       ensureSubject();
-      setPrevScreen((current) => (screen === "conversation" ? current : screen));
+      setPreviousScreen(screen === "conversation" ? previousScreen : screen);
       setScreen(next);
     },
-    [ensureSubject, screen],
+    [ensureSubject, previousScreen, screen],
   );
 
-  const openConvo = useCallback((nextTopicId = "general") => {
-    ensureSubject();
-    setTopicId(nextTopicId);
-    setPrevScreen((current) => (screen === "conversation" ? current : screen === "home" ? "workspace" : screen));
-    setScreen("conversation");
-    setStuck(false);
-  }, [ensureSubject, screen]);
-
-  const exitConvo = useCallback(() => {
-    setScreen(prevScreen);
-  }, [prevScreen]);
+  const openTopic = useCallback(
+    (nextTopicId = "general") => {
+      const nextSubjectId = ensureSubject();
+      window.localStorage.setItem(`grindsai-last-tutor-topic:${nextSubjectId}`, nextTopicId);
+      setTopicId(nextTopicId);
+      setPreviousScreen(screen === "home" ? "workspace" : screen === "conversation" ? previousScreen : screen);
+      setScreen("conversation");
+      setStuck(false);
+    },
+    [ensureSubject, previousScreen, screen],
+  );
 
   const selectSubject = useCallback((id: string) => {
-    if (id === "all") {
-      setSubjectId("all");
-      setScreen("home");
-      return;
-    }
     setSubjectId(id);
     setTopicId("general");
     setScreen("workspace");
   }, []);
 
-  const openSettings = useCallback(() => {
-    router.push("/onboarding?edit=1");
-  }, [router]);
-
-  const showRail = screen === "home" || screen === "workspace" || screen === "tracker" || screen === "conversation";
-
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
-      <AppSidebar
-        screen={screen}
-        subjectId={subjectId}
-        subjects={subjects}
-        collapsed={collapsed}
-        userName={userName}
-        userEmail={userEmail}
-        userInitials={initialsFrom(userName, userEmail)}
-        onSelectAll={() => selectSubject("all")}
-        onSelectSubject={selectSubject}
-        onGoHome={goHome}
-        onGoWorkspace={goToWorkspace}
-        onGoTutor={goToTutor}
-        onGoGenerator={() => goToSubjectTool("generator")}
-        onGoTracker={() => goToSubjectTool("tracker")}
-        onGoProgress={() => goToSubjectTool("progress")}
-        onOpenSettings={openSettings}
-      />
-
-      <main
-        className="flex-1 min-w-0 h-full flex flex-col relative bg-white"
-        style={{
-          backgroundImage:
-            "radial-gradient(120% 52% at 50% -8%, rgba(16,185,129,0.07), rgba(16,185,129,0) 62%), radial-gradient(circle at center, rgba(17,24,39,0.045) 1px, transparent 1.5px)",
-          backgroundSize: "100% 100%, 23px 23px",
-        }}
-      >
+    <div className="h-screen min-h-screen bg-[#f4f8f6] dark:bg-slate-950">
+      <main className="app-study-shell flex h-full min-h-0 flex-col">
         <AppTopBar
           screen={screen}
           subjectId={subjectId}
           activeSubjectId={activeSubjectId}
-          onToggleSidebar={() => setCollapsed((c) => !c)}
-          onExitConvo={exitConvo}
+          userInitials={initialsFrom(userName, userEmail)}
+          onBack={screen === "workspace" ? goHome : screen === "conversation" ? () => setScreen(previousScreen) : goToWorkspace}
+          onHome={goHome}
+          onOpenSettings={() => router.push("/onboarding?edit=1")}
         />
 
-        <div className="flex-1 overflow-y-auto relative">
+        <div className={screen === "conversation" ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-y-auto"}>
           {screen === "home" && (
             <HomeFeed
+              hasProfile={Boolean(profile)}
               subjects={subjects}
               subjectLevels={profile?.subjectLevels}
               onSelectSubject={selectSubject}
-              onOpenTutor={goToTutor}
-              onOpenSettings={openSettings}
+              onOpenSettings={() => router.push("/onboarding?edit=1")}
             />
           )}
           {screen === "workspace" && (
@@ -177,9 +137,8 @@ export function ChatClient() {
               subjectId={activeSubjectId}
               level={activeLevel}
               onOpenTutor={goToTutor}
-              onOpenGenerator={() => goToSubjectTool("generator")}
-              onOpenTracker={() => goToSubjectTool("tracker")}
-              onOpenProgress={() => goToSubjectTool("progress")}
+              onOpenGenerator={() => goToTool("generator")}
+              onOpenProgress={() => goToTool("progress")}
             />
           )}
           {screen === "conversation" && (
@@ -189,34 +148,23 @@ export function ChatClient() {
               topicId={topicId}
               stuck={stuck}
               onRevealStuck={() => setStuck(true)}
-              onOpenTopic={openConvo}
+              onOpenTopic={openTopic}
             />
           )}
           {screen === "generator" && (
-            <PapersView
+            <PapersView key={activeSubjectId} subjectId={activeSubjectId} level={activeLevel} onOpenConvo={() => openTopic(topicId)} />
+          )}
+          {screen === "progress" && (
+            <ProgressResultsView
               key={activeSubjectId}
               subjectId={activeSubjectId}
               level={activeLevel}
-              onOpenConvo={() => openConvo(topicId)}
+              onOpenConvo={() => openTopic(topicId)}
+              onOpenGenerator={() => goToTool("generator")}
             />
-          )}
-          {screen === "tracker" && (
-            <ExamTrackerView subjectId={activeSubjectId} level={activeLevel} onOpenTutor={goToTutor} />
-          )}
-          {screen === "progress" && (
-            <ProgressView subjectId={activeSubjectId} level={activeLevel} onOpenConvo={() => openConvo(topicId)} />
           )}
         </div>
       </main>
-
-      {showRail && (
-        <CalendarRail
-          subjectId={subjectId === "all" ? undefined : activeSubjectId}
-          dimmed={screen === "conversation"}
-          onDismiss={exitConvo}
-          onOpenConvo={() => openConvo(topicId)}
-        />
-      )}
     </div>
   );
 }

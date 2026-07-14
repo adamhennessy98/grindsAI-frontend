@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { subjectLabel } from "./subjects";
 import type { Screen } from "./types";
 
@@ -7,82 +8,57 @@ interface TopBarProps {
   screen: Screen;
   subjectId: string;
   activeSubjectId: string;
-  onToggleSidebar: () => void;
-  onExitConvo: () => void;
+  userInitials: string;
+  onBack: () => void;
+  onHome: () => void;
+  onOpenSettings: () => void;
 }
 
-export function AppTopBar({ screen, subjectId, activeSubjectId, onToggleSidebar, onExitConvo }: TopBarProps) {
-  const inConvo = screen === "conversation";
+export function AppTopBar({ screen, activeSubjectId, userInitials, onBack, onHome, onOpenSettings }: TopBarProps) {
+  const isHome = screen === "home";
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const stored = window.localStorage.getItem("grindsai-theme");
+    return stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  const toggleTheme = () => {
+    setDarkMode((current) => {
+      const next = !current;
+      document.documentElement.classList.toggle("dark", next);
+      window.localStorage.setItem("grindsai-theme", next ? "dark" : "light");
+      return next;
+    });
+  };
+
   const subject = subjectLabel(activeSubjectId);
+  const title = screen === "workspace" ? subject : screen === "generator" ? "Exam Questions" : screen === "progress" ? "Progress & Results" : "Tutor";
+  const subtitle = screen === "workspace" ? "Choose what to do next" : screen === "conversation" ? `${subject} tutor` : subject;
 
   return (
-    <header className="relative z-[3] flex h-[62px] shrink-0 items-center gap-3.5 border-b border-gray-200 bg-white/90 px-5 backdrop-blur-sm sm:px-7">
-      <button
-        type="button"
-        onClick={onToggleSidebar}
-        title="Toggle sidebar"
-        className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] border border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100"
-      >
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 6h16M4 12h16M4 18h16" stroke="#6B7280" strokeWidth="1.7" strokeLinecap="round" />
-        </svg>
-      </button>
-
-      {inConvo ? (
-        <button
-          type="button"
-          onClick={onExitConvo}
-          className="-ml-1 flex items-center gap-2 rounded-lg px-2 py-1.5 text-gray-500 transition-colors hover:bg-gray-100"
-        >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M15 6l-6 6 6 6" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span className="text-sm font-medium">Back</span>
+    <header className="sticky top-0 z-20 border-b border-white/70 bg-[#f7faf8]/90 px-4 py-3 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 sm:px-6">
+      <div className="mx-auto flex max-w-[1120px] items-center gap-3">
+        {isHome ? (
+          <button type="button" onClick={onHome} className="flex min-w-0 items-center gap-2.5 text-left">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#10b981,#22d3ee)] font-heading text-sm font-semibold text-white shadow-[0_10px_24px_-16px_rgba(16,185,129,.9)]">G</span>
+            <span><span className="block font-heading text-[17px] font-semibold text-gray-900 dark:text-white">GrindsAI</span><span className="block text-xs text-gray-400">Leaving Cert study workspace</span></span>
+          </button>
+        ) : (
+          <button type="button" onClick={onBack} aria-label="Go back" className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 6-6 6 6 6" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        )}
+        {!isHome && <div className="min-w-0 flex-1"><div className="truncate font-heading text-[16.5px] font-semibold text-gray-900 dark:text-white">{title}</div><div className="truncate text-xs text-gray-400">{subtitle}</div></div>}
+        {isHome && <div className="flex-1" />}
+        <button type="button" onClick={toggleTheme} title={darkMode ? "Switch to light mode" : "Switch to dark mode"} className="flex h-10 items-center gap-2 rounded-full border border-gray-200 bg-white px-3 text-[12.5px] font-semibold text-gray-700 transition-colors hover:bg-amber-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800">
+          <span aria-hidden="true">{darkMode ? "☀" : "☾"}</span><span className="hidden sm:inline">{darkMode ? "Light" : "Dark"}</span>
         </button>
-      ) : (
-        <div className="flex min-w-0 items-baseline gap-2.5">
-          <span className="font-heading truncate text-lg font-semibold text-gray-900">{screenTitle(screen, subjectId, subject)}</span>
-          <span className="hidden text-[13px] text-gray-400 sm:inline">{screenSubtitle(screen, subjectId, subject)}</span>
-        </div>
-      )}
-
-      <div className="flex-1" />
-
-      {inConvo ? (
-        <div className="hidden items-center gap-2 rounded-full border border-gray-200 bg-gray-100 px-[11px] py-[5px] text-[12.5px] text-gray-500 sm:flex">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 8v5l3 2" stroke="#10B981" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="12" cy="12" r="8.5" stroke="#10B981" strokeWidth="1.6" />
-          </svg>
-          Tutor memory active for&nbsp;<strong className="font-semibold text-emerald-600">{subject}</strong>
-        </div>
-      ) : screen === "home" ? (
-        <div className="hidden items-center gap-2 sm:flex">
-          <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-[5px] font-mono text-[10.5px] font-medium uppercase tracking-[0.06em] text-amber-900">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-            Beta
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[13px] font-medium text-gray-500">
-            <span className="h-[7px] w-[7px] rounded-full bg-emerald-500" />
-            Leaving Cert planning
-          </span>
-        </div>
-      ) : null}
+        <button type="button" onClick={onOpenSettings} title="Study profile and feedback" className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,#fef3c7,#bbf7d0)] text-[13px] font-semibold text-gray-800 transition-transform hover:scale-[1.03] dark:!bg-none dark:!bg-cyan-950 dark:!text-cyan-100 dark:ring-1 dark:ring-cyan-700">{userInitials}</button>
+      </div>
     </header>
   );
-}
-
-function screenTitle(screen: Screen, subjectId: string, subject: string) {
-  if (screen === "home" || subjectId === "all") return "My subjects";
-  if (screen === "workspace") return `${subject} workspace`;
-  if (screen === "generator") return "Practice questions";
-  if (screen === "tracker") return "Exam tracker";
-  if (screen === "progress") return "My progress";
-  return "Tutor";
-}
-
-function screenSubtitle(screen: Screen, subjectId: string, subject: string) {
-  if (screen === "home" || subjectId === "all") return "Choose what to work on";
-  if (screen === "workspace") return "Tutor, practice, tracker, and progress";
-  return subject;
 }

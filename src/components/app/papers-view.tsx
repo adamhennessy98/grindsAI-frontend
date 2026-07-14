@@ -61,10 +61,10 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
           {subjectLabel(subjectId)} / {level === "OL" ? "Ordinary Level" : "Higher Level"}
         </div>
         <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">
-          Practice questions
+          Exam Questions
         </h1>
         <p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">
-          Generate Leaving Cert-style questions by topic and difficulty, then work through them independently or with the
+          Generate one Leaving Cert-style question by topic and difficulty, then work through it independently or with the
           tutor.
         </p>
       </div>
@@ -73,8 +73,7 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
         <form onSubmit={generate} className="rounded-2xl border border-gray-200 bg-white px-5 py-5">
           <h2 className="font-heading m-0 text-lg font-semibold text-gray-900">Question generator</h2>
           <p className="m-0 mb-5 mt-1 text-[13px] leading-relaxed text-gray-500">
-            Uses the existing exam-generator API. If auth or model keys are not configured, this will show the backend
-            error.
+            Pick a topic, style, and difficulty. If generation is unavailable, the error will appear clearly here.
           </p>
 
           <div className="space-y-4">
@@ -137,7 +136,7 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
               onClick={onOpenConvo}
               className="rounded-[10px] border border-gray-200 bg-white px-3.5 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:border-emerald-500 hover:text-emerald-600"
             >
-              Work with tutor
+              Work through this with Tutor
             </button>
           </div>
 
@@ -175,9 +174,9 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
         </div>
         <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-2">
           <RecommendedRow
-            tag="Weak area"
-            title="Try a topic from the tracker"
-            sub="Use recent mistakes as the input for the generator."
+            tag="Focus area"
+            title="Practise something you find difficult"
+            sub="Add a focus area in Progress & Results, then use it here."
             onClick={onOpenConvo}
           />
           <RecommendedRow
