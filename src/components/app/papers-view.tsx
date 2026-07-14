@@ -11,15 +11,16 @@ import type { TutorQuestionHandoff } from "./conversation-view";
 interface PapersViewProps {
   subjectId: string;
   level: string;
+  initialTopicId?: string;
   focusAreas: FocusArea[];
   onOpenConvo: (handoff: TutorQuestionHandoff) => void;
   onQuestionGenerated: (topic: { id: string; name: string }) => void;
   onReflect: (outcome: "Comfortable" | "Needed some help" | "Still stuck", topic: { id: string; name: string }) => void;
 }
 
-export function PapersView({ subjectId, level, focusAreas, onOpenConvo, onQuestionGenerated, onReflect }: PapersViewProps) {
+export function PapersView({ subjectId, level, initialTopicId, focusAreas, onOpenConvo, onQuestionGenerated, onReflect }: PapersViewProps) {
   const topics = useMemo(() => getSubjectTopics(subjectId), [subjectId]);
-  const [topicId, setTopicId] = useState(topics[0]?.id ?? "general");
+  const [topicId, setTopicId] = useState(() => initialTopicId && topics.some((topic) => topic.id === initialTopicId) ? initialTopicId : topics[0]?.id ?? "general");
   const [questionType, setQuestionType] = useState<ExamQuestionType>("mixed");
   const [difficulty, setDifficulty] = useState<ExamQuestionDifficulty>("exam");
   const [includeHints, setIncludeHints] = useState(true);

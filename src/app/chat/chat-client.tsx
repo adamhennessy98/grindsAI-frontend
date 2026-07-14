@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SUBJECTS, getTopic } from "@/lib/constants";
+import { SUBJECTS, getSubjectTopics, getTopic } from "@/lib/constants";
 import { filterSubjects, getSubjectLevel, readStudentProfile, type StudentProfile } from "@/lib/onboarding";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { AppTopBar } from "@/components/app/topbar";
@@ -30,6 +30,7 @@ export function ChatClient() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [studyState, setStudyState] = useState<StudyStateBySubject>({});
   const [tutorHandoff, setTutorHandoff] = useState<TutorQuestionHandoff | null>(null);
+  const [generatorTopicId, setGeneratorTopicId] = useState<string | undefined>();
 
   useEffect(() => { const timer = window.setTimeout(() => setProfile(readStudentProfile()), 0); return () => window.clearTimeout(timer); }, []);
   useEffect(() => {
@@ -58,7 +59,7 @@ export function ChatClient() {
   }, [updateSubjectState]);
 
   const ensureSubject = useCallback(() => { if (subjectId) return subjectId; setSubjectId(fallbackSubjectId); return fallbackSubjectId; }, [fallbackSubjectId, subjectId]);
-  const goHome = useCallback(() => { setSubjectId(""); setTutorHandoff(null); setScreen("home"); }, []);
+  const goHome = useCallback(() => { setSubjectId(""); setTutorHandoff(null); setGeneratorTopicId(undefined); setScreen("home"); }, []);
   const goToWorkspace = useCallback(() => { ensureSubject(); setTutorHandoff(null); setScreen("workspace"); }, [ensureSubject]);
 
   const openTopic = useCallback((nextTopicId = "general", handoff?: TutorQuestionHandoff | null) => {
@@ -77,7 +78,7 @@ export function ChatClient() {
     openTopic(lastTopic);
   }, [ensureSubject, openTopic, studyState]);
   const goToTool = useCallback((next: Exclude<Screen, "home" | "workspace" | "conversation">) => { ensureSubject(); setTutorHandoff(null); setPreviousScreen(screen === "conversation" ? previousScreen : screen); setScreen(next); }, [ensureSubject, previousScreen, screen]);
-  const selectSubject = useCallback((id: string) => { setSubjectId(id); setTopicId(studyState[id]?.lastTopicId ?? "general"); setTutorHandoff(null); setScreen("workspace"); }, [studyState]);
+  const selectSubject = useCallback((id: string) => { setSubjectId(id); setTopicId(studyState[id]?.lastTopicId ?? "general"); setTutorHandoff(null); setGeneratorTopicId(undefined); setScreen("workspace"); }, [studyState]);
   const continueSubject = useCallback((id: string) => {
     const lastTopic = studyState[id]?.lastTopicId ?? "general";
     window.localStorage.setItem(`grindsai-last-tutor-topic:${id}`, lastTopic);
@@ -100,12 +101,15 @@ export function ChatClient() {
     recordActivity(activeSubjectId, { type: status === "improved" ? "improved" : "focus", label: status === "improved" ? `Marked comfortable: ${area.label}` : `Restored focus area: ${area.label}` });
   }, [activeSubjectId, recordActivity, updateSubjectState]);
   const addResult = useCallback((result: ResultEntry) => { updateSubjectState(activeSubjectId, (current) => ({ ...current, results: [result, ...current.results] })); recordActivity(activeSubjectId, { type: "result", label: `${result.type}: ${result.topic}` }); }, [activeSubjectId, recordActivity, updateSubjectState]);
+  const topicForFocus = useCallback((focus: string) => getSubjectTopics(activeSubjectId).find((topic) => topic.name.toLowerCase() === focus.trim().toLowerCase())?.id ?? "general", [activeSubjectId]);
+  const openFocusTutor = useCallback((focus = "") => { openTopic(topicForFocus(focus)); }, [openTopic, topicForFocus]);
+  const openFocusGenerator = useCallback((focus = "") => { setGeneratorTopicId(topicForFocus(focus)); goToTool("generator"); }, [goToTool, topicForFocus]);
 
   return <div className="h-screen min-h-screen bg-[#eaf1ed] dark:bg-slate-950"><main className="app-study-shell flex h-full min-h-0 flex-col"><AppTopBar screen={screen} subjectId={subjectId} activeSubjectId={activeSubjectId} userInitials={initialsFrom(userName, userEmail)} onBack={screen === "workspace" ? goHome : screen === "conversation" ? () => setScreen(previousScreen) : goToWorkspace} onHome={goHome} onOpenSettings={() => router.push("/onboarding?edit=1")} /><div className={screen === "conversation" ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-y-auto"}>
     {screen === "home" && <HomeFeed hasProfile={Boolean(profile)} subjects={subjects} subjectLevels={profile?.subjectLevels} studyState={studyState} onSelectSubject={selectSubject} onContinueSubject={continueSubject} onOpenSettings={() => router.push("/onboarding?edit=1")} />}
     {screen === "workspace" && <SubjectWorkspace subjectId={activeSubjectId} level={activeLevel} studyState={activeStudyState} onOpenTutor={goToTutor} onOpenGenerator={() => goToTool("generator")} onOpenProgress={() => goToTool("progress")} />}
-    {screen === "conversation" && <ConversationView subjectId={activeSubjectId} level={activeLevel} topicId={topicId} handoff={tutorHandoff} onStartSession={(activeTopicId) => recordActivity(activeSubjectId, { type: "tutor", topicId: activeTopicId, label: `Tutor session: ${getTopic(activeSubjectId, activeTopicId).name}` })} onOpenTopic={openTopic} />}
-    {screen === "generator" && <PapersView key={activeSubjectId} subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas.filter((area) => area.status === "current")} onOpenConvo={(handoff) => openTopic(handoff.topicId, handoff)} onQuestionGenerated={(topic) => recordActivity(activeSubjectId, { type: "question", topicId: topic.id, label: `Generated an Exam Question: ${topic.name}` })} onReflect={(outcome, topic) => { recordActivity(activeSubjectId, { type: "reflection", topicId: topic.id, label: `Question reflection: ${outcome}` }); if (outcome === "Still stuck") addFocusArea(topic.name); }} />}
-    {screen === "progress" && <ProgressResultsView subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas} results={activeStudyState.results} onAddFocusArea={addFocusArea} onUpdateFocusArea={updateFocusArea} onAddResult={addResult} onOpenConvo={goToTutor} onOpenGenerator={() => goToTool("generator")} />}
+    {screen === "conversation" && <ConversationView subjectId={activeSubjectId} level={activeLevel} topicId={topicId} handoff={tutorHandoff} onOpenGenerator={() => openFocusGenerator(getTopic(activeSubjectId, topicId).name)} onStartSession={(activeTopicId) => recordActivity(activeSubjectId, { type: "tutor", topicId: activeTopicId, label: `Tutor session: ${getTopic(activeSubjectId, activeTopicId).name}` })} onOpenTopic={openTopic} />}
+    {screen === "generator" && <PapersView key={activeSubjectId} subjectId={activeSubjectId} level={activeLevel} initialTopicId={generatorTopicId} focusAreas={activeStudyState.focusAreas.filter((area) => area.status === "current")} onOpenConvo={(handoff) => openTopic(handoff.topicId, handoff)} onQuestionGenerated={(topic) => recordActivity(activeSubjectId, { type: "question", topicId: topic.id, label: `Generated an Exam Question: ${topic.name}` })} onReflect={(outcome, topic) => { recordActivity(activeSubjectId, { type: "reflection", topicId: topic.id, label: `Question reflection: ${outcome}` }); if (outcome === "Still stuck") addFocusArea(topic.name); }} />}
+    {screen === "progress" && <ProgressResultsView subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas} results={activeStudyState.results} activities={activeStudyState.activities} onAddFocusArea={addFocusArea} onUpdateFocusArea={updateFocusArea} onAddResult={addResult} onOpenConvo={openFocusTutor} onOpenGenerator={openFocusGenerator} />}
   </div></main></div>;
 }
