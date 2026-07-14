@@ -158,6 +158,16 @@
     background-position: -1px -1px;
   }
 
+  .app-study-shell {
+    background:
+      radial-gradient(900px 420px at 12% -12%, rgba(34, 211, 238, 0.18), transparent 58%),
+      radial-gradient(760px 420px at 96% 0%, rgba(190, 242, 100, 0.17), transparent 54%),
+      radial-gradient(700px 420px at 70% 106%, rgba(251, 191, 36, 0.13), transparent 55%),
+      radial-gradient(circle at center, rgba(15, 23, 42, 0.06) 1px, transparent 1.5px),
+      linear-gradient(180deg, #f4f8f6 0%, #eef4f2 100%);
+    background-size: auto, auto, auto, 23px 23px, auto;
+  }
+
   .fade-mask {
     mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 40%, transparent 80%);
     -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, black 40%, transparent 80%);
@@ -186,11 +196,47 @@
 ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; border: 2px solid white; }
 ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
 
+/* Softer light app surfaces: keep the app readable without so much pure white glare. */
+html:not(.dark) .app-study-shell .bg-white { background-color: #fbfaf6; }
+html:not(.dark) .app-study-shell .bg-white\/80 { background-color: rgba(251, 250, 246, 0.8); }
+html:not(.dark) .app-study-shell .bg-white\/82 { background-color: rgba(251, 250, 246, 0.82); }
+html:not(.dark) .app-study-shell .bg-white\/85 { background-color: rgba(251, 250, 246, 0.85); }
+html:not(.dark) .app-study-shell .bg-white\/86 { background-color: rgba(251, 250, 246, 0.86); }
+html:not(.dark) .app-study-shell .bg-white\/88 { background-color: rgba(251, 250, 246, 0.88); }
+html:not(.dark) .app-study-shell .bg-white\/95 { background-color: rgba(251, 250, 246, 0.95); }
+html:not(.dark) .app-study-shell .bg-gray-50 { background-color: #f3f6f3; }
+html:not(.dark) .app-study-shell .bg-gray-100 { background-color: #e9eee9; }
+html:not(.dark) .app-study-shell .border-white\/70,
+html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(226, 232, 225, 0.95); }
+html:not(.dark) .app-study-shell .hover\:bg-cyan-50:hover { background-color: #ecfeff; }
+html:not(.dark) .app-study-shell .hover\:bg-lime-50:hover { background-color: #f7fee7; }
+html:not(.dark) .app-study-shell .hover\:bg-amber-50:hover { background-color: #fffbeb; }
+html:not(.dark) .app-study-shell .hover\:bg-violet-50:hover { background-color: #f5f3ff; }
+html:not(.dark) .app-study-shell .active\:bg-cyan-100\/70:active { background-color: rgba(207, 250, 254, 0.7); }
+html:not(.dark) .app-study-shell .active\:bg-lime-100\/70:active { background-color: rgba(236, 252, 203, 0.7); }
+html:not(.dark) .app-study-shell .active\:bg-amber-100\/70:active { background-color: rgba(254, 243, 199, 0.7); }
+html:not(.dark) .app-study-shell .active\:bg-violet-100\/70:active { background-color: rgba(237, 233, 254, 0.7); }
+html:not(.dark) .app-study-shell input::placeholder,
+html:not(.dark) .app-study-shell textarea::placeholder { color: #8b94a3; }
+html:not(.dark) .app-study-shell ::-webkit-scrollbar-thumb {
+  background: #d7ded8;
+  border-color: #f4f8f6;
+}
+
 /* Display-only dark theme overrides for existing utility colors. */
 .dark .bg-white { background-color: #0f172a; }
+.dark .bg-white\/82 { background-color: rgba(15, 23, 42, 0.82); }
+.dark .bg-white\/85 { background-color: rgba(15, 23, 42, 0.85); }
+.dark .bg-white\/86 { background-color: rgba(15, 23, 42, 0.86); }
+.dark .bg-white\/88 { background-color: rgba(15, 23, 42, 0.88); }
+.dark .bg-white\/95 { background-color: rgba(15, 23, 42, 0.95); }
 .dark .bg-gray-50 { background-color: #111827; }
 .dark .bg-gray-100 { background-color: #1f2937; }
 .dark .bg-gray-200 { background-color: #374151; }
+.dark .bg-cyan-50 { background-color: rgba(8, 145, 178, 0.14); }
+.dark .bg-lime-50 { background-color: rgba(101, 163, 13, 0.14); }
+.dark .bg-amber-50 { background-color: rgba(217, 119, 6, 0.14); }
+.dark .bg-violet-50 { background-color: rgba(124, 58, 237, 0.14); }
 .dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.12); }
 .dark .bg-red-50 { background-color: rgba(127, 29, 29, 0.45); }
 .dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.2); }
@@ -210,6 +256,12 @@
 
 .dark .border-gray-100,
 .dark .border-gray-200,
+.dark .border-white\/70,
+.dark .border-white\/80,
+.dark .border-cyan-100,
+.dark .border-lime-100,
+.dark .border-amber-100,
+.dark .border-violet-100,
 .dark .border-emerald-100,
 .dark .border-red-100 { border-color: #243244; }
 
@@ -221,9 +273,36 @@
 .dark .hover\:text-gray-900:hover,
 .dark .hover\:text-gray-700:hover { color: #f8fafc; }
 
+.dark .feature-action-card:hover .feature-action-pill {
+  color: #f8fafc;
+  box-shadow: 0 12px 28px -18px rgba(255, 255, 255, 0.34);
+}
+.dark .feature-action-cyan:hover .feature-action-pill {
+  background-color: #0891b2;
+}
+.dark .feature-action-lime:hover .feature-action-pill {
+  background-color: #65a30d;
+}
+.dark .feature-action-amber:hover .feature-action-pill {
+  background-color: #d97706;
+}
+.dark .feature-action-violet:hover .feature-action-pill {
+  background-color: #7c3aed;
+}
+
 .dark textarea::placeholder { color: #64748b; }
 .dark ::-webkit-scrollbar-thumb { background: #334155; border-color: #0f172a; }
 .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+.dark .app-study-shell {
+  background:
+    radial-gradient(900px 420px at 10% -10%, rgba(34, 211, 238, 0.16), transparent 58%),
+    radial-gradient(760px 420px at 96% 0%, rgba(132, 204, 22, 0.12), transparent 54%),
+    radial-gradient(700px 420px at 72% 108%, rgba(245, 158, 11, 0.12), transparent 55%),
+    radial-gradient(circle at center, rgba(226, 232, 240, 0.055) 1px, transparent 1.5px),
+    linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  background-size: auto, auto, auto, 23px 23px, auto;
+}
 
 .math-markdown .katex {
   color: inherit;

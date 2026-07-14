@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist_Mono, Inter } from "next/font/google";
-import { IS_BETA } from "@/lib/beta";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 
@@ -23,10 +22,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: IS_BETA ? "GrindsAI (Beta) - LC study tutor" : "GrindsAI - Your personal LC tutor",
-  description: IS_BETA
-    ? "Free beta for Leaving Cert students. An AI tutor that guides you with questions — still a work in progress."
-    : "An AI-powered Leaving Certificate tutor that uses the Socratic method to guide Irish students to answers - not just give them.",
+  title: "GrindsAI - Your personal Leaving Cert tutor",
+  description:
+    "A subject-based Leaving Cert tutor that helps Irish students practise exam questions, track results, and understand what to work on next.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

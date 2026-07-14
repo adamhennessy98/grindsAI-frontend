@@ -55,9 +55,9 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
   };
 
   return (
-    <div className="mx-auto max-w-[1060px] px-5 pb-16 pt-[30px] sm:px-7">
+    <div className="mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9">
       <div className="mb-6">
-        <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-emerald-600">
+        <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-lime-700">
           {subjectLabel(subjectId)} / {level === "OL" ? "Ordinary Level" : "Higher Level"}
         </div>
         <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">
@@ -70,11 +70,10 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[0.86fr_1.14fr]">
-        <form onSubmit={generate} className="rounded-2xl border border-gray-200 bg-white px-5 py-5">
+        <form onSubmit={generate} className="rounded-2xl border border-lime-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(101,163,13,.65)]">
           <h2 className="font-heading m-0 text-lg font-semibold text-gray-900">Question generator</h2>
           <p className="m-0 mb-5 mt-1 text-[13px] leading-relaxed text-gray-500">
-            Uses the existing exam-generator API. If auth or model keys are not configured, this will show the backend
-            error.
+            Pick a topic, style, and difficulty. If the backend is not configured, the error will appear clearly here.
           </p>
 
           <div className="space-y-4">
@@ -119,25 +118,25 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-[10px] bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 disabled:bg-gray-200 disabled:text-gray-400"
+              className="w-full rounded-[10px] bg-lime-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-lime-600 disabled:bg-gray-200 disabled:text-gray-400"
             >
               {loading ? "Generating..." : "Generate question"}
             </button>
           </div>
         </form>
 
-        <section className="rounded-2xl border border-gray-200 bg-white px-5 py-5">
+        <section className="rounded-2xl border border-lime-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(101,163,13,.65)]">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="font-heading m-0 text-lg font-semibold text-gray-900">Generated question</h2>
-              <p className="m-0 mt-1 text-[13px] text-gray-500">Attempt it here, then open the tutor if you want guidance.</p>
+              <p className="m-0 mt-1 text-[13px] text-gray-500">Attempt it here, then open the tutor for step-by-step help.</p>
             </div>
             <button
               type="button"
               onClick={onOpenConvo}
-              className="rounded-[10px] border border-gray-200 bg-white px-3.5 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:border-emerald-500 hover:text-emerald-600"
+              className="rounded-[10px] border border-lime-100 bg-white px-3.5 py-2 text-[13px] font-medium text-gray-700 transition-colors hover:border-lime-500 hover:text-lime-700"
             >
-              Work with tutor
+              Work through this with Tutor
             </button>
           </div>
 
@@ -154,8 +153,8 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
               ))}
             </div>
           ) : (
-            <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 text-center">
-              <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+            <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-lime-200 bg-lime-50/60 px-6 text-center dark:bg-lime-400/10">
+              <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-lime-50 text-lime-700">
                 <QuestionIcon />
               </div>
               <h3 className="font-heading m-0 text-lg font-semibold text-gray-900">Ready to generate</h3>
@@ -168,7 +167,7 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
         </section>
       </div>
 
-      <section className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 px-5 py-5">
+      <section className="mt-6 rounded-2xl border border-lime-100 bg-lime-50/70 px-4 py-4 sm:px-5 dark:bg-lime-400/10">
         <div className="mb-4 flex items-center gap-3">
           <span className="font-heading text-[16px] font-semibold text-gray-900">Recommended starts</span>
           <div className="h-px flex-1 bg-gray-200" />
@@ -198,11 +197,11 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
           {papers.map((paper) => (
             <div
               key={paper.key}
-              className="flex flex-col rounded-2xl border border-gray-200 bg-white px-5 py-[18px] shadow-[0_1px_2px_rgba(17,24,39,.04)]"
+              className="flex flex-col rounded-2xl border border-lime-100 bg-white px-5 py-[18px] shadow-[0_1px_2px_rgba(17,24,39,.04)]"
             >
               <div className="mb-1 flex items-baseline gap-2">
                 <span className="font-heading text-[19px] font-semibold text-gray-900">{paper.year}</span>
-                <span className="text-[13px] font-semibold text-emerald-600">{paper.paper}</span>
+                <span className="text-[13px] font-semibold text-lime-700">{paper.paper}</span>
               </div>
               <div className="mb-3.5 text-[12.5px] leading-snug text-gray-400">{paper.topics}</div>
               <div className="flex-1" />
@@ -211,7 +210,7 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
                 <button
                   type="button"
                   onClick={onOpenConvo}
-                  className="rounded-[9px] border border-gray-200 bg-gray-100 px-3 py-[7px] text-[12.5px] font-semibold text-emerald-600 transition-colors hover:border-emerald-500 hover:bg-emerald-500 hover:text-white"
+                  className="rounded-[9px] border border-lime-100 bg-lime-50 px-3 py-[7px] text-[12.5px] font-semibold text-lime-700 transition-colors hover:border-lime-500 hover:bg-lime-500 hover:text-white"
                 >
                   Work through
                 </button>
@@ -225,7 +224,7 @@ export function PapersView({ subjectId, level, onOpenConvo }: PapersViewProps) {
 }
 
 const inputCls =
-  "w-full rounded-[10px] border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/[0.08]";
+  "w-full rounded-[10px] border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-lime-500 focus:ring-4 focus:ring-lime-500/[0.1]";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -246,7 +245,7 @@ function SegmentedControl({
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="grid gap-1 rounded-[10px] border border-gray-200 bg-gray-50 p-1" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
+    <div className="grid gap-1 rounded-[10px] border border-lime-100 bg-lime-50/60 p-1 dark:bg-lime-400/10" style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}>
       {options.map(([key, label]) => (
         <button
           key={key}
@@ -254,7 +253,7 @@ function SegmentedControl({
           onClick={() => onChange(key)}
           className={[
             "rounded-[8px] px-3 py-2 text-[12.5px] font-medium transition-colors",
-            value === key ? "bg-white text-emerald-700 shadow-[0_1px_2px_rgba(17,24,39,.08)]" : "text-gray-500 hover:text-gray-800",
+            value === key ? "bg-white text-lime-700 shadow-[0_1px_2px_rgba(17,24,39,.08)]" : "text-gray-500 hover:text-gray-800",
           ].join(" ")}
         >
           {label}
@@ -269,10 +268,10 @@ function Toggle({ checked, label, onChange }: { checked: boolean; label: string;
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className="flex items-center justify-between gap-3 rounded-[10px] border border-gray-200 bg-white px-3.5 py-3 text-left"
+      className="flex items-center justify-between gap-3 rounded-[10px] border border-lime-100 bg-white px-3.5 py-3 text-left"
     >
       <span className="text-[13px] font-medium text-gray-700">{label}</span>
-      <span className={["h-5 w-9 rounded-full p-0.5 transition-colors", checked ? "bg-emerald-500" : "bg-gray-200"].join(" ")}>
+      <span className={["h-5 w-9 rounded-full p-0.5 transition-colors", checked ? "bg-lime-500" : "bg-gray-200"].join(" ")}>
         <span className={["block h-4 w-4 rounded-full bg-white transition-transform", checked ? "translate-x-4" : "translate-x-0"].join(" ")} />
       </span>
     </button>
@@ -281,7 +280,7 @@ function Toggle({ checked, label, onChange }: { checked: boolean; label: string;
 
 function GeneratedCard({ question }: { question: GeneratedExamQuestion }) {
   return (
-    <article className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4">
+    <article className="rounded-2xl border border-lime-100 bg-lime-50/60 px-4 py-4 dark:bg-lime-400/10">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="m-0 text-[15px] font-semibold text-gray-900">{question.title}</h3>
@@ -293,8 +292,8 @@ function GeneratedCard({ question }: { question: GeneratedExamQuestion }) {
       </div>
       <MathMarkdown className="text-[14px] leading-relaxed text-gray-800">{question.question}</MathMarkdown>
       {question.hint && (
-        <div className="mt-3 rounded-[12px] border border-emerald-100 bg-emerald-50 px-3.5 py-3">
-          <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.07em] text-emerald-600">Hint</div>
+        <div className="mt-3 rounded-[12px] border border-lime-100 bg-lime-50 px-3.5 py-3">
+          <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.07em] text-lime-700">Hint</div>
           <MathMarkdown className="text-[13px] leading-relaxed text-gray-700">{question.hint}</MathMarkdown>
         </div>
       )}
@@ -323,7 +322,7 @@ function RecommendedRow({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-3.5 rounded-[11px] border border-gray-200 bg-white px-4 py-[13px] text-left transition-colors hover:border-emerald-500"
+      className="flex w-full items-center gap-3.5 rounded-[11px] border border-lime-100 bg-white px-4 py-[13px] text-left transition-colors hover:border-lime-500"
     >
       <span className="shrink-0 rounded-md bg-gray-100 px-2 py-1 text-[11px] font-bold text-gray-500">{tag}</span>
       <span className="min-w-0 flex-1">

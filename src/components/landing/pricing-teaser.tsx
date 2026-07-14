@@ -6,8 +6,8 @@ import { SectionHeader } from "./how-it-works";
 const FEATURES = [
   "Unlimited Socratic tutoring sessions",
   "All LC subjects - Higher & Ordinary",
-  "Past paper walkthroughs (2010 to 2025)",
-  "Saved chat history & notes",
+  "Practice question generator",
+  "Exam tracker and progress views",
   "Mobile, tablet & desktop",
   "Cancel any time, no contract",
 ];
@@ -15,13 +15,13 @@ const FEATURES = [
 export function PricingCard({ compact, checkoutCta }: { compact?: boolean; checkoutCta?: boolean }) {
   return (
     <div
-      className="w-full max-w-[440px] bg-white border border-gray-200 rounded-[18px] p-7"
-      style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 8px 24px -12px rgba(17,24,39,0.08)" }}
+      className="w-full max-w-[440px] bg-[#fbfaf6] border border-cyan-100 rounded-[18px] p-7"
+      style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 18px 44px -30px rgba(8,145,178,0.42)" }}
     >
       <div className="flex items-center justify-between">
         <h3 className="text-base font-semibold tracking-[-0.01em] m-0">Student</h3>
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
-          Most popular
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-800 text-xs font-medium border border-cyan-100">
+          Student plan
         </span>
       </div>
       <div className="mt-[18px] flex items-baseline gap-1.5">
@@ -34,15 +34,15 @@ export function PricingCard({ compact, checkoutCta }: { compact?: boolean; check
       ) : (
         <Link
           href="/signup"
-          className="mt-5 flex items-center justify-center h-12 w-full rounded-[10px] text-[15px] font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)]"
+          className="mt-5 flex items-center justify-center h-12 w-full rounded-[10px] text-[15px] font-medium text-white bg-[linear-gradient(135deg,#06b6d4,#84cc16)] hover:brightness-105 transition-[filter,transform] hover:-translate-y-0.5 shadow-[0_16px_34px_-22px_rgba(6,182,212,.9)]"
         >
-          Start 7-day free trial
+          Create account
         </Link>
       )}
       <ul className="list-none p-0 mt-6 flex flex-col gap-2.5 m-0">
         {FEATURES.map((item) => (
           <li key={item} className="flex items-start gap-2.5 text-sm text-gray-700">
-            <span className="text-emerald-500 mt-0.5 shrink-0"><CheckIcon size={16} /></span>
+            <span className="text-cyan-600 mt-0.5 shrink-0"><CheckIcon size={16} /></span>
             {item}
           </li>
         ))}
@@ -58,12 +58,12 @@ export function PricingCard({ compact, checkoutCta }: { compact?: boolean; check
 
 export function PricingTeaser() {
   return (
-    <section id="pricing" className="py-24 bg-white">
+    <section id="pricing" className="py-24 bg-[#f4f8f6]">
       <div className="max-w-[1140px] mx-auto px-6">
         <SectionHeader
           eyebrow="Pricing"
-          title="One price. No upsells."
-          subtitle="A single private grinds session in Dublin costs EUR40-50. This is your tutor for an entire term."
+          title="A tutor workspace for every subject."
+          subtitle="Use GrindsAI at home, on the bus, or before class. Sign in to continue, or create an account to start."
         />
         <div className="mt-10 grid place-items-center">
           <PricingCard />
