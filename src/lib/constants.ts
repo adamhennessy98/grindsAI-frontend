@@ -1,4 +1,4 @@
-import type { Message, Subject, SubjectTopic } from "./types";
+import type { Subject, SubjectTopic } from "./types";
 
 export const SUBJECTS: Subject[] = [
   { id: "accounting",     name: "Accounting",     icon: "Book",     enabled: true },
@@ -330,15 +330,6 @@ export const STARTERS: Record<string, string[]> = {
   spanish: ["Help me prepare for the oral", "Explain a grammar point", "Help me improve written production"],
   technology: ["Help me revise Technology", "Explain project work", "What should I practise first?"],
 };
-
-export const SAMPLE_CONVO: Message[] = [
-  { role: "user", text: "Can you explain Pythagoras' theorem to me?" },
-  { role: "ai",   text: "Great topic! Before I explain it, let me ask you something - if you have a right-angled triangle, what's special about the longest side? Do you know what it's called?" },
-  { role: "user", text: "Is it called the hypotenuse?" },
-  { role: "ai",   text: "Exactly right. The hypotenuse is always the side opposite the right angle, and it's always the longest side.\n\nNow, Pythagoras noticed a relationship between the lengths of all three sides. If the hypotenuse is c, and the other two sides are a and b - what do you think that relationship might look like? Take a guess, even if you're not sure." },
-  { role: "user", text: "Is it a^2 + b^2 = c^2?" },
-  { role: "ai",   text: "Perfect - that's it exactly. **a^2 + b^2 = c^2**.\n\nNow let's make sure you can *use* it, not just recall it. If a = 3 and b = 4, what is c? Show me your working." },
-];
 
 export function socraticReply(subjectId: string, userText: string): string {
   const lower = userText.toLowerCase();

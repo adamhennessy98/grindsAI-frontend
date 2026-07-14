@@ -1,78 +1,75 @@
-import { SparkleIcon, ShieldIcon, ClockIcon } from "@/components/icons";
+import { BookIcon, MessageCircleIcon, TargetIcon } from "@/components/icons";
 import { SectionHeader } from "./how-it-works";
-
-function FauxMsg({ user, children }: { user?: boolean; children: React.ReactNode }) {
-  return user ? (
-    <div className="self-end bg-emerald-500 text-white text-[12.5px] px-2.5 py-1.5 rounded-[10px_10px_2px_10px] max-w-[85%]">
-      {children}
-    </div>
-  ) : (
-    <div className="self-start bg-white border border-gray-200 text-[12.5px] px-2.5 py-1.5 rounded-[2px_10px_10px_10px] max-w-[85%]">
-      {children}
-    </div>
-  );
-}
 
 const features = [
   {
-    icon: <SparkleIcon />,
-    title: "Socratic method",
-    body: "It won't hand you the answer. GrindsAI asks the questions that lead you there - the way a real teacher does.",
-    demo: (
-      <div className="flex flex-col gap-2">
-        <FauxMsg user>Just give me the answer.</FauxMsg>
-        <FauxMsg>Let&apos;s try a smaller version first - what&apos;s 2^3?</FauxMsg>
-      </div>
-    ),
+    icon: <MessageCircleIcon />,
+    title: "Tutor",
+    body: "Ask about a topic, paste an exam question, or say what feels confusing. The tutor helps you reason through it.",
+    accent: "cyan",
+    demo: "Step-by-step chat",
   },
   {
-    icon: <ShieldIcon />,
-    title: "Curriculum-locked",
-    body: "Trained only on the State Exams Commission syllabus. No hallucinated theorems, no off-spec rabbit holes.",
-    demo: (
-      <div className="flex flex-col gap-1.5">
-        {["Maths H - Topic 5.2", "Biology - Unit 2.4", "Chemistry - Mole concept"].map((t) => (
-          <div key={t} className="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-[11.5px] text-gray-500 font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-            {t}
-          </div>
-        ))}
-      </div>
-    ),
+    icon: <BookIcon />,
+    title: "Exam Questions",
+    body: "Generate Leaving Cert-style questions by subject, level, topic, type, and difficulty.",
+    accent: "lime",
+    demo: "Exam-style practice",
   },
   {
-    icon: <ClockIcon />,
-    title: "Available 24/7",
-    body: "Stuck at 11pm the night before a class test? GrindsAI doesn't sleep, doesn't cancel, and never doubles its rates.",
-    demo: (
-      <div className="bg-white border border-gray-200 rounded-lg p-3 text-xs text-gray-500 font-mono leading-[1.7]">
-        <div><span className="text-emerald-500">*</span> Online / {new Date().toLocaleString("en-IE", { weekday: "short" })} 23:47</div>
-        <div className="text-gray-400">avg. response &lt; 2s</div>
-      </div>
-    ),
+    icon: <TargetIcon />,
+    title: "Progress & Results",
+    body: "Log results, keep track of difficult areas, and see the next useful thing to work on.",
+    accent: "violet",
+    demo: "Track what to improve",
   },
-];
+] as const;
+
+const accent = {
+  cyan: {
+    card: "border-cyan-100 bg-cyan-50/60 shadow-[0_16px_42px_-34px_rgba(8,145,178,.85)]",
+    icon: "border-cyan-100 bg-[#fbfaf6] text-cyan-700",
+    pill: "bg-cyan-100 text-cyan-800",
+  },
+  lime: {
+    card: "border-lime-100 bg-lime-50/60 shadow-[0_16px_42px_-34px_rgba(101,163,13,.8)]",
+    icon: "border-lime-100 bg-[#fbfaf6] text-lime-700",
+    pill: "bg-lime-100 text-lime-800",
+  },
+  violet: {
+    card: "border-violet-100 bg-violet-50/60 shadow-[0_16px_42px_-34px_rgba(139,92,246,.85)]",
+    icon: "border-violet-100 bg-[#fbfaf6] text-violet-700",
+    pill: "bg-violet-100 text-violet-800",
+  },
+};
 
 export function Features() {
   return (
-    <section id="features" className="py-20 bg-gray-50">
-      <div className="max-w-[1140px] mx-auto px-6">
-        <SectionHeader eyebrow="Why GrindsAI" title="A tutor, not a cheat sheet." />
-        <div className="mt-10 grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
-          {features.map((f) => (
-            <article
-              key={f.title}
-              className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col"
-              style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 1px 1px rgba(17,24,39,0.03)" }}
-            >
-              <div className="w-[38px] h-[38px] rounded-[10px] bg-emerald-50 text-emerald-700 grid place-items-center border border-emerald-100 mb-4">
-                {f.icon}
-              </div>
-              <h3 className="text-[17px] font-semibold tracking-[-0.01em] mb-2">{f.title}</h3>
-              <p className="text-gray-500 text-[14.5px] leading-relaxed mb-[18px]">{f.body}</p>
-              <div className="mt-auto p-3.5 bg-gray-50 border border-[#eef0f3] rounded-xl">{f.demo}</div>
-            </article>
-          ))}
+    <section id="features" className="bg-[#eef4f2] py-20">
+      <div className="mx-auto max-w-[1140px] px-6">
+        <SectionHeader
+          eyebrow="Features"
+          title="One subject workspace. Three clear actions."
+          subtitle="The logged-in app is built around the way students actually revise: ask, practise, improve."
+        />
+        <div className="mt-10 grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+          {features.map((feature) => {
+            const colors = accent[feature.accent];
+            return (
+              <article key={feature.title} className={`flex min-h-[250px] flex-col rounded-2xl border p-6 ${colors.card}`}>
+                <div className={`mb-4 grid h-[42px] w-[42px] place-items-center rounded-[12px] border ${colors.icon}`}>
+                  {feature.icon}
+                </div>
+                <h3 className="mb-2 text-[19px] font-semibold tracking-[-0.01em] text-gray-900">{feature.title}</h3>
+                <p className="m-0 text-[14.5px] leading-relaxed text-gray-500">{feature.body}</p>
+                <div className="mt-auto pt-5">
+                  <span className={`inline-flex rounded-full px-3 py-1.5 text-[12.5px] font-semibold ${colors.pill}`}>
+                    {feature.demo}
+                  </span>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -7,5 +7,15 @@ import { SocialProof } from "@/components/landing/social-proof";
 import { Footer } from "@/components/landing/footer";
 
 export default function LandingPage() {
-  return <div className="min-h-full bg-[#f4f8f6]"><LandingNav /><Hero /><HowItWorks /><Features /><PricingTeaser /><SocialProof /><Footer /></div>;
+  return (
+    <div className="min-h-full bg-[#f4f8f6]">
+      <LandingNav />
+      <Hero />
+      <HowItWorks />
+      <Features />
+      <PricingTeaser />
+      <SocialProof />
+      <Footer />
+    </div>
+  );
 }
