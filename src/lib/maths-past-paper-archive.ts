@@ -19,11 +19,18 @@ type RecordItem = {
   hasVisual: boolean;
   questionText: string;
   markingSchemeText: string;
+  tutorQuestionText: string;
+  tutorMarkingSchemeText: string;
 };
 
-export type MathsArchiveQuestion = Pick<RecordItem, "id" | "year" | "questionNumber" | "topic" | "hasVisual">;
+export type MathsArchiveQuestion = Pick<RecordItem, "id" | "year" | "questionNumber" | "topic" | "hasVisual"> & { topicId: string };
 export type MathsArchiveYear = { year: number; questions: MathsArchiveQuestion[] };
-export type MathsArchiveDetail = MathsArchiveQuestion & { questionText: string; markingSchemeText: string };
+export type MathsArchiveDetail = MathsArchiveQuestion & {
+  questionText: string;
+  markingSchemeText: string;
+  tutorQuestionText: string;
+  tutorMarkingSchemeText: string;
+};
 
 let archiveCache: Promise<RecordItem[]> | undefined;
 
@@ -87,6 +94,17 @@ function cleanMarkdown(value: string, questionId: string, assetCursor: { value: 
     .trim();
 }
 
+function tutorText(value: string) {
+  return value
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/^# (Question|Marking Scheme|Page \d+)\s*$/gm, "")
+    .replace(/!\[[^\]]*]\([^)]+\)/g, "")
+    .replace(/^# Source References[\s\S]*$/m, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+    .slice(0, 10000);
+}
+
 function locationFor(filePath: string): Pick<RecordItem, "level" | "collection"> | null {
   const parts = filePath.split(path.sep);
   const level = parts.includes("ordinary") ? "ordinary" : parts.includes("higher") ? "higher" : null;
@@ -118,6 +136,8 @@ async function loadArchive() {
       hasVisual: visualAssets.length > 0,
       questionText: cleanMarkdown(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References"), id, cursor),
       markingSchemeText: cleanMarkdown(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References"), id, cursor),
+      tutorQuestionText: tutorText(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References")),
+      tutorMarkingSchemeText: tutorText(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References")),
     } satisfies RecordItem;
   }));
   return records.filter((record): record is RecordItem => Boolean(record));
@@ -138,7 +158,18 @@ function matchesTopic(record: RecordItem, topicId: string) {
 }
 
 function summary(record: RecordItem): MathsArchiveQuestion {
-  return { id: record.id, year: record.year, questionNumber: record.questionNumber, topic: record.topic, hasVisual: record.hasVisual };
+  if (record.collection === "mixed" || record.collection === "unclassified") {
+    return { id: record.id, year: record.year, questionNumber: record.questionNumber, topic: "Mixed", topicId: "general", hasVisual: record.hasVisual };
+  }
+  const mappedTopic = getSubjectTopics("maths").find((topic) => normalizeLabel(topic.name) === normalizeLabel(record.topic));
+  return {
+    id: record.id,
+    year: record.year,
+    questionNumber: record.questionNumber,
+    topic: mappedTopic?.name ?? record.topic,
+    topicId: mappedTopic?.id ?? "general",
+    hasVisual: record.hasVisual,
+  };
 }
 
 export async function getMathsArchiveByTopic(input: { level: string; topicId: string }) {
@@ -154,7 +185,13 @@ export async function getMathsArchiveByTopic(input: { level: string; topicId: st
 
 export async function getMathsArchiveDetail(id: string): Promise<MathsArchiveDetail | null> {
   const record = (await getArchive()).find((item) => item.id === id);
-  return record ? { ...summary(record), questionText: record.questionText, markingSchemeText: record.markingSchemeText } : null;
+  return record ? {
+    ...summary(record),
+    questionText: record.questionText,
+    markingSchemeText: record.markingSchemeText,
+    tutorQuestionText: record.tutorQuestionText,
+    tutorMarkingSchemeText: record.tutorMarkingSchemeText,
+  } : null;
 }
 
 export async function getMathsArchiveAsset(id: string, assetIndex: number) {

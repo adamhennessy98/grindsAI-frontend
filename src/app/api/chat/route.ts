@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     : [];
 
   const studentContext =
-    typeof body.studentContext === "string" ? body.studentContext.trim().slice(0, 2000) : "";
+    typeof body.studentContext === "string" ? body.studentContext.trim().slice(0, 12000) : "";
 
   let conversationId = typeof body.conversationId === "string" ? body.conversationId : null;
 
