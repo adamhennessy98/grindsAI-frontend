@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getSubjectTopics } from "@/lib/constants";
 import { requestExamQuestions, type ExamQuestionDifficulty, type ExamQuestionType, type GeneratedExamQuestion } from "@/lib/exam-generator";
 import { MathMarkdown } from "@/components/math-markdown";
@@ -55,7 +55,71 @@ export function PapersView({ subjectId, level, initialTopicId, focusAreas, onOpe
   return <div style={subjectThemeStyle(subjectId)} className="mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9"><div className="mb-6"><div className="subject-context-label mb-1 text-[12px] font-semibold uppercase tracking-[.08em]">{subjectLabel(subjectId)} / {level === "OL" ? "Ordinary Level" : "Higher Level"}</div><h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-.02em] text-gray-900 dark:text-white">Exam Questions</h1><p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">Generate one exam-style question, attempt it yourself, then choose the support you need.</p></div>
     <div className={`grid grid-cols-1 gap-4 ${generated ? "xl:grid-cols-[300px_minmax(0,1fr)]" : "xl:grid-cols-[360px_minmax(0,1fr)]"}`}><GeneratorControls topics={topics} activeTopicId={activeTopic?.id ?? ""} questionType={questionType} difficulty={difficulty} includeHints={includeHints} focusAreas={focusAreas} loading={loading} onTopic={(value) => { setTopicId(value); setGenerated(null); setReflection(null); }} onQuestionType={setQuestionType} onDifficulty={setDifficulty} onHints={setIncludeHints} onGenerate={generate} />
       <section className={`rounded-2xl border border-lime-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(101,163,13,.55)] dark:bg-slate-900 ${generated ? "" : "flex min-h-[210px] items-center"}`}>{error && <div className="w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] leading-relaxed text-red-800">{error}</div>}{!error && !generated && <div><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-lime-700">Ready when you are</div><h2 className="font-heading m-0 mt-2 text-[21px] font-semibold text-gray-900 dark:text-white">Generate one exam-style question tailored to this topic and level.</h2><p className="m-0 mt-2 max-w-[560px] text-[14px] leading-relaxed text-gray-500">Try it before revealing support. When you are ready, bring the exact question into your Tutor session.</p></div>}{generated && <GeneratedQuestion question={generated} topic={activeTopic!} onTutor={handoff} reflection={reflection} onReflect={chooseReflection} />}</section>
-    </div><ArchivedQuestionsPlaceholder subject={subjectLabel(subjectId)} topic={activeTopic} /></div>;
+    </div>{subjectId === "maths" && activeTopic ? <MathsPastPaperArchive level={level} topic={activeTopic} /> : <ArchivedQuestionsPlaceholder subject={subjectLabel(subjectId)} topic={activeTopic} />}</div>;
+}
+
+type MathsArchiveQuestion = { id: string; year: number; questionNumber: number; topic: string; hasVisual: boolean };
+type MathsArchiveYear = { year: number; questions: MathsArchiveQuestion[] };
+type MathsArchiveDetail = MathsArchiveQuestion & { questionText: string; markingSchemeText: string };
+
+function MathsPastPaperArchive({ level, topic }: { level: string; topic: { id: string; name: string } }) {
+  const [years, setYears] = useState<MathsArchiveYear[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
+  const isGeneral = topic.id === "general";
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const loadArchive = async () => {
+      setLoading(true);
+      setError("");
+      setSelectedQuestionId(null);
+      try {
+        const response = await fetch(`/api/maths-archive?level=${encodeURIComponent(level)}&topicId=${encodeURIComponent(topic.id)}`, { signal: controller.signal });
+        const payload = await response.json() as { years?: MathsArchiveYear[]; error?: string };
+        if (!response.ok) throw new Error(payload.error ?? "Could not load the Maths archive.");
+        setYears(payload.years ?? []);
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        setError(err instanceof Error ? err.message : "Could not load the Maths archive.");
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    };
+    void loadArchive();
+    return () => controller.abort();
+  }, [level, topic.id]);
+
+  return <section className="mt-5 rounded-2xl border border-lime-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(101,163,13,.45)] dark:border-lime-950/80 dark:bg-slate-900"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-lime-700 dark:text-lime-300">Maths past-paper archive</div><h2 className="font-heading m-0 mt-1 text-lg font-semibold text-gray-900 dark:text-white">Archived exam questions</h2><p className="m-0 mt-1 max-w-[660px] text-[13px] leading-relaxed text-gray-500 dark:text-slate-400">{isGeneral ? "Browse all available Maths questions by year." : `Showing questions tagged to ${topic.name}.`}</p></div><span className="w-fit rounded-full border border-lime-200 bg-lime-50 px-2.5 py-1 text-[11.5px] font-semibold text-lime-700 dark:border-lime-800 dark:bg-lime-400/10 dark:text-lime-200">{isGeneral ? "All topics" : topic.name}</span></div>{loading && <div className="mt-4 space-y-2">{[1, 2, 3].map((item) => <div key={item} className="h-14 animate-pulse rounded-xl bg-lime-50 dark:bg-lime-400/10" />)}</div>}{error && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-800 dark:border-red-950 dark:bg-red-950/25 dark:text-red-200">{error}</div>}{!loading && !error && years.length === 0 && <div className="mt-4 rounded-xl border border-dashed border-lime-200 bg-lime-50/50 px-4 py-4 text-[13px] leading-relaxed text-gray-600 dark:border-lime-900 dark:bg-lime-400/5 dark:text-slate-300">No archived questions are tagged to this topic yet. Choose General Maths to browse the complete archive.</div>}{!loading && !error && years.length > 0 && <div className="mt-4 space-y-2">{years.map((year) => <details key={year.year} className="group rounded-xl border border-lime-100 bg-lime-50/35 open:bg-lime-50/65 dark:border-lime-950 dark:bg-lime-400/[.04] dark:open:bg-lime-400/[.07]"><summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-left marker:content-none"><span className="font-heading text-[16px] font-semibold text-gray-900 dark:text-white">{year.year}</span><span className="flex items-center gap-3 text-[12.5px] font-medium text-lime-700 dark:text-lime-200"><span>{year.questions.length} {year.questions.length === 1 ? "question" : "questions"}</span><span className="text-base transition-transform group-open:rotate-45">+</span></span></summary><div className="border-t border-lime-100 px-3 py-2 dark:border-lime-950">{year.questions.map((question) => <button key={question.id} type="button" onClick={() => setSelectedQuestionId(question.id)} className="flex w-full items-center justify-between gap-3 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-500 dark:hover:bg-slate-950"><span><span className="block text-[13px] font-semibold text-gray-800 dark:text-slate-100">Question {question.questionNumber}</span>{isGeneral && <span className="mt-0.5 block text-[11.5px] text-gray-500 dark:text-slate-400">{question.topic}</span>}</span><span className="shrink-0 text-[11.5px] font-semibold text-lime-700 dark:text-lime-200">{question.hasVisual ? "View diagram" : "View question"} -&gt;</span></button>)}</div></details>)}</div>}{selectedQuestionId && <MathsArchiveQuestionDialog key={selectedQuestionId} questionId={selectedQuestionId} onClose={() => setSelectedQuestionId(null)} />}</section>;
+}
+
+function MathsArchiveQuestionDialog({ questionId, onClose }: { questionId: string; onClose: () => void }) {
+  const [question, setQuestion] = useState<MathsArchiveDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [markingOpen, setMarkingOpen] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const loadQuestion = async () => {
+      try {
+        const response = await fetch(`/api/maths-archive?questionId=${encodeURIComponent(questionId)}`, { signal: controller.signal });
+        const payload = await response.json() as { question?: MathsArchiveDetail; error?: string };
+        if (!response.ok) throw new Error(payload.error ?? "Could not load this exam question.");
+        setQuestion(payload.question ?? null);
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        setError(err instanceof Error ? err.message : "Could not load this exam question.");
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    };
+    void loadQuestion();
+    return () => controller.abort();
+  }, [questionId]);
+
+  return <div role="dialog" aria-modal="true" aria-label="Past exam question" className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/65 p-3 sm:items-center sm:p-6" onMouseDown={onClose}><article className="max-h-[88vh] w-full max-w-[840px] overflow-y-auto rounded-2xl border border-lime-100 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900" onMouseDown={(event) => event.stopPropagation()}><div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-lime-100 bg-white/95 px-5 py-4 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95"><div><div className="text-[11.5px] font-semibold uppercase tracking-[.08em] text-lime-700 dark:text-lime-300">{question ? `${question.year} / ${question.topic}` : "Past exam question"}</div><h3 className="font-heading m-0 mt-1 text-xl font-semibold text-gray-900 dark:text-white">{question ? `Question ${question.questionNumber}` : "Loading question"}</h3></div><button type="button" onClick={onClose} className="rounded-lg border border-gray-200 px-3 py-2 text-[12.5px] font-semibold text-gray-700 hover:border-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-500 dark:border-slate-700 dark:text-slate-200">Close</button></div><div className="px-5 py-5">{loading && <div className="h-40 animate-pulse rounded-xl bg-lime-50 dark:bg-lime-400/10" />}{error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-800 dark:border-red-950 dark:bg-red-950/25 dark:text-red-200">{error}</div>}{question && <><MathMarkdown className="text-[15px] leading-relaxed text-gray-800 dark:text-slate-100">{question.questionText}</MathMarkdown>{question.markingSchemeText && <div className="mt-6 border-t border-lime-100 pt-5 dark:border-lime-950"><button type="button" onClick={() => setMarkingOpen((current) => !current)} className="rounded-xl border border-lime-200 bg-lime-50 px-3.5 py-2.5 text-[13px] font-semibold text-lime-700 hover:border-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-500 dark:border-lime-800 dark:bg-lime-400/10 dark:text-lime-200">{markingOpen ? "Hide marking scheme" : "Show marking scheme"}</button>{markingOpen && <div className="mt-4 rounded-xl border border-lime-100 bg-lime-50/50 px-4 py-4 dark:border-lime-950 dark:bg-lime-400/[.04]"><div className="mb-3 text-[11.5px] font-semibold uppercase tracking-[.08em] text-lime-700 dark:text-lime-300">Marking scheme</div><MathMarkdown className="text-[14px] leading-relaxed text-gray-800 dark:text-slate-100">{question.markingSchemeText}</MathMarkdown></div>}</div>}</>}</div></article></div>;
 }
 
 function ArchivedQuestionsPlaceholder({ subject, topic }: { subject: string; topic: { id: string; name: string } | undefined }) {
