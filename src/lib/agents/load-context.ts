@@ -26,6 +26,8 @@ export type LoadAgentContextInput = {
   subjectId?: string | null;
   level?: string | null;
   topicId?: string | null;
+  /** Extra prompt fragments (e.g. question handoff context). */
+  extras?: string[];
 };
 
 export type AgentRuntimeContext = {
@@ -117,6 +119,7 @@ export async function loadAgentContext(input: LoadAgentContextInput): Promise<Ag
     mode,
     rag,
     memoryContext,
+    extras: input.extras,
   });
 
   return {

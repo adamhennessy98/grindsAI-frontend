@@ -17,6 +17,7 @@ type ChatBody = {
   history?: { role: "user" | "ai"; text: string }[];
   agentId?: string | null;
   mode?: string | null;
+  studentContext?: string;
 };
 
 function isValidSubject(id: string) {
@@ -76,6 +77,8 @@ export async function POST(request: Request) {
 
   const mode = isAgentMode(body.mode) ? body.mode : "normal";
   const agentId = isAgentId(body.agentId) ? body.agentId : undefined;
+  const studentContext =
+    typeof body.studentContext === "string" ? body.studentContext.trim().slice(0, 12000) : "";
 
   let conversationId = typeof body.conversationId === "string" ? body.conversationId : null;
 
@@ -135,6 +138,7 @@ export async function POST(request: Request) {
       subjectId,
       level,
       topicId,
+      extras: studentContext ? [studentContext] : undefined,
     });
     resolvedAgentId = ctx.agentId;
     const out = await streamAgentReply(ctx);

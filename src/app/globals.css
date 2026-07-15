@@ -427,6 +427,15 @@ html:not(.dark) .app-study-shell ::-webkit-scrollbar-thumb {
   overflow-wrap: anywhere;
 }
 
+.math-markdown img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  margin: 1rem auto;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+  border-radius: 0.75rem;
+}
+
 .math-markdown .katex-display {
   margin: 0.85rem 0;
   overflow-x: auto;
