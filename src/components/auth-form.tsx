@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogoIcon, GoogleIcon, EyeIcon } from "@/components/icons";
 import { getBrowserSupabase } from "@/lib/supabase/client";
-import { BetaBadge } from "@/components/beta-badge";
-import { IS_BETA } from "@/lib/beta";
 import { getAuthCallbackUrl } from "@/lib/site-url";
 
 type Mode = "login" | "signup";
@@ -142,7 +140,6 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
       <Link href="/" className="flex items-center gap-2.5 mb-7">
         <LogoIcon size={32} />
         <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
-        <BetaBadge />
       </Link>
 
       <div
@@ -150,20 +147,14 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
         style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 8px 24px -12px rgba(17,24,39,0.08)" }}
       >
         <h1 className="text-[22px] font-semibold tracking-[-0.015em] m-0">
-          {mode === "signup"
-            ? IS_BETA
-              ? "Join the Leaving Cert beta"
-              : "Create your account"
-            : "Welcome back"}
+          {mode === "signup" ? "Create your account" : "Welcome back"}
         </h1>
         <p className="mt-1.5 mb-[22px] text-gray-500 text-sm">
           {mode === "signup"
-            ? IS_BETA
-              ? "Free access for current LC students while we're in beta. No card or payment."
-              : "Start your free 7-day trial. No card required."
+            ? "Set up your personalised Leaving Cert study workspace."
             : "Sign in to continue your study session."}
         </p>
-        {mode === "signup" && IS_BETA && (
+        {false && (
           <p className="-mt-3 mb-[18px] text-[12.5px] text-amber-900 bg-amber-50 border border-amber-100 px-2.5 py-2 rounded-lg leading-relaxed">
             This is an early preview — some subjects and features are still being built. Always double-check important
             work with your teacher or textbook.
@@ -269,7 +260,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
                 <span className="typing-dot" />
               </>
             ) : mode === "signup" ? (
-              IS_BETA ? "Create beta account" : "Create account"
+              "Create account"
             ) : (
               "Sign in"
             )}

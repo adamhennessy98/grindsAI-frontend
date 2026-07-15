@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogoIcon } from "@/components/icons";
 import { SUBJECTS } from "@/lib/constants";
+import { subjectThemeStyle } from "@/components/app/subjects";
 import {
   CHALLENGE_OPTIONS,
   YEAR_OPTIONS,
@@ -17,7 +18,6 @@ import {
   type SubjectLevel,
   type YearGroup,
 } from "@/lib/onboarding";
-import { BetaBadge } from "@/components/beta-badge";
 
 const TOTAL_STEPS = 5;
 
@@ -104,7 +104,6 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
       <Link href="/" className="flex items-center gap-2.5 mb-6">
         <LogoIcon size={32} />
         <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
-        <BetaBadge />
       </Link>
 
       <div
@@ -175,8 +174,10 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
                     key={subject.id}
                     type="button"
                     onClick={() => toggleSubject(subject.id)}
+                    style={subjectThemeStyle(subject.id, active ? subjects : [...subjects, subject.id])}
+                    data-selected={active}
                     className={[
-                      "px-3 py-2.5 rounded-lg border text-[13px] font-medium text-left transition-all",
+                      "subject-selection px-3 py-2.5 rounded-lg border text-[13px] font-medium text-left transition-all",
                       active
                         ? "border-emerald-500 bg-emerald-50 text-emerald-900"
                         : "border-gray-200 bg-white text-gray-700 hover:border-gray-300",
@@ -205,7 +206,8 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
                 return (
                   <div
                     key={id}
-                    className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50"
+                    style={subjectThemeStyle(id, subjects)}
+                    className="subject-selection-level flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50/50"
                   >
                     <span className="text-[13.5px] font-medium text-gray-900 truncate">{subject?.name ?? id}</span>
                     <div className="grid grid-cols-2 gap-1 p-0.5 bg-white border border-gray-200 rounded-lg shrink-0">

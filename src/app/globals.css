@@ -131,6 +131,120 @@
 
 /* GrindsAI design utilities */
 
+.app-study-shell {
+  background:
+    radial-gradient(120% 52% at 50% -8%, rgba(6, 182, 212, 0.07), rgba(6, 182, 212, 0) 62%),
+    radial-gradient(circle at center, rgba(15, 23, 42, 0.05) 1px, transparent 1.5px),
+    #eaf1ed;
+  background-size: 100% 100%, 23px 23px, auto;
+}
+
+/* Keep the light workspace calm: cards retain separation without stark white glare. */
+html:not(.dark) .app-study-shell .bg-white\/88 { background-color: rgba(248, 250, 247, 0.94); }
+html:not(.dark) .app-study-shell .bg-white\/85 { background-color: rgba(248, 250, 247, 0.92); }
+html:not(.dark) .app-study-shell .bg-white { background-color: #fafbf8; }
+html:not(.dark) .app-study-shell .bg-gray-50 { background-color: #f1f5f2; }
+html:not(.dark) .app-study-shell .bg-gray-100 { background-color: #e9efeb; }
+html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255, 255, 0.58); }
+
+.dark .app-study-shell {
+  background:
+    radial-gradient(120% 52% at 50% -8%, rgba(34, 211, 238, 0.08), rgba(34, 211, 238, 0) 62%),
+    radial-gradient(circle at center, rgba(148, 163, 184, 0.11) 1px, transparent 1.5px),
+    #020617;
+  background-size: 100% 100%, 23px 23px, auto;
+}
+
+/* Subject colours establish context. Tutor, Exam Questions, and Progress & Results retain their feature colours. */
+.subject-accent-icon {
+  background: var(--subject-surface) !important;
+  border-color: var(--subject-border) !important;
+  color: var(--subject-accent-strong) !important;
+}
+
+.subject-context-label { color: var(--subject-accent-strong) !important; }
+
+.subject-card {
+  position: relative;
+  border-color: var(--subject-border) !important;
+  overflow: hidden;
+}
+
+.subject-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--subject-accent);
+}
+
+.subject-card:hover,
+.subject-card:focus-within {
+  border-color: var(--subject-accent) !important;
+  background-color: var(--subject-hover) !important;
+  box-shadow: 0 24px 54px -30px color-mix(in srgb, var(--subject-accent) 56%, transparent) !important;
+}
+
+.subject-workspace-header {
+  border-color: var(--subject-border) !important;
+  background: linear-gradient(135deg, var(--subject-surface), rgba(255, 255, 255, 0.82) 55%) !important;
+  box-shadow: 0 18px 46px -34px color-mix(in srgb, var(--subject-accent) 58%, transparent) !important;
+}
+
+.subject-context-marker {
+  border-color: var(--subject-border) !important;
+  background: var(--subject-surface) !important;
+  color: var(--subject-accent-strong) !important;
+}
+
+.subject-selection {
+  border-color: var(--subject-border) !important;
+}
+
+.subject-selection:hover { border-color: var(--subject-accent) !important; }
+
+.subject-selection[data-selected="true"] {
+  background: var(--subject-surface) !important;
+  border-color: var(--subject-accent) !important;
+  color: var(--subject-accent-strong) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--subject-accent) 28%, transparent) !important;
+}
+
+.subject-selection-level {
+  border-left: 3px solid var(--subject-accent) !important;
+}
+
+.dark .subject-accent-icon,
+.dark .subject-context-marker {
+  background: var(--subject-dark-surface) !important;
+  border-color: var(--subject-dark-border) !important;
+  color: var(--subject-dark-text) !important;
+}
+
+.dark .subject-context-label { color: var(--subject-dark-text) !important; }
+
+.dark .subject-card { border-color: var(--subject-dark-border) !important; }
+
+.dark .subject-card:hover,
+.dark .subject-card:focus-within {
+  background-color: var(--subject-dark-surface) !important;
+  border-color: var(--subject-dark-text) !important;
+  box-shadow: 0 24px 54px -30px color-mix(in srgb, var(--subject-dark-text) 34%, transparent) !important;
+}
+
+.dark .subject-workspace-header {
+  border-color: var(--subject-dark-border) !important;
+  background: linear-gradient(135deg, var(--subject-dark-surface), #0f172a 58%) !important;
+}
+
+.dark .subject-selection { border-color: var(--subject-dark-border) !important; }
+
+.dark .subject-selection[data-selected="true"] {
+  background: var(--subject-dark-surface) !important;
+  border-color: var(--subject-dark-text) !important;
+  color: var(--subject-dark-text) !important;
+}
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: none; }

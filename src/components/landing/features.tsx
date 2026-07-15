@@ -1,4 +1,4 @@
-import { BookIcon, ClockIcon, MessageCircleIcon, TargetIcon } from "@/components/icons";
+import { BookIcon, MessageCircleIcon, TargetIcon } from "@/components/icons";
 import { SectionHeader } from "./how-it-works";
 
 const features = [
@@ -11,24 +11,17 @@ const features = [
   },
   {
     icon: <BookIcon />,
-    title: "Practice Questions",
+    title: "Exam Questions",
     body: "Generate Leaving Cert-style questions by subject, level, topic, type, and difficulty.",
     accent: "lime",
     demo: "Exam-style practice",
   },
   {
-    icon: <ClockIcon />,
-    title: "Exam Tracker",
-    body: "Log class tests, mocks, past-paper attempts, results, and feedback so your study has a record.",
-    accent: "amber",
-    demo: "Tests and milestones",
-  },
-  {
     icon: <TargetIcon />,
-    title: "My Progress",
-    body: "See strengths, weak areas, repeated mistakes, and the next area worth working on.",
+    title: "Progress & Results",
+    body: "Log results, keep track of difficult areas, and see the next useful thing to work on.",
     accent: "violet",
-    demo: "What to focus on",
+    demo: "Track what to improve",
   },
 ] as const;
 
@@ -43,11 +36,6 @@ const accent = {
     icon: "border-lime-100 bg-[#fbfaf6] text-lime-700",
     pill: "bg-lime-100 text-lime-800",
   },
-  amber: {
-    card: "border-amber-100 bg-amber-50/60 shadow-[0_16px_42px_-34px_rgba(245,158,11,.85)]",
-    icon: "border-amber-100 bg-[#fbfaf6] text-amber-700",
-    pill: "bg-amber-100 text-amber-800",
-  },
   violet: {
     card: "border-violet-100 bg-violet-50/60 shadow-[0_16px_42px_-34px_rgba(139,92,246,.85)]",
     icon: "border-violet-100 bg-[#fbfaf6] text-violet-700",
@@ -61,8 +49,8 @@ export function Features() {
       <div className="mx-auto max-w-[1140px] px-6">
         <SectionHeader
           eyebrow="Features"
-          title="One subject workspace. Four clear actions."
-          subtitle="The logged-in app is built around the way students actually revise: ask, practise, track, improve."
+          title="One subject workspace. Three clear actions."
+          subtitle="The logged-in app is built around the way students actually revise: ask, practise, improve."
         />
         <div className="mt-10 grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
           {features.map((feature) => {

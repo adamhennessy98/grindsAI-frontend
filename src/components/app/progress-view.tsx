@@ -1,277 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import { subjectLabel } from "./subjects";
+import { useMemo, useState } from "react";
+import { getSubjectTopics } from "@/lib/constants";
+import { RecommendationCard } from "./recommendation-card";
+import type { FocusArea, ResultEntry, StudyActivity } from "./study-state";
+import { subjectLabel, subjectThemeStyle } from "./subjects";
 
-interface ProgressViewProps {
-  subjectId: string;
-  level: string;
-  onOpenConvo: () => void;
-}
+interface ProgressResultsViewProps { subjectId: string; level: string; focusAreas: FocusArea[]; results: ResultEntry[]; activities: StudyActivity[]; onAddFocusArea: (label: string) => void; onUpdateFocusArea: (area: FocusArea, status: FocusArea["status"]) => void; onAddResult: (result: ResultEntry) => void; onOpenConvo: (focus?: string) => void; onOpenGenerator: (focus?: string) => void; }
 
-type ProgressSeed = {
-  average: string;
-  trend: string;
-  strongest: string;
-  weakest: string;
-  chartTitle: string;
-  skills: { label: string; pct: number }[];
-  recurring: { title: string; sub: string }[];
-};
-
-const PROGRESS: Record<string, ProgressSeed> = {
-  maths: {
-    average: "72%",
-    trend: "+11 pts this term",
-    strongest: "Algebra",
-    weakest: "Chain rule",
-    chartTitle: "Calculus accuracy",
-    skills: [
-      { label: "Algebra and functions", pct: 88 },
-      { label: "Coordinate geometry", pct: 76 },
-      { label: "Calculus", pct: 63 },
-    ],
-    recurring: [
-      { title: "Chain rule in differentiation", sub: "Seen in 4 sessions, improving slowly" },
-      { title: "Rates of change", sub: "Correct method, weaker setup" },
-      { title: "Showing method marks", sub: "Answers are better than written working" },
-    ],
-  },
-  chemistry: {
-    average: "64%",
-    trend: "+7 pts this term",
-    strongest: "Atomic theory",
-    weakest: "Stoichiometry",
-    chartTitle: "Stoichiometry accuracy",
-    skills: [
-      { label: "Atomic theory", pct: 82 },
-      { label: "Bonding", pct: 74 },
-      { label: "Stoichiometry", pct: 58 },
-    ],
-    recurring: [
-      { title: "Mass to mole conversions", sub: "Units are the main source of lost marks" },
-      { title: "Limiting reagent questions", sub: "Needs more structured setup" },
-      { title: "Volumetric analysis wording", sub: "Formula choice is sometimes rushed" },
-    ],
-  },
-};
-
-export function ProgressView({ subjectId, level, onOpenConvo }: ProgressViewProps) {
+export function ProgressResultsView({ subjectId, level, focusAreas, results, activities, onAddFocusArea, onUpdateFocusArea, onAddResult, onOpenConvo, onOpenGenerator }: ProgressResultsViewProps) {
   const subject = subjectLabel(subjectId);
-  const seed = PROGRESS[subjectId] ?? {
-    average: "New",
-    trend: "Add tests to build a trend",
-    strongest: "Not enough data yet",
-    weakest: "Not enough data yet",
-    chartTitle: "Score trend",
-    skills: [
-      { label: "Exam technique", pct: 58 },
-      { label: "Topic recall", pct: 52 },
-      { label: "Written working", pct: 49 },
-    ],
-    recurring: [
-      { title: "No repeated mistake identified yet", sub: "Track more tests and sessions to surface patterns" },
-      { title: "Add teacher feedback", sub: "Teacher comments will sharpen the progress view" },
-    ],
-  };
+  const topics = useMemo(() => getSubjectTopics(subjectId), [subjectId]);
+  const currentFocus = focusAreas.filter((area) => area.status === "current");
+  const improved = focusAreas.filter((area) => area.status === "improved");
+  const [focusDraft, setFocusDraft] = useState("");
+  const [resultOpen, setResultOpen] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [resultTopic, setResultTopic] = useState(topics[0]?.name ?? "General");
+  const [resultType, setResultType] = useState("Class test");
+  const [score, setScore] = useState("");
+  const [wentWell, setWentWell] = useState("");
+  const [difficult, setDifficult] = useState("");
+  const [teacherNote, setTeacherNote] = useState("");
+  const showFeedback = (message: string) => { setFeedback(message); window.setTimeout(() => setFeedback(""), 2200); };
+  const addFocus = () => { const value = focusDraft.trim(); if (!value) return; onAddFocusArea(value); setFocusDraft(""); showFeedback("Focus area added"); };
+  const addResult = (event: React.FormEvent) => { event.preventDefault(); if (!score.trim() && !wentWell.trim() && !difficult.trim() && !teacherNote.trim()) return; onAddResult({ id: `result-${Date.now()}`, topic: resultTopic, type: resultType, score: score.trim(), wentWell: wentWell.trim(), difficult: difficult.trim(), teacherNote: teacherNote.trim() }); setScore(""); setWentWell(""); setDifficult(""); setTeacherNote(""); setResultOpen(false); showFeedback("Result saved"); };
+  const recommendation = currentFocus[0] ? { title: `Practise ${currentFocus[0].label}`, reason: "Based on your current focus area.", cta: "Start question", onClick: () => onOpenGenerator(currentFocus[0].label), feature: "questions" as const } : { title: "Add something you are finding difficult", reason: "Focus areas help shape your next useful step.", cta: "Add focus area", onClick: () => document.getElementById("focus-input")?.focus(), feature: "progress" as const };
 
-  const [struggles, setStruggles] = useState("");
-  const [easyAreas, setEasyAreas] = useState("");
-  const [savedNote, setSavedNote] = useState<{ struggles: string; easyAreas: string } | null>(null);
-
-  const saveNote = () => {
-    setSavedNote({
-      struggles: struggles.trim(),
-      easyAreas: easyAreas.trim(),
-    });
-  };
-
-  return (
-    <div className="mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9">
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="mb-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-violet-600">
-            {subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}
-          </div>
-          <h1 className="font-heading m-0 text-[30px] font-semibold tracking-[-0.02em] text-gray-900">My progress</h1>
-          <p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">
-            A simple summary of what the tutor knows: scores, strengths, repeated mistakes, and the next area to work on.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={onOpenConvo}
-          className="rounded-[10px] bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-600"
-        >
-          Work on weakest area
-        </button>
-      </div>
-
-      <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <StatTile label="Average test score" value={seed.average} valueColor="text-violet-600" caption={seed.trend} />
-        <StatTile label="Strongest area" value={seed.strongest} valueColor="text-gray-900" caption="Based on recent results" />
-        <StatTile label="Main focus" value={seed.weakest} valueColor="text-gray-900" caption="Recommended next step" />
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[1.08fr_0.92fr]">
-        <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border border-violet-100 bg-white px-[22px] py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.65)]">
-            <h2 className="font-heading mb-3.5 flex items-center gap-2 text-base font-semibold text-gray-900">
-              <span className="h-2 w-2 rounded-full bg-violet-500" />
-              Areas going well
-            </h2>
-            <div className="flex flex-col gap-3.5">
-              {seed.skills.map((skill) => (
-                <SkillBar key={skill.label} label={skill.label} pct={skill.pct} />
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-violet-100 bg-white px-[22px] py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.65)]">
-            <h2 className="font-heading mb-1.5 flex items-center gap-2 text-base font-semibold text-gray-900">
-              <span className="h-2 w-2 rounded-full bg-gray-500" />
-              Repeated mistakes
-            </h2>
-            <p className="m-0 mb-3.5 text-[12.5px] text-gray-400">Patterns pulled from tutor sessions and tracked tests.</p>
-            <div className="flex flex-col gap-2.5">
-              {seed.recurring.map((item) => (
-                <RecurringRow key={item.title} title={item.title} sub={item.sub} onClick={onOpenConvo} />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <section className="rounded-2xl border border-violet-100 bg-white px-[22px] py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.65)]">
-            <div className="mb-1 flex items-center justify-between">
-              <h2 className="font-heading m-0 text-base font-semibold text-gray-900">{seed.chartTitle}</h2>
-              <span className="text-xs font-semibold text-violet-600">{seed.trend}</span>
-            </div>
-            <p className="m-0 mb-4 text-[12.5px] text-gray-400">Illustrative trend from recent tracked assessments.</p>
-            <ProgressChart />
-          </section>
-
-          <section className="rounded-2xl border border-violet-100 bg-violet-50/70 px-5 py-[18px] dark:bg-violet-400/10">
-            <h2 className="font-heading m-0 text-base font-semibold text-gray-900">Tell the tutor more</h2>
-            <p className="m-0 mb-4 mt-1 text-[13px] leading-relaxed text-gray-500">
-              Add your own view of what feels hard or easy. For now this saves visually in the current session only.
-            </p>
-            <div className="space-y-3">
-              <label className="block">
-                <span className="mb-1.5 block text-[12.5px] font-medium text-gray-700">I am struggling with</span>
-                <textarea
-                  value={struggles}
-                  onChange={(event) => setStruggles(event.target.value)}
-                  placeholder="Example: worded calculus questions, timing, remembering formulae"
-                  className={textareaCls}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-[12.5px] font-medium text-gray-700">I find easy</span>
-                <textarea
-                  value={easyAreas}
-                  onChange={(event) => setEasyAreas(event.target.value)}
-                  placeholder="Example: algebra basics, definitions, short questions"
-                  className={textareaCls}
-                />
-              </label>
-              <button
-                type="button"
-                onClick={saveNote}
-                className="w-full rounded-[10px] border border-violet-100 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-violet-500 hover:text-violet-600"
-              >
-                Save note
-              </button>
-            </div>
-            {savedNote && (savedNote.struggles || savedNote.easyAreas) && (
-              <div className="mt-4 rounded-[12px] border border-violet-100 bg-violet-50 px-4 py-3">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.07em] text-violet-600">Saved this session</div>
-                {savedNote.struggles && <p className="m-0 mt-2 text-[13px] text-gray-700">Struggling with: {savedNote.struggles}</p>}
-                {savedNote.easyAreas && <p className="m-0 mt-1 text-[13px] text-gray-700">Finds easy: {savedNote.easyAreas}</p>}
-              </div>
-            )}
-          </section>
-        </div>
-      </div>
-    </div>
-  );
+  return <div style={subjectThemeStyle(subjectId)} className="animate-fade-up mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9"><header className="mb-5"><div className="subject-context-label text-[12px] font-semibold uppercase tracking-[.08em]">{subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}</div><h1 className="font-heading m-0 mt-1 text-[30px] font-semibold tracking-[-.02em] text-gray-900 dark:text-white">Progress & Results</h1><p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">See what to work on next, keep track of difficult areas, and make improvement visible.</p></header><RecommendationCard {...recommendation} />{feedback && <p role="status" className="animate-fade-up m-0 mt-3 text-[13px] font-semibold text-violet-700 dark:text-violet-200">{feedback}</p>}<section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Things I&apos;m finding hard</h2><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">Your focus areas help GrindsAI recommend what to work on next.</p></div></div><div className="mt-4 flex gap-2"><input id="focus-input" value={focusDraft} onChange={(event) => setFocusDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addFocus(); } }} placeholder="e.g. starting long questions" className={inputClass} /><button type="button" onClick={addFocus} className="rounded-xl bg-violet-500 px-3.5 py-2.5 text-[13px] font-semibold text-white hover:bg-violet-600">Add</button></div>{currentFocus.length ? <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">{currentFocus.map((area) => <FocusAreaCard key={area.id} area={area} onTutor={() => onOpenConvo(area.label)} onQuestion={() => onOpenGenerator(area.label)} onComfortable={() => { onUpdateFocusArea(area, "improved"); showFeedback(`${area.label} moved to Improved areas`); }} />)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 bg-violet-50/60 px-4 py-4 text-[13px] leading-relaxed text-gray-500 dark:bg-violet-400/10">Nothing added yet. Start with one topic or exam skill you want to feel more confident with.</div>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Recent activity and results</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Your Tutor sessions, Exam Questions, and logged results appear here.</p></div>{results.length || activities.length ? <div className="mt-4 space-y-2">{results.map((result) => <ResultCard key={result.id} result={result} />)}{activities.filter((activity) => activity.type !== "result").map((activity) => <ActivityRow key={activity.id} activity={activity} />)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 px-4 py-5 text-[13px] leading-relaxed text-gray-500">Nothing recorded yet. Your study activity will build here as you use the three tools.</div>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div className="flex items-center justify-between gap-3"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Improved areas</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Areas you have marked as comfortable.</p></div><span className="rounded-full bg-violet-50 px-2.5 py-1 text-[12px] font-semibold text-violet-700 dark:bg-violet-400/10 dark:text-violet-200">{improved.length}</span></div>{improved.length ? <div className="mt-4 flex flex-wrap gap-2">{improved.map((area) => <span key={area.id} className="animate-fade-up inline-flex items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-[13px] font-medium text-violet-800 dark:bg-violet-400/10 dark:text-violet-200">{area.label}<button type="button" onClick={() => onUpdateFocusArea(area, "current")} className="rounded-lg bg-white px-2 py-1 text-[11px] font-semibold text-violet-700 hover:bg-violet-100 dark:bg-slate-900 dark:text-violet-200">Restore</button></span>)}</div> : <p className="mb-0 mt-4 text-[13px] text-gray-500">Mark a current focus area as comfortable to make your progress visible here.</p>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 dark:bg-slate-900"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Log a result</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Add a score, reflection, or teacher feedback when you have it.</p></div><button type="button" onClick={() => setResultOpen((open) => !open)} className="rounded-xl border border-violet-200 bg-violet-50 px-3.5 py-2.5 text-[13px] font-semibold text-violet-700 hover:border-violet-500 dark:border-violet-900 dark:bg-violet-400/10 dark:text-violet-200">{resultOpen ? "Close" : "Log a result"}</button></div>{resultOpen && <ResultForm topics={topics} topic={resultTopic} type={resultType} score={score} wentWell={wentWell} difficult={difficult} teacherNote={teacherNote} onTopic={setResultTopic} onType={setResultType} onScore={setScore} onWentWell={setWentWell} onDifficult={setDifficult} onTeacherNote={setTeacherNote} onSubmit={addResult} />}</section><p className="m-0 mt-4 text-center text-[11.5px] text-gray-400">This release stores progress for the current browser session only.</p></div>;
 }
 
-const textareaCls =
-  "min-h-[86px] w-full resize-none rounded-[10px] border border-gray-200 bg-white px-3.5 py-3 text-sm text-gray-800 outline-none transition-[border-color,box-shadow] focus:border-violet-500 focus:ring-4 focus:ring-violet-500/[0.1]";
-
-function StatTile({
-  label,
-  value,
-  valueColor,
-  caption,
-}: {
-  label: string;
-  value: string;
-  valueColor: string;
-  caption: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-violet-100 bg-white px-5 py-[18px] shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)]">
-      <div className="mb-2 text-[12.5px] text-gray-400">{label}</div>
-      <div className={`font-heading text-[27px] font-semibold ${valueColor}`}>{value}</div>
-      <div className="mt-1 text-xs text-gray-400">{caption}</div>
-    </div>
-  );
-}
-
-function SkillBar({ label, pct }: { label: string; pct: number }) {
-  return (
-    <div>
-      <div className="mb-1.5 flex justify-between text-[13px]">
-        <span className="text-gray-700">{label}</span>
-        <span className="font-semibold text-violet-600">{pct}%</span>
-      </div>
-      <div className="h-[7px] overflow-hidden rounded-md bg-gray-200">
-        <div className="h-full rounded-md bg-violet-500" style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-}
-
-function RecurringRow({ title, sub, onClick }: { title: string; sub: string; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex w-full items-center gap-3 rounded-[10px] border border-violet-100 bg-violet-50/50 px-3.5 py-[11px] text-left transition-colors hover:border-violet-500 dark:bg-violet-400/10"
-    >
-      <span className="flex-1">
-        <span className="block text-[13.5px] font-semibold text-gray-900">{title}</span>
-        <span className="text-xs text-gray-400">{sub}</span>
-      </span>
-      <span className="shrink-0 rounded-xl bg-white px-2 py-0.5 text-[11px] font-semibold text-violet-600">Practise</span>
-    </button>
-  );
-}
-
-function ProgressChart() {
-  return (
-    <svg viewBox="0 0 320 150" className="block h-auto w-full" aria-hidden="true">
-      <line x1="34" y1="14" x2="34" y2="118" stroke="#E5E7EB" strokeWidth="1" />
-      <line x1="34" y1="118" x2="312" y2="118" stroke="#E5E7EB" strokeWidth="1" />
-      <line x1="34" y1="40" x2="312" y2="40" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="3 4" />
-      <line x1="34" y1="79" x2="312" y2="79" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="3 4" />
-      <text x="26" y="44" textAnchor="end" fontSize="9" fill="#9CA3AF">80</text>
-      <text x="26" y="83" textAnchor="end" fontSize="9" fill="#9CA3AF">50</text>
-      <text x="26" y="121" textAnchor="end" fontSize="9" fill="#9CA3AF">20</text>
-      <path d="M48,96 L114,90 L180,70 L246,58 L300,49 L300,118 L48,118 Z" fill="#8B5CF6" opacity="0.1" />
-      <path d="M48,96 L114,90 L180,70 L246,58 L300,49" fill="none" stroke="#8B5CF6" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="48" cy="96" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
-      <circle cx="114" cy="90" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
-      <circle cx="180" cy="70" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
-      <circle cx="246" cy="58" r="3.4" fill="#fff" stroke="#8B5CF6" strokeWidth="2" />
-      <circle cx="300" cy="49" r="4.2" fill="#8B5CF6" />
-      <text x="48" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Sep</text>
-      <text x="114" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Oct</text>
-      <text x="180" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Nov</text>
-      <text x="246" y="134" textAnchor="middle" fontSize="9" fill="#9CA3AF">Dec</text>
-      <text x="300" y="134" textAnchor="middle" fontSize="9" fill="#8B5CF6" fontWeight="600">Now</text>
-    </svg>
-  );
-}
+function FocusAreaCard({ area, onTutor, onQuestion, onComfortable }: { area: FocusArea; onTutor: () => void; onQuestion: () => void; onComfortable: () => void }) { return <article className="rounded-xl border border-violet-100 bg-violet-50/60 px-3.5 py-3 dark:bg-violet-400/10"><div className="text-[14px] font-semibold text-gray-900 dark:text-white">{area.label}</div><div className="mt-3 flex flex-wrap gap-2"><SmallAction onClick={onTutor}>Ask Tutor</SmallAction><SmallAction onClick={onQuestion}>Exam Question</SmallAction><SmallAction onClick={onComfortable}>Mark comfortable</SmallAction></div></article>; }
+function ResultForm({ topics, topic, type, score, wentWell, difficult, teacherNote, onTopic, onType, onScore, onWentWell, onDifficult, onTeacherNote, onSubmit }: { topics: ReturnType<typeof getSubjectTopics>; topic: string; type: string; score: string; wentWell: string; difficult: string; teacherNote: string; onTopic: (value: string) => void; onType: (value: string) => void; onScore: (value: string) => void; onWentWell: (value: string) => void; onDifficult: (value: string) => void; onTeacherNote: (value: string) => void; onSubmit: (event: React.FormEvent) => void }) { return <form onSubmit={onSubmit} className="animate-fade-up mt-4 rounded-xl border border-violet-100 bg-violet-50/55 p-4 dark:bg-violet-400/10"><div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><Field label="Topic"><select value={topic} onChange={(event) => onTopic(event.target.value)} className={inputClass}>{topics.map((item) => <option key={item.id}>{item.name}</option>)}</select></Field><Field label="What was this?"><select value={type} onChange={(event) => onType(event.target.value)} className={inputClass}>{["Class test", "Mock", "Homework", "Past paper", "Other"].map((item) => <option key={item}>{item}</option>)}</select></Field><Field label="Result or score"><input value={score} onChange={(event) => onScore(event.target.value)} placeholder="Optional: 72%, H3, 42/60" className={inputClass} /></Field></div><div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2"><Field label="What went well"><textarea value={wentWell} onChange={(event) => onWentWell(event.target.value)} className={textareaClass} /></Field><Field label="What was difficult"><textarea value={difficult} onChange={(event) => onDifficult(event.target.value)} className={textareaClass} /></Field></div><div className="mt-3"><Field label="Teacher feedback, optional"><textarea value={teacherNote} onChange={(event) => onTeacherNote(event.target.value)} className={textareaClass} /></Field></div><div className="mt-4 flex gap-2"><button type="submit" className="rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-600">Save result</button></div></form>; }
+function ResultCard({ result }: { result: ResultEntry }) { return <article className="rounded-xl border border-violet-100 bg-violet-50/55 px-4 py-3 dark:bg-violet-400/10"><div className="flex flex-wrap items-center justify-between gap-2"><div><span className="font-semibold text-gray-900 dark:text-white">{result.topic}</span><span className="ml-2 text-[12px] text-gray-400">{result.type}</span></div><span className="rounded-full bg-white px-2.5 py-1 text-[12px] font-semibold text-violet-700 dark:bg-slate-900 dark:text-violet-200">{result.score || "Reflection"}</span></div>{result.wentWell && <Detail label="Went well" value={result.wentWell} />}{result.difficult && <Detail label="Difficult" value={result.difficult} />}{result.teacherNote && <Detail label="Teacher" value={result.teacherNote} />}</article>; }
+function ActivityRow({ activity }: { activity: StudyActivity }) { return <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-slate-800 dark:bg-slate-950"><span className="h-2 w-2 rounded-full bg-violet-500" /><span className="text-[13px] text-gray-700 dark:text-slate-200">{activity.label}</span></div>; }
+function SmallAction({ children, onClick }: { children: React.ReactNode; onClick: () => void }) { return <button type="button" onClick={onClick} className="rounded-lg bg-white px-2.5 py-1.5 text-[11.5px] font-semibold text-violet-700 hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 dark:bg-slate-900 dark:text-violet-200">{children}</button>; }
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="block"><span className="mb-1.5 block text-[12.5px] font-medium text-gray-700 dark:text-slate-200">{label}</span>{children}</label>; }
+function Detail({ label, value }: { label: string; value: string }) { return <p className="m-0 mt-2 text-[13px] leading-relaxed text-gray-600 dark:text-slate-300"><span className="font-semibold text-violet-700 dark:text-violet-200">{label}:</span> {value}</p>; }
+const inputClass = "w-full min-w-0 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white";
+const textareaClass = `${inputClass} min-h-[70px] resize-none py-3`;
