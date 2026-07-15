@@ -164,7 +164,7 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
         {step === 2 && (
           <StepShell
             title="Which subjects do you take?"
-            subtitle="Pick all that apply — we'll only show these in your sidebar."
+            subtitle="Pick all that apply — we'll only show these on your home screen."
           >
             <div className="grid grid-cols-2 gap-2 max-h-[340px] overflow-auto pr-0.5">
               {SUBJECTS.map((subject) => {
