@@ -225,13 +225,17 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
 
   const finishEdit = async () => {
     if (!yearGroup || !challenge) return;
-    setSubmitting(true);
     const profile = buildPartialProfile({ withChallenge: true });
     if (!profile) return;
-    profile.completedAt = new Date().toISOString();
-    await saveStudentProfileRemote(profile, { markComplete: true });
-    router.push("/chat");
-    router.refresh();
+    setSubmitting(true);
+    try {
+      profile.completedAt = new Date().toISOString();
+      await saveStudentProfileRemote(profile, { markComplete: true });
+      router.push("/chat");
+      router.refresh();
+    } catch {
+      setSubmitting(false);
+    }
   };
 
   const currentQ = questions[qIndex];

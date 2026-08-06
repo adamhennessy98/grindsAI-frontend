@@ -4,7 +4,8 @@ import { recordLearningEvent } from "@/lib/learning/events";
 import type { LearningEventInput, LearningEventSource, LearningOutcome } from "@/lib/learning/kc";
 
 const OUTCOMES = new Set(["correct", "incorrect", "partial"]);
-const SOURCES = new Set(["tutor", "exam_gen", "archive", "system", "onboarding_diagnostic"]);
+/** Client self-report only — tutor/system/diagnostic must be written server-side. */
+const CLIENT_SOURCES = new Set(["exam_gen", "archive"]);
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -30,9 +31,12 @@ export async function POST(request: Request) {
   const outcome = typeof body.outcome === "string" ? body.outcome : "";
   const source = typeof body.source === "string" ? body.source : "";
 
-  if (!kcId || !subjectId || !OUTCOMES.has(outcome) || !SOURCES.has(source)) {
+  if (!kcId || !subjectId || !OUTCOMES.has(outcome) || !CLIENT_SOURCES.has(source)) {
     return NextResponse.json(
-      { error: "kcId, subjectId, outcome, and source are required." },
+      {
+        error:
+          "kcId, subjectId, outcome, and a client-allowed source (exam_gen|archive) are required.",
+      },
       { status: 400 },
     );
   }

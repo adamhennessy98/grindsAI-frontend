@@ -47,18 +47,71 @@ async function loadKcState(
   };
 }
 
-export async function recordLearningEvent(
+/** Preferred path: single Postgres transaction via security-definer RPC. */
+async function recordViaRpc(
+  supabase: SupabaseClient,
+  input: LearningEventInput,
+  next: BktState,
+): Promise<RecordLearningEventResult | null> {
+  const { data, error } = await supabase.rpc("record_learning_event", {
+    p_kc_id: input.kcId,
+    p_subject_id: input.subjectId,
+    p_outcome: input.outcome,
+    p_source: input.source,
+    p_mastery_p: next.masteryP,
+    p_p_l: next.pL,
+    p_p_t: next.pT,
+    p_p_g: next.pG,
+    p_p_s: next.pS,
+    p_evidence_n: next.evidenceN,
+    p_chunk_id: input.chunkId ?? null,
+    p_marks_earned: input.marksEarned ?? null,
+    p_marks_possible: input.marksPossible ?? null,
+    p_hint_depth: input.hintDepth ?? 0,
+    p_scaffolded: input.scaffolded ?? false,
+    p_transfer_check: input.transferCheck ?? false,
+    p_error_type: input.errorType ?? null,
+    p_latency_ms: input.latencyMs ?? null,
+    p_conversation_id: input.conversationId ?? null,
+    p_message_id: input.messageId ?? null,
+  });
+
+  if (error) {
+    // Function missing (migration not applied yet) → caller falls back.
+    if (/function .*record_learning_event.* does not exist/i.test(error.message)) {
+      return null;
+    }
+    throw error;
+  }
+
+  const row = data as {
+    eventId?: string;
+    attemptIndexOnKc?: number;
+    masteryP?: number;
+  } | null;
+
+  if (!row?.eventId) {
+    throw new Error("Failed to record learning event");
+  }
+
+  return {
+    eventId: String(row.eventId),
+    attemptIndexOnKc: Number(row.attemptIndexOnKc ?? 0),
+    masteryP: Number(row.masteryP ?? next.masteryP),
+  };
+}
+
+/**
+ * Fallback when RPC is unavailable: insert then upsert, and delete the event
+ * if the state write fails so the append-only log does not diverge.
+ */
+async function recordWithCompensation(
   supabase: SupabaseClient,
   userId: string,
   input: LearningEventInput,
+  next: BktState,
 ): Promise<RecordLearningEventResult> {
-  if (!input.kcId?.trim()) {
-    throw new Error("kc_id is required");
-  }
-
   const attemptIndexOnKc = await nextAttemptIndex(supabase, userId, input.kcId);
-  const prev = await loadKcState(supabase, userId, input.kcId);
-  const next = updateBkt(prev, input.outcome, { source: input.source });
   const now = new Date().toISOString();
 
   const { data: eventRow, error: insertErr } = await supabase
@@ -88,6 +141,8 @@ export async function recordLearningEvent(
     throw insertErr ?? new Error("Failed to insert learning event");
   }
 
+  const eventId = eventRow.id as string;
+
   const { error: upsertErr } = await supabase.from("student_kc_state").upsert(
     {
       user_id: userId,
@@ -105,11 +160,32 @@ export async function recordLearningEvent(
     { onConflict: "user_id,kc_id" },
   );
 
-  if (upsertErr) throw upsertErr;
+  if (upsertErr) {
+    await supabase.from("learning_events").delete().eq("id", eventId);
+    throw upsertErr;
+  }
 
   return {
-    eventId: eventRow.id as string,
+    eventId,
     attemptIndexOnKc,
     masteryP: next.masteryP,
   };
+}
+
+export async function recordLearningEvent(
+  supabase: SupabaseClient,
+  userId: string,
+  input: LearningEventInput,
+): Promise<RecordLearningEventResult> {
+  if (!input.kcId?.trim()) {
+    throw new Error("kc_id is required");
+  }
+
+  const prev = await loadKcState(supabase, userId, input.kcId);
+  const next = updateBkt(prev, input.outcome, { source: input.source });
+
+  const viaRpc = await recordViaRpc(supabase, input, next);
+  if (viaRpc) return viaRpc;
+
+  return recordWithCompensation(supabase, userId, input, next);
 }

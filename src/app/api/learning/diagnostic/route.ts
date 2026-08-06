@@ -81,12 +81,27 @@ export async function POST(request: Request) {
 
   // Re-build expected paper server-side so clients can't invent correct answers.
   const paper = buildDiagnosticPaper(profileIn.subjects);
+  if (!paper.length) {
+    return NextResponse.json({ error: "No diagnostic questions for selected subjects." }, { status: 400 });
+  }
   const byId = new Map(paper.map((q) => [q.id, q]));
+  const answeredIds = new Set(body.answers.map((a) => a.questionId));
+  if (answeredIds.size !== paper.length || paper.some((q) => !answeredIds.has(q.id))) {
+    return NextResponse.json(
+      { error: "All diagnostic questions must be answered before completing onboarding." },
+      { status: 400 },
+    );
+  }
 
   try {
     for (const answer of body.answers) {
       const q = byId.get(answer.questionId);
-      if (!q) continue;
+      if (!q) {
+        return NextResponse.json({ error: "Unknown diagnostic question." }, { status: 400 });
+      }
+      if (!q.choices.some((c) => c.id === answer.choiceId)) {
+        return NextResponse.json({ error: "Invalid diagnostic choice." }, { status: 400 });
+      }
       const outcome = answer.choiceId === q.correctChoiceId ? "correct" : "incorrect";
       await recordLearningEvent(supabase, user.id, {
         kcId: q.kcId,

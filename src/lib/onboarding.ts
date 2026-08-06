@@ -130,11 +130,18 @@ export async function saveStudentProfileRemote(
 
 /** Load prefs: prefer server, fall back to localStorage; one-shot migrate local → DB when DB empty. */
 export async function loadStudentProfile(): Promise<StudentProfile | null> {
+  const local = readStudentProfile();
+
   try {
     const response = await fetch("/api/learning/prefs", { method: "GET" });
     if (response.ok) {
       const body = (await response.json()) as { profile: StudentProfile | null };
       if (body.profile) {
+        // Incomplete server row must not wipe a finished local profile (mid-onboarding sync race).
+        if (!body.profile.completedAt && local && isCompleteProfile(local)) {
+          void saveStudentProfileRemote(local, { markComplete: true });
+          return local;
+        }
         saveStudentProfileLocal(body.profile, { markGateComplete: Boolean(body.profile.completedAt) });
         return body.profile;
       }
@@ -143,7 +150,6 @@ export async function loadStudentProfile(): Promise<StudentProfile | null> {
     /* fall through to local */
   }
 
-  const local = readStudentProfile();
   if (!local) return null;
 
   if (isCompleteProfile(local)) {

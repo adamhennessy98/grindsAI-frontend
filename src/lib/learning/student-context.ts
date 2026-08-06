@@ -36,6 +36,14 @@ export async function fetchStudentToneContext(
   };
 }
 
+function mergeToneNotes(existing: string[], incoming: string[]): string[] {
+  const out = [...existing];
+  for (const note of incoming) {
+    if (!out.includes(note)) out.push(note);
+  }
+  return out.slice(-20);
+}
+
 export async function upsertStudentToneContext(
   supabase: SupabaseClient,
   userId: string,
@@ -44,7 +52,9 @@ export async function upsertStudentToneContext(
   const existing = await fetchStudentToneContext(supabase, userId);
   const next = {
     anxiety_flag: patch.anxietyFlag ?? existing?.anxietyFlag ?? false,
-    notes: patch.notes ?? existing?.notes ?? [],
+    notes: patch.notes?.length
+      ? mergeToneNotes(existing?.notes ?? [], patch.notes)
+      : (existing?.notes ?? []),
     raw_free_text: patch.rawFreeText !== undefined ? patch.rawFreeText : (existing?.rawFreeText ?? null),
     updated_at: new Date().toISOString(),
   };
