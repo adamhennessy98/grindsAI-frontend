@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SUBJECTS, getSubjectTopics, getTopic } from "@/lib/constants";
-import { filterSubjects, getSubjectLevel, readStudentProfile, type StudentProfile } from "@/lib/onboarding";
+import { filterSubjects, getSubjectLevel, loadStudentProfile, type StudentProfile } from "@/lib/onboarding";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { AppTopBar } from "@/components/app/topbar";
 import { HomeFeed } from "@/components/app/home-feed";
@@ -32,7 +32,15 @@ export function ChatClient() {
   const [tutorHandoff, setTutorHandoff] = useState<TutorQuestionHandoff | null>(null);
   const [generatorTopicId, setGeneratorTopicId] = useState<string | undefined>();
 
-  useEffect(() => { const timer = window.setTimeout(() => setProfile(readStudentProfile()), 0); return () => window.clearTimeout(timer); }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        const next = await loadStudentProfile();
+        setProfile(next);
+      })();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
   useEffect(() => {
     const supabase = getBrowserSupabase();
     if (!supabase) return;

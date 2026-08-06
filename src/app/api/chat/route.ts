@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { conversationKey, getSubjectTopics, SUBJECTS } from "@/lib/constants";
+import { composeStudentContext } from "@/lib/learning/compose-student-context";
+import { getLearningProfile } from "@/lib/learning/profile";
 import { streamTutorReply } from "@/lib/llm";
 import { assertChatAllowed } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
@@ -12,6 +14,7 @@ type ChatBody = {
   topicId?: string | null;
   text: string;
   history?: { role: "user" | "ai"; text: string }[];
+  /** Papers → tutor handoff only (question text). Profile/tone/mastery loaded server-side. */
   studentContext?: string;
 };
 
@@ -70,8 +73,23 @@ export async function POST(request: Request) {
     ? body.history.map((m) => ({ role: m.role === "ai" ? "ai" : "user", text: String(m.text) }))
     : [];
 
-  const studentContext =
+  const handoffContext =
     typeof body.studentContext === "string" ? body.studentContext.trim().slice(0, 12000) : "";
+
+  let composedContext = handoffContext;
+  try {
+    const learning = await getLearningProfile(supabase, user.id);
+    composedContext = composeStudentContext({
+      profile: learning.prefs,
+      tone: learning.tone
+        ? { anxietyFlag: learning.tone.anxietyFlag, notes: learning.tone.notes }
+        : null,
+      strugglingKcs: learning.strugglingKcs,
+      handoffContext,
+    });
+  } catch (err) {
+    console.warn("[chat] learning profile compose failed, using handoff only:", err);
+  }
 
   let conversationId = typeof body.conversationId === "string" ? body.conversationId : null;
 
@@ -126,7 +144,7 @@ export async function POST(request: Request) {
       topicId,
       history,
       userMessage: text,
-      studentContext: studentContext || undefined,
+      studentContext: composedContext || undefined,
     });
     replyStream = out.stream;
     usedFallback = out.usedFallback;

@@ -1,8 +1,10 @@
 import { SUBJECTS } from "@/lib/constants";
+import { GRADE_BAND_OPTIONS, type TargetGradeBand } from "@/lib/learning/diagnostic-bank";
 
 export type YearGroup = "5th-year" | "6th-year" | "repeat-year";
 export type SubjectLevel = "HL" | "OL";
 export type StudyChallenge = "concepts" | "exam-freeze" | "time-management" | "practice";
+export type { TargetGradeBand };
 
 export type StudentProfile = {
   yearGroup: YearGroup;
@@ -10,7 +12,10 @@ export type StudentProfile = {
   subjectLevels: Record<string, SubjectLevel>;
   examTarget: string;
   challenge: StudyChallenge;
-  completedAt: string;
+  targetGradeBand?: TargetGradeBand | null;
+  reasonForUsing?: string | null;
+  /** Set only after Stage 3 diagnostic completes. */
+  completedAt: string | null;
 };
 
 const STORAGE_KEY = "grindsai-student-profile";
@@ -45,6 +50,8 @@ export const CHALLENGE_OPTIONS: { id: StudyChallenge; label: string; description
   },
 ];
 
+export { GRADE_BAND_OPTIONS };
+
 export function defaultExamTarget(yearGroup: YearGroup): string {
   const year = new Date().getFullYear();
   if (yearGroup === "5th-year") return `June ${year + 1}`;
@@ -63,22 +70,86 @@ export function defaultSubjectLevels(subjectIds: string[]): Record<string, Subje
   return Object.fromEntries(subjectIds.map((id) => [id, "HL" as SubjectLevel]));
 }
 
+function isCompleteProfile(parsed: StudentProfile): boolean {
+  return Boolean(parsed?.yearGroup && Array.isArray(parsed.subjects) && parsed.challenge && parsed.completedAt);
+}
+
 export function readStudentProfile(): StudentProfile | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as StudentProfile;
-    if (!parsed?.yearGroup || !Array.isArray(parsed.subjects) || !parsed.challenge) return null;
+    if (!parsed?.yearGroup || !Array.isArray(parsed.subjects)) return null;
     return parsed;
   } catch {
     return null;
   }
 }
 
-export function saveStudentProfile(profile: StudentProfile) {
+/** Local cache only — cookie is set only when onboarding is fully complete (Stage 3). */
+export function saveStudentProfileLocal(profile: StudentProfile, opts?: { markGateComplete?: boolean }) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  document.cookie = `${ONBOARDING_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+  if (opts?.markGateComplete && profile.completedAt) {
+    document.cookie = `${ONBOARDING_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+  }
+}
+
+/** @deprecated use saveStudentProfileLocal — kept for call sites that mean “cache + cookie”. */
+export function saveStudentProfile(profile: StudentProfile) {
+  saveStudentProfileLocal(profile, { markGateComplete: Boolean(profile.completedAt) });
+}
+
+export type SavePrefsOptions = {
+  /** Only true after Stage 3 diagnostic. */
+  markComplete?: boolean;
+};
+
+/** Persist prefs to Supabase; cookie only when markComplete. */
+export async function saveStudentProfileRemote(
+  profile: StudentProfile,
+  opts?: SavePrefsOptions,
+): Promise<{ ok: boolean; error?: string }> {
+  const markComplete = Boolean(opts?.markComplete && profile.completedAt);
+  saveStudentProfileLocal(profile, { markGateComplete: markComplete });
+  try {
+    const response = await fetch("/api/learning/prefs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...profile, markComplete }),
+    });
+    if (!response.ok) {
+      const body = (await response.json().catch(() => null)) as { error?: string } | null;
+      return { ok: false, error: body?.error ?? `Prefs sync failed (${response.status})` };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Prefs sync failed" };
+  }
+}
+
+/** Load prefs: prefer server, fall back to localStorage; one-shot migrate local → DB when DB empty. */
+export async function loadStudentProfile(): Promise<StudentProfile | null> {
+  try {
+    const response = await fetch("/api/learning/prefs", { method: "GET" });
+    if (response.ok) {
+      const body = (await response.json()) as { profile: StudentProfile | null };
+      if (body.profile) {
+        saveStudentProfileLocal(body.profile, { markGateComplete: Boolean(body.profile.completedAt) });
+        return body.profile;
+      }
+    }
+  } catch {
+    /* fall through to local */
+  }
+
+  const local = readStudentProfile();
+  if (!local) return null;
+
+  if (isCompleteProfile(local)) {
+    void saveStudentProfileRemote(local, { markComplete: true });
+  }
+  return local;
 }
 
 export function clearOnboardingCookie() {
@@ -86,7 +157,8 @@ export function clearOnboardingCookie() {
 }
 
 export function hasCompletedOnboarding(): boolean {
-  return readStudentProfile() !== null;
+  const profile = readStudentProfile();
+  return Boolean(profile?.completedAt);
 }
 
 export function getSubjectLevel(profile: StudentProfile | null, subjectId: string): SubjectLevel {
@@ -129,7 +201,7 @@ export function buildStudentContextPrompt(profile: StudentProfile): string {
   };
 
   return [
-    `Student context: ${yearLabel} student sitting the Leaving Cert in ${profile.examTarget}.`,
+    `Student prefs (not mastery evidence): ${yearLabel} student sitting the Leaving Cert in ${profile.examTarget}.`,
     urgency,
     subjectSummary ? `They study: ${subjectSummary}.` : "",
     challenge ? `Biggest challenge right now: ${challenge.label}. ${challengeGuidance[profile.challenge]}` : "",

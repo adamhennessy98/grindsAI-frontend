@@ -42,3 +42,15 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# local agent / IDE (not for PRs)
+.cursor/
+.claude/
+.agents/
+skills/
+
+# logs and scratch notes
+*.log
+**/BUILD_LOG.md
+**/KNOCKED-OFF.md
+docs/gaps-plain0eng.txt

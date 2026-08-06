@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { postLearningEvent } from "@/lib/learning/client";
+import { resolveKcId } from "@/lib/learning/kc";
 import { getTopic } from "@/lib/constants";
 import { MathMarkdown } from "@/components/math-markdown";
 import { subjectInitial, subjectLabel, subjectThemeStyle } from "./subjects";
@@ -55,6 +57,7 @@ export function ConversationView({
   const [respondingTopicId, setRespondingTopicId] = useState<string | null>(null);
   const conversationIds = useRef<Record<string, string>>({});
   const questionContexts = useRef<Record<string, string>>({});
+  const hintDepthByTopic = useRef<Record<string, number>>({});
   const handledHandoffs = useRef(new Set<string>());
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const messages = messagesByTopic[topic.id] ?? [];
@@ -68,6 +71,28 @@ export function ConversationView({
         : ["I'm still stuck", "Show another step", "Show a worked example"];
   const scrollToBottom = useCallback(() => bottomRef.current?.scrollIntoView({ block: "end" }), []);
 
+  const noteScaffoldAction = useCallback(
+    (action: string) => {
+      const isHint = /hint|help me start|explain what the question|another step|worked example|still stuck/i.test(action);
+      if (!isHint) return;
+      hintDepthByTopic.current[topic.id] = (hintDepthByTopic.current[topic.id] ?? 0) + 1;
+      const kcId = resolveKcId(subjectId, level, topic.id);
+      if (!kcId) return;
+      const stuck = /still stuck/i.test(action);
+      void postLearningEvent({
+        kcId,
+        subjectId,
+        outcome: stuck ? "incorrect" : "partial",
+        hintDepth: hintDepthByTopic.current[topic.id] ?? 1,
+        scaffolded: true,
+        transferCheck: false,
+        source: "tutor",
+        conversationId: conversationIds.current[topic.id] ?? null,
+      });
+    },
+    [level, subjectId, topic.id],
+  );
+
   useEffect(() => {
     window.requestAnimationFrame(scrollToBottom);
   }, [scrollToBottom, messages.length, topic.id, isResponding]);
@@ -75,6 +100,7 @@ export function ConversationView({
   const sendMessage = useCallback(async (value: string, studentContext = "") => {
     const message = value.trim();
     if (!message || respondingTopicId) return;
+    noteScaffoldAction(message);
     if (studentContext.trim()) questionContexts.current[topic.id] = studentContext.trim();
     const activeMessages = messagesByTopic[topic.id] ?? [];
     const wasEmpty = activeMessages.length === 0;
@@ -129,7 +155,7 @@ export function ConversationView({
     } finally {
       setRespondingTopicId((current) => current === topic.id ? null : current);
     }
-  }, [level, messagesByTopic, onStartSession, respondingTopicId, subjectId, topic.id]);
+  }, [level, messagesByTopic, noteScaffoldAction, onStartSession, respondingTopicId, subjectId, topic.id]);
 
   useEffect(() => {
     if (!handoff || handledHandoffs.current.has(handoff.id)) return;

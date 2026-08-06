@@ -5,6 +5,7 @@ import type { Subject } from "@/lib/types";
 import type { SubjectLevel } from "@/lib/onboarding";
 import type { StudyStateBySubject } from "./study-state";
 import { subjectInitial, subjectLabel, subjectThemeStyle } from "./subjects";
+import { FreeTextNote } from "./free-text-note";
 
 interface HomeFeedProps {
   hasProfile: boolean;
@@ -23,6 +24,7 @@ export function HomeFeed({ hasProfile, subjects, subjectLevels, studyState, onSe
   return <div className="mx-auto max-w-[1080px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9">
     <section className="mb-5"><p className="mb-2 text-[12px] font-semibold uppercase tracking-[.08em] text-cyan-600">My Subjects</p><div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><h1 className="font-heading m-0 text-[30px] font-semibold leading-tight tracking-[-.02em] text-gray-900 dark:text-white sm:text-[36px]">What are you studying today?</h1><p className="m-0 mt-2 max-w-[580px] text-[14.5px] leading-relaxed text-gray-500">Choose a subject, then work through the next useful step.</p></div><button type="button" onClick={onOpenSettings} className="rounded-xl border border-cyan-100 bg-white/85 px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:border-cyan-400 hover:bg-cyan-50 hover:text-cyan-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">Edit subjects</button></div></section>
     {continuation ? <ContinuationCard subject={continuation.subject} state={continuation.state!} onContinue={() => onContinueSubject(continuation.subject.id)} /> : <NewContinuationCard subject={subjects[0]} onStart={() => subjects[0] && onContinueSubject(subjects[0].id)} />}
+    <div className="mt-4"><FreeTextNote /></div>
     <div className="mb-4 mt-7 flex items-center gap-3"><h2 className="font-heading m-0 text-[18px] font-semibold text-gray-900 dark:text-white">Your subjects</h2><div className="h-px flex-1 bg-gray-200 dark:bg-slate-800" /></div>
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">{subjects.map((subject) => <SubjectCard key={subject.id} subject={subject} level={subjectLevels?.[subject.id] ?? "HL"} state={studyState[subject.id]} onView={() => onSelectSubject(subject.id)} />)}</div>
   </div>;

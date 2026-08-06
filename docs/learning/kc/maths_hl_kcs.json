@@ -1,0 +1,41 @@
+{
+  "subject_id": "maths",
+  "level": "HL",
+  "source": "strand_seed",
+  "note": "v1 strand-level KCs aligned with SUBJECT_TOPICS. Finer MS-method KCs are future enrichment.",
+  "knowledge_components": [
+    { "kc_id": "maths.hl.algebra", "strand_topic_id": "algebra", "label": "Algebra" },
+    { "kc_id": "maths.hl.functions-graphs", "strand_topic_id": "functions-graphs", "label": "Functions & Graphs" },
+    { "kc_id": "maths.hl.calculus", "strand_topic_id": "calculus", "label": "Calculus" },
+    { "kc_id": "maths.hl.sequences-series", "strand_topic_id": "sequences-series", "label": "Sequences & Series" },
+    { "kc_id": "maths.hl.complex-numbers", "strand_topic_id": "complex-numbers", "label": "Complex Numbers" },
+    { "kc_id": "maths.hl.financial-maths", "strand_topic_id": "financial-maths", "label": "Financial Maths" },
+    { "kc_id": "maths.hl.coordinate-geometry", "strand_topic_id": "coordinate-geometry", "label": "Coordinate Geometry" },
+    { "kc_id": "maths.hl.geometry-proofs", "strand_topic_id": "geometry-proofs", "label": "Geometry & Proofs" },
+    { "kc_id": "maths.hl.trigonometry", "strand_topic_id": "trigonometry", "label": "Trigonometry" },
+    { "kc_id": "maths.hl.probability", "strand_topic_id": "probability", "label": "Probability" },
+    { "kc_id": "maths.hl.statistics", "strand_topic_id": "statistics", "label": "Statistics" },
+    { "kc_id": "maths.hl.area-volume-measurement", "strand_topic_id": "area-volume-measurement", "label": "Area, Volume & Measurement" },
+    { "kc_id": "maths.hl.general", "strand_topic_id": "general", "label": "General Maths" }
+  ],
+  "topic_name_to_strand": {
+    "Algebra": "algebra",
+    "Functions & Graphs": "functions-graphs",
+    "Functions and Graphs": "functions-graphs",
+    "Calculus": "calculus",
+    "Sequences & Series": "sequences-series",
+    "Sequences and Series": "sequences-series",
+    "Complex Numbers": "complex-numbers",
+    "Financial Maths": "financial-maths",
+    "Coordinate Geometry": "coordinate-geometry",
+    "Geometry & Proofs": "geometry-proofs",
+    "Geometry and Proofs": "geometry-proofs",
+    "Trigonometry": "trigonometry",
+    "Probability": "probability",
+    "Statistics": "statistics",
+    "Area, Volume & Measurement": "area-volume-measurement",
+    "Area, Volume and Measurement": "area-volume-measurement",
+    "Mixed": "general",
+    "General Maths": "general"
+  }
+}
