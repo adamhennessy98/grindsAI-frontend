@@ -65,7 +65,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (!user && pathname === "/api/chat") {
+  if (!user && (pathname === "/api/chat" || pathname.startsWith("/api/learning"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

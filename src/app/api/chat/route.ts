@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { conversationKey, getTopic, getSubjectTopics, SUBJECTS } from "@/lib/constants";
 import { loadAgentContext } from "@/lib/agents/load-context";
 import { isAgentId, isAgentMode } from "@/lib/agents/registry";
+import { composeStudentContext } from "@/lib/learning/compose-student-context";
+import { getLearningProfile } from "@/lib/learning/profile";
 import { streamAgentReply } from "@/lib/llm";
 import { buildChatMemorySummary, saveMemory } from "@/lib/memory";
 import { assertChatAllowed } from "@/lib/subscription";
@@ -17,6 +19,7 @@ type ChatBody = {
   history?: { role: "user" | "ai"; text: string }[];
   agentId?: string | null;
   mode?: string | null;
+  /** Papers → tutor handoff only (question text). Profile/tone/mastery loaded server-side. */
   studentContext?: string;
 };
 
@@ -77,8 +80,23 @@ export async function POST(request: Request) {
 
   const mode = isAgentMode(body.mode) ? body.mode : "normal";
   const agentId = isAgentId(body.agentId) ? body.agentId : undefined;
-  const studentContext =
+  const handoffContext =
     typeof body.studentContext === "string" ? body.studentContext.trim().slice(0, 12000) : "";
+
+  let composedContext = handoffContext;
+  try {
+    const learning = await getLearningProfile(supabase, user.id);
+    composedContext = composeStudentContext({
+      profile: learning.prefs,
+      tone: learning.tone
+        ? { anxietyFlag: learning.tone.anxietyFlag, notes: learning.tone.notes }
+        : null,
+      strugglingKcs: learning.strugglingKcs,
+      handoffContext,
+    });
+  } catch (err) {
+    console.warn("[chat] learning profile compose failed, using handoff only:", err);
+  }
 
   let conversationId = typeof body.conversationId === "string" ? body.conversationId : null;
 
@@ -138,7 +156,7 @@ export async function POST(request: Request) {
       subjectId,
       level,
       topicId,
-      extras: studentContext ? [studentContext] : undefined,
+      extras: composedContext ? [composedContext] : undefined,
     });
     resolvedAgentId = ctx.agentId;
     const out = await streamAgentReply(ctx);
