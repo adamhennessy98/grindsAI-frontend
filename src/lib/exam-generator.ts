@@ -1,5 +1,6 @@
 export type ExamQuestionType = "short" | "long" | "mixed";
 export type ExamQuestionDifficulty = "easy" | "exam";
+export type ExamQuestionPurpose = "exam-practice" | "topic-check";
 
 export type ExamGeneratorRequest = {
   subjectId: string;
@@ -11,6 +12,11 @@ export type ExamGeneratorRequest = {
   includeHints: boolean;
   includeWorkedSolution: boolean;
   includeMarkingScheme: boolean;
+  /** Keeps Topic Check generation distinct from normal exam-style practice. */
+  purpose?: ExamQuestionPurpose;
+  /** The question's position in an ordered Topic Check sequence. */
+  topicCheckStep?: number;
+  topicCheckTotal?: number;
 };
 
 export type GeneratedExamQuestion = {

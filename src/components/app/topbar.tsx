@@ -36,7 +36,7 @@ export function AppTopBar({ screen, activeSubjectId, userInitials, onBack, onHom
   };
 
   const subject = subjectLabel(activeSubjectId);
-  const title = screen === "workspace" ? subject : screen === "generator" ? "Exam Questions" : screen === "progress" ? "Progress & Results" : "Tutor";
+  const title = screen === "workspace" ? subject : screen === "generator" ? "Exam Questions" : screen === "progress" ? "Progress & Results" : screen === "topic-check" ? "Topic Check" : "Tutor";
   const subtitle = screen === "workspace" ? "Choose what to do next" : screen === "conversation" ? `${subject} tutor` : subject;
 
   return (

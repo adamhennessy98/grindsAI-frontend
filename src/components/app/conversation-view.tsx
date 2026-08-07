@@ -12,7 +12,7 @@ export type TutorQuestionHandoff = {
   topicId: string;
   topicName: string;
   level: string;
-  sourceLabel: "Generated exam question" | "Past exam question";
+  sourceLabel: "Generated exam question" | "Past exam question" | "Topic Check question";
   summary: string;
   initialMessage: string;
   contextPrompt: string;
