@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getTopic } from "@/lib/constants";
@@ -37,6 +37,8 @@ const starterActions = [
   "Test me on this topic",
   "What should I revise next?",
 ];
+
+const stuckPhrases = new Set(["I'm still stuck", "I am still stuck", "I'm stuck", "I am stuck"]);
 
 export function ConversationView({
   subjectId,
@@ -97,6 +99,8 @@ export function ConversationView({
           topicId: topic.id,
           text: message,
           history: activeMessages.map(({ role, text }) => ({ role, text })),
+          agentId: "subject-tutor",
+          mode: stuckPhrases.has(message) ? "stuck" : "normal",
           studentContext: (studentContext || questionContexts.current[topic.id] || "").slice(0, 12000),
         }),
       });

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { conversationKey, getSubjectTopics, SUBJECTS } from "@/lib/constants";
-import { streamTutorReply } from "@/lib/llm";
+import { conversationKey, getTopic, getSubjectTopics, SUBJECTS } from "@/lib/constants";
+import { loadAgentContext } from "@/lib/agents/load-context";
+import { isAgentId, isAgentMode } from "@/lib/agents/registry";
+import { streamAgentReply } from "@/lib/llm";
+import { buildChatMemorySummary, saveMemory } from "@/lib/memory";
 import { assertChatAllowed } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
 import type { Message } from "@/lib/types";
@@ -12,6 +15,8 @@ type ChatBody = {
   topicId?: string | null;
   text: string;
   history?: { role: "user" | "ai"; text: string }[];
+  agentId?: string | null;
+  mode?: string | null;
   studentContext?: string;
 };
 
@@ -70,6 +75,8 @@ export async function POST(request: Request) {
     ? body.history.map((m) => ({ role: m.role === "ai" ? "ai" : "user", text: String(m.text) }))
     : [];
 
+  const mode = isAgentMode(body.mode) ? body.mode : "normal";
+  const agentId = isAgentId(body.agentId) ? body.agentId : undefined;
   const studentContext =
     typeof body.studentContext === "string" ? body.studentContext.trim().slice(0, 12000) : "";
 
@@ -119,19 +126,26 @@ export async function POST(request: Request) {
 
   let replyStream: AsyncIterable<string>;
   let usedFallback = false;
+  let resolvedAgentId = agentId ?? "subject-tutor";
   try {
-    const out = await streamTutorReply({
+    const ctx = await loadAgentContext({
+      supabase,
+      userId: user.id,
+      userMessage: text,
+      history,
+      agentId: agentId ?? "subject-tutor",
+      mode,
       subjectId,
       level,
       topicId,
-      history,
-      userMessage: text,
-      studentContext: studentContext || undefined,
+      extras: studentContext ? [studentContext] : undefined,
     });
+    resolvedAgentId = ctx.agentId;
+    const out = await streamAgentReply(ctx);
     replyStream = out.stream;
     usedFallback = out.usedFallback;
   } catch (err) {
-    console.error("[chat] streamTutorReply threw:", err);
+    console.error("[chat] streamAgentReply threw:", err);
     const { socraticReply } = await import("@/lib/constants");
     replyStream = singleChunk(socraticReply(subjectId, text));
     usedFallback = true;
@@ -141,6 +155,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Could not start conversation." }, { status: 500 });
   }
   const activeConversationId = conversationId;
+  const subjectName = SUBJECTS.find((s) => s.id === subjectId)?.name;
+  const topicName = getTopic(subjectId, topicId).name;
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
@@ -157,9 +173,35 @@ export async function POST(request: Request) {
             role: "ai",
             content: reply,
           });
+
+          const memory = await saveMemory(supabase, user.id, {
+            subjectId,
+            topicId,
+            level,
+            source: "chat",
+            summary: buildChatMemorySummary({
+              subjectId,
+              topicId,
+              mode,
+              userMessage: text,
+              subjectName,
+              topicName,
+            }),
+            metadata: {
+              conversationId: activeConversationId,
+              agentId: resolvedAgentId,
+              mode,
+              usedFallback,
+            },
+          });
+          if (!memory.ok) {
+            console.warn("[chat] could not save student memory:", memory.message);
+          }
         }
       } catch {
-        controller.enqueue(encoder.encode("\n\nSorry, something went wrong while writing that response. Try again."));
+        controller.enqueue(
+          encoder.encode("\n\nSorry, something went wrong while writing that response. Try again."),
+        );
       } finally {
         controller.close();
       }
@@ -171,6 +213,7 @@ export async function POST(request: Request) {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-cache, no-transform",
       "X-Conversation-Id": activeConversationId,
+      "X-Agent-Id": resolvedAgentId,
       "X-Used-Fallback": String(usedFallback),
     },
   });

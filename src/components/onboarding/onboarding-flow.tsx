@@ -14,6 +14,7 @@ import {
   examOptionsForYear,
   readStudentProfile,
   saveStudentProfile,
+  type StudentProfile,
   type StudyChallenge,
   type SubjectLevel,
   type YearGroup,
@@ -34,16 +35,36 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
   const [subjectLevels, setSubjectLevels] = useState<Record<string, SubjectLevel>>({});
   const [examTarget, setExamTarget] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!editMode) return;
     const timer = window.setTimeout(() => {
-      const profile = readStudentProfile();
-      if (!profile) return;
-      setYearGroup(profile.yearGroup);
-      setSubjects(profile.subjects);
-      setSubjectLevels(profile.subjectLevels);
-      setExamTarget(profile.examTarget);
+      void (async () => {
+        try {
+          const response = await fetch("/api/profile");
+          if (response.ok) {
+            const data = (await response.json()) as { profile?: StudentProfile | null };
+            if (data.profile) {
+              setYearGroup(data.profile.yearGroup);
+              setSubjects(data.profile.subjects);
+              setSubjectLevels(data.profile.subjectLevels);
+              setExamTarget(data.profile.examTarget);
+              saveStudentProfile(data.profile);
+              return;
+            }
+          }
+        } catch {
+          /* fall through to local cache */
+        }
+
+        const profile = readStudentProfile();
+        if (!profile) return;
+        setYearGroup(profile.yearGroup);
+        setSubjects(profile.subjects);
+        setSubjectLevels(profile.subjectLevels);
+        setExamTarget(profile.examTarget);
+      })();
     }, 0);
     return () => window.clearTimeout(timer);
   }, [editMode]);
@@ -83,20 +104,40 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
     return false;
   };
 
-  const finish = (challenge: StudyChallenge) => {
-    if (!yearGroup || subjects.length === 0) return;
+  const finish = async (challenge: StudyChallenge) => {
+    if (!yearGroup || subjects.length === 0 || submitting) return;
     setSubmitting(true);
+    setError(null);
+
     const levels = { ...defaultSubjectLevels(subjects), ...subjectLevels };
-    saveStudentProfile({
+    const profile = {
       yearGroup,
       subjects,
       subjectLevels: levels,
       examTarget,
       challenge,
       completedAt: new Date().toISOString(),
-    });
-    router.push("/chat");
-    router.refresh();
+    };
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profile),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(data?.error || "Could not save your profile.");
+      }
+
+      saveStudentProfile(profile);
+      router.push("/chat");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save your profile.");
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -269,7 +310,7 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
                   key={option.id}
                   type="button"
                   disabled={submitting}
-                  onClick={() => finish(option.id)}
+                  onClick={() => void finish(option.id)}
                   className={[choiceCls, choiceIdleCls, "hover:border-emerald-400"].join(" ")}
                 >
                   <span className="block text-[14.5px] font-semibold text-gray-900">{option.label}</span>
@@ -277,6 +318,8 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
                 </button>
               ))}
             </div>
+            {error && <p className="mt-3 text-[13px] text-red-600">{error}</p>}
+            {submitting && <p className="mt-3 text-[13px] text-gray-500">Saving your profile...</p>}
           </StepShell>
         )}
 
