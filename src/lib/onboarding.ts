@@ -70,10 +70,6 @@ export function defaultSubjectLevels(subjectIds: string[]): Record<string, Subje
   return Object.fromEntries(subjectIds.map((id) => [id, "HL" as SubjectLevel]));
 }
 
-function isCompleteProfile(parsed: StudentProfile): boolean {
-  return Boolean(parsed?.yearGroup && Array.isArray(parsed.subjects) && parsed.challenge && parsed.completedAt);
-}
-
 export function readStudentProfile(): StudentProfile | null {
   if (typeof window === "undefined") return null;
   try {
@@ -128,7 +124,11 @@ export async function saveStudentProfileRemote(
   }
 }
 
-/** Load prefs: prefer server, fall back to localStorage; one-shot migrate local → DB when DB empty. */
+/**
+ * Load prefs: server is source of truth for “onboarding complete”.
+ * Never promote a stale localStorage profile into markComplete — that skipped Stage 3
+ * for the next signed-in user on the same browser.
+ */
 export async function loadStudentProfile(): Promise<StudentProfile | null> {
   const local = readStudentProfile();
 
@@ -137,24 +137,30 @@ export async function loadStudentProfile(): Promise<StudentProfile | null> {
     if (response.ok) {
       const body = (await response.json()) as { profile: StudentProfile | null };
       if (body.profile) {
-        // Incomplete server row must not wipe a finished local profile (mid-onboarding sync race).
-        if (!body.profile.completedAt && local && isCompleteProfile(local)) {
-          void saveStudentProfileRemote(local, { markComplete: true });
-          return local;
-        }
-        saveStudentProfileLocal(body.profile, { markGateComplete: Boolean(body.profile.completedAt) });
+        const complete = Boolean(body.profile.completedAt);
+        saveStudentProfileLocal(body.profile, { markGateComplete: complete });
+        if (!complete) clearOnboardingCookie();
         return body.profile;
       }
+
+      // No server prefs yet — soft-migrate local cache for resume, but do not mark complete.
+      if (local) {
+        const incomplete = { ...local, completedAt: null };
+        saveStudentProfileLocal(incomplete, { markGateComplete: false });
+        clearOnboardingCookie();
+        void saveStudentProfileRemote(incomplete, { markComplete: false });
+        return incomplete;
+      }
+      clearOnboardingCookie();
+      return null;
     }
   } catch {
     /* fall through to local */
   }
 
   if (!local) return null;
-
-  if (isCompleteProfile(local)) {
-    void saveStudentProfileRemote(local, { markComplete: true });
-  }
+  // Offline / error: keep local for UI, but never set the gate cookie from cache alone.
+  clearOnboardingCookie();
   return local;
 }
 

@@ -1,6 +1,44 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const ONBOARDING_COOKIE = "grindsai_onboarding";
+const ONBOARDING_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+function applyOnboardingCookie(response: NextResponse, complete: boolean) {
+  if (complete) {
+    response.cookies.set(ONBOARDING_COOKIE, "1", {
+      path: "/",
+      maxAge: ONBOARDING_COOKIE_MAX_AGE,
+      sameSite: "lax",
+    });
+  } else {
+    response.cookies.set(ONBOARDING_COOKIE, "", {
+      path: "/",
+      maxAge: 0,
+      sameSite: "lax",
+    });
+  }
+  return response;
+}
+
+async function readOnboardingComplete(
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string,
+  cookieFallback: boolean,
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("onboarding_completed_at")
+      .eq("id", userId)
+      .maybeSingle();
+    if (error) return cookieFallback;
+    return Boolean(data?.onboarding_completed_at);
+  } catch {
+    return cookieFallback;
+  }
+}
+
 export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/webhooks")) {
     return NextResponse.next();
@@ -36,19 +74,25 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const onboardingComplete = request.cookies.get("grindsai_onboarding")?.value === "1";
+  const cookieComplete = request.cookies.get(ONBOARDING_COOKIE)?.value === "1";
+  const onboardingComplete = user
+    ? await readOnboardingComplete(supabase, user.id, cookieComplete)
+    : false;
 
   if (user && (pathname === "/login" || pathname === "/signup")) {
     const destination = onboardingComplete ? "/chat" : "/onboarding";
-    return NextResponse.redirect(new URL(destination, request.url));
+    const redirect = NextResponse.redirect(new URL(destination, request.url));
+    return applyOnboardingCookie(redirect, onboardingComplete);
   }
 
   if (user && pathname.startsWith("/chat") && !onboardingComplete) {
-    return NextResponse.redirect(new URL("/onboarding", request.url));
+    const redirect = NextResponse.redirect(new URL("/onboarding", request.url));
+    return applyOnboardingCookie(redirect, false);
   }
 
   if (user && pathname === "/onboarding" && onboardingComplete && !request.nextUrl.searchParams.has("edit")) {
-    return NextResponse.redirect(new URL("/chat", request.url));
+    const redirect = NextResponse.redirect(new URL("/chat", request.url));
+    return applyOnboardingCookie(redirect, true);
   }
 
   if (!user && pathname.startsWith("/onboarding")) {
@@ -67,6 +111,10 @@ export async function proxy(request: NextRequest) {
 
   if (!user && (pathname === "/api/chat" || pathname.startsWith("/api/learning"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (user) {
+    applyOnboardingCookie(supabaseResponse, onboardingComplete);
   }
 
   return supabaseResponse;

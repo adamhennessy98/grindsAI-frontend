@@ -18,7 +18,8 @@ export function getSiteUrl(fallbackOrigin?: string) {
 }
 
 export function safeNextPath(nextPath: string | null | undefined) {
-  if (!nextPath || !nextPath.startsWith("/") || nextPath.startsWith("//")) return "/chat";
+  // Default to onboarding; proxy sends finished students to /chat once the DB says complete.
+  if (!nextPath || !nextPath.startsWith("/") || nextPath.startsWith("//")) return "/onboarding";
   return nextPath;
 }
 
