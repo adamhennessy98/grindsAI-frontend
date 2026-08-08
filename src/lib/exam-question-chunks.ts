@@ -375,26 +375,3 @@ export async function getProcessedPastPaperContext(input: {
   ].join("\n\n");
 }
 
-export async function getMathsProcessedPastPaperContext(input: {
-  level: string;
-  topicId?: string;
-  userMessage: string;
-}) {
-  return getProcessedPastPaperContext({ ...input, subjectId: "maths" });
-}
-
-export async function getAccountingProcessedPastPaperContext(input: {
-  level: string;
-  topicId?: string;
-  userMessage: string;
-}) {
-  return getProcessedPastPaperContext({ ...input, subjectId: "accounting" });
-}
-
-export async function getAppliedMathsProcessedPastPaperContext(input: {
-  level: string;
-  topicId?: string;
-  userMessage: string;
-}) {
-  return getProcessedPastPaperContext({ ...input, subjectId: "applied-maths" });
-}
