@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { LogoIcon, GoogleIcon, EyeIcon } from "@/components/icons";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { getAuthCallbackUrl } from "@/lib/site-url";
+import { clearOnboardingCookie, ONBOARDING_COOKIE } from "@/lib/onboarding";
 
 type Mode = "login" | "signup";
 
@@ -50,6 +51,28 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
     if (n && n.startsWith("/") && !n.startsWith("//")) return n;
     return "/chat";
   }, [searchParams]);
+
+  /** After auth: trust server completion, not a leftover browser cookie. */
+  const goAfterAuth = async () => {
+    try {
+      const response = await fetch("/api/learning/prefs", { method: "GET" });
+      if (response.ok) {
+        const body = (await response.json()) as { profile: { completedAt?: string | null } | null };
+        if (body.profile?.completedAt) {
+          document.cookie = `${ONBOARDING_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+          const dest = nextPath === "/onboarding" ? "/chat" : nextPath;
+          router.push(dest);
+          router.refresh();
+          return;
+        }
+      }
+    } catch {
+      /* fall through */
+    }
+    clearOnboardingCookie();
+    router.push("/onboarding");
+    router.refresh();
+  };
 
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
@@ -97,8 +120,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
           return;
         }
         if (data.session) {
-          router.push(nextPath);
-          router.refresh();
+          await goAfterAuth();
           return;
         }
         setInfo("Account created. Check your email for a confirmation link, then sign in.");
@@ -110,8 +132,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
         setError(mapAuthMessage(signErr.message));
         return;
       }
-      router.push(nextPath);
-      router.refresh();
+      await goAfterAuth();
     } finally {
       setLoading(false);
     }
