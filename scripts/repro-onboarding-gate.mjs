@@ -7,9 +7,8 @@ import assert from "node:assert/strict";
 
 function proxyRedirect({ pathname, user, dbComplete, edit = false }) {
   const onboardingComplete = Boolean(dbComplete);
-  if (user && (pathname === "/login" || pathname === "/signup")) {
-    return onboardingComplete ? "/chat" : "/onboarding";
-  }
+  // Auth pages are never auto-bounced (Sign in / Get started must show the forms).
+  if (pathname === "/login" || pathname === "/signup") return null;
   if (user && pathname.startsWith("/chat") && !onboardingComplete) {
     return "/onboarding";
   }
@@ -125,6 +124,13 @@ check("OAuth default next is onboarding (site-url safeNextPath)", () => {
     return nextPath;
   };
   assert.equal(safeNextPath(null), "/onboarding");
+});
+
+check("Sign in and Get started stay on auth pages even if already signed in", () => {
+  assert.equal(proxyRedirect({ pathname: "/login", user: true, dbComplete: false }), null);
+  assert.equal(proxyRedirect({ pathname: "/signup", user: true, dbComplete: false }), null);
+  assert.equal(proxyRedirect({ pathname: "/login", user: true, dbComplete: true }), null);
+  assert.equal(proxyRedirect({ pathname: "/signup", user: true, dbComplete: true }), null);
 });
 
 if (failures) {

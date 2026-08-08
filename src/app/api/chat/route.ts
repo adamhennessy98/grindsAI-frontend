@@ -89,7 +89,11 @@ export async function POST(request: Request) {
     composedContext = composeStudentContext({
       profile: learning.prefs,
       tone: learning.tone
-        ? { anxietyFlag: learning.tone.anxietyFlag, notes: learning.tone.notes }
+        ? {
+            anxietyFlag: learning.tone.anxietyFlag,
+            notes: learning.tone.notes,
+            learnerStyle: learning.tone.learnerStyle,
+          }
         : null,
       strugglingKcs: learning.strugglingKcs,
       handoffContext,

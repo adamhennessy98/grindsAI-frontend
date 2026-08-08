@@ -3,10 +3,12 @@ import {
   type StudentProfile,
 } from "@/lib/onboarding";
 import type { KcMasterySummary } from "@/lib/learning/profile";
+import { learnerStyleToneNote, type LearnerStyle } from "@/lib/learning/learner-style";
 
 export type StudentToneContext = {
   anxietyFlag: boolean;
   notes: string[];
+  learnerStyle?: LearnerStyle | null;
 };
 
 const PROFILE_CAP = 2500;
@@ -41,10 +43,12 @@ export function composeStudentContext(input: {
     parts.push(prefs.slice(0, PROFILE_CAP));
   }
 
-  if (input.tone?.anxietyFlag || (input.tone?.notes?.length ?? 0) > 0) {
+  const learnerNote = learnerStyleToneNote(input.tone?.learnerStyle ?? null);
+  if (input.tone?.anxietyFlag || (input.tone?.notes?.length ?? 0) > 0 || learnerNote) {
     const tone = input.tone;
     const toneBits = [
       "Tutor tone notes (do not treat as ability evidence):",
+      learnerNote ? `• ${learnerNote}` : "",
       tone?.anxietyFlag ? "Student has indicated test anxiety — stay calm, encouraging, and paced." : "",
       ...(tone?.notes ?? []).slice(0, 5).map((n) => `• ${n}`),
     ]
@@ -73,7 +77,6 @@ export function composeStudentContext(input: {
 
   let joined = parts.filter(Boolean).join("\n\n").trim();
   if (joined.length > TOTAL_CAP) {
-    // Drop from handoff end first
     const withoutHandoff = parts.slice(0, -1).join("\n\n");
     const budget = Math.max(0, TOTAL_CAP - withoutHandoff.length - 40);
     const trimmedHandoff = handoff.slice(0, budget);

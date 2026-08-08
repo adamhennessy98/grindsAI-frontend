@@ -6,36 +6,24 @@ import { useRouter } from "next/navigation";
 import { LogoIcon } from "@/components/icons";
 import { SUBJECTS } from "@/lib/constants";
 import { subjectThemeStyle } from "@/components/app/subjects";
+import { LEARNER_STYLE_OPTIONS, type LearnerStyle } from "@/lib/learning/learner-style";
 import {
-  CHALLENGE_OPTIONS,
-  GRADE_BAND_OPTIONS,
   YEAR_OPTIONS,
   defaultExamTarget,
   defaultSubjectLevels,
   examOptionsForYear,
   readStudentProfile,
   loadStudentProfile,
+  saveStudentProfileLocal,
   saveStudentProfileRemote,
-  type StudyChallenge,
   type SubjectLevel,
-  type TargetGradeBand,
   type YearGroup,
   type StudentProfile,
 } from "@/lib/onboarding";
 
-type PublicQuestion = {
-  id: string;
-  subjectId: string;
-  kcId: string;
-  strandLabel: string;
-  prompt: string;
-  choices: { id: string; label: string }[];
-};
-
-/** UI steps: 1–4 Stage1, 5–7 Stage2, 8 Stage3 diagnostic. */
+/** UI steps: 1–4 Stage 1, 5 Stage 2 (learner style + free text). No Stage 3. */
 const STAGE1_LAST = 4;
-const STAGE2_LAST = 7;
-const DIAGNOSTIC_STEP = 8;
+const STAGE2_STEP = 5;
 
 const choiceCls =
   "w-full text-left px-4 py-3.5 rounded-xl border transition-all disabled:opacity-50";
@@ -49,15 +37,10 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
   const [subjects, setSubjects] = useState<string[]>([]);
   const [subjectLevels, setSubjectLevels] = useState<Record<string, SubjectLevel>>({});
   const [examTarget, setExamTarget] = useState<string>("");
-  const [challenge, setChallenge] = useState<StudyChallenge | null>(null);
-  const [gradeBand, setGradeBand] = useState<TargetGradeBand | null>(null);
-  const [reason, setReason] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [questions, setQuestions] = useState<PublicQuestion[]>([]);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [qIndex, setQIndex] = useState(0);
-  const [diagError, setDiagError] = useState<string | null>(null);
+  const [learnerStyle, setLearnerStyle] = useState<LearnerStyle | null>(null);
   const [freeText, setFreeText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!editMode) return;
@@ -69,17 +52,22 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
         setSubjects(profile.subjects);
         setSubjectLevels(profile.subjectLevels);
         setExamTarget(profile.examTarget);
-        setChallenge(profile.challenge);
-        setGradeBand(profile.targetGradeBand ?? null);
-        setReason(profile.reasonForUsing ?? "");
+        try {
+          const res = await fetch("/api/learning/learner-style");
+          if (res.ok) {
+            const body = (await res.json()) as { learnerStyle: LearnerStyle | null };
+            if (body.learnerStyle) setLearnerStyle(body.learnerStyle);
+          }
+        } catch {
+          /* ignore */
+        }
       })();
     }, 0);
     return () => window.clearTimeout(timer);
   }, [editMode]);
 
   const examOptions = useMemo(() => (yearGroup ? examOptionsForYear(yearGroup) : []), [yearGroup]);
-
-  const stageLabel = step <= STAGE1_LAST ? "1 of 3" : step <= STAGE2_LAST ? "2 of 3" : "3 of 3";
+  const stageLabel = step <= STAGE1_LAST ? "1 of 2" : "2 of 2";
 
   const selectYear = (value: YearGroup) => {
     setYearGroup(value);
@@ -106,7 +94,7 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
     setSubjectLevels((levels) => ({ ...levels, [id]: level }));
   };
 
-  const buildPartialProfile = (opts?: { withChallenge?: boolean }): StudentProfile | null => {
+  const buildProfile = (): StudentProfile | null => {
     if (!yearGroup || subjects.length === 0) return null;
     const levels = { ...defaultSubjectLevels(subjects), ...subjectLevels };
     return {
@@ -114,9 +102,10 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
       subjects,
       subjectLevels: levels,
       examTarget,
-      challenge: (opts?.withChallenge ? challenge : challenge) ?? "concepts",
-      targetGradeBand: gradeBand,
-      reasonForUsing: reason.trim() || null,
+      // Prefs schema still expects a challenge; default until a later prefs edit collects it.
+      challenge: "concepts",
+      targetGradeBand: null,
+      reasonForUsing: null,
       completedAt: null,
     };
   };
@@ -126,120 +115,83 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
     if (step === 2) return subjects.length > 0;
     if (step === 3) return subjects.length > 0;
     if (step === 4) return Boolean(examTarget);
-    if (step === 5) return challenge !== null;
-    if (step === 6) return gradeBand !== null;
-    if (step === 7) return true;
-    if (step === DIAGNOSTIC_STEP) {
-      return questions.length > 0 && Object.keys(answers).length === questions.length;
-    }
+    if (step === STAGE2_STEP) return learnerStyle !== null;
     return false;
   };
 
-  const saveStagePrefs = async (markComplete = false) => {
-    const profile = buildPartialProfile({ withChallenge: true });
-    if (!profile) return;
-    if (markComplete) {
-      profile.completedAt = new Date().toISOString();
+  const finishOnboarding = async () => {
+    const profile = buildProfile();
+    if (!profile || !learnerStyle) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const completedAt = new Date().toISOString();
+      const complete: StudentProfile = { ...profile, completedAt };
+
+      const prefs = await saveStudentProfileRemote(complete, { markComplete: true });
+      if (!prefs.ok) {
+        // Still set local cookie so the gate can advance if the server prefs write partially worked.
+        saveStudentProfileLocal(complete, { markGateComplete: true });
+      }
+
+      const styleRes = await fetch("/api/learning/learner-style", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ learnerStyle, freeText: freeText.trim() || undefined }),
+      });
+      if (!styleRes.ok) {
+        const payload = (await styleRes.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(payload?.error ?? "Could not save your learner preferences.");
+      }
+
+      if (!prefs.ok) {
+        // Retry prefs once — style saved; do not leave the account unmarked if possible.
+        await saveStudentProfileRemote(complete, { markComplete: true });
+      }
+
+      window.location.assign("/chat");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setSubmitting(false);
     }
-    await saveStudentProfileRemote(profile, { markComplete });
   };
 
   const goNext = async () => {
     if (step === STAGE1_LAST) {
       setSubmitting(true);
-      await saveStagePrefs(false);
+      setError(null);
+      const profile = buildProfile();
+      if (profile) await saveStudentProfileRemote(profile, { markComplete: false });
       setSubmitting(false);
-      setStep(5);
+      setStep(STAGE2_STEP);
       return;
     }
-    if (step === STAGE2_LAST) {
-      setSubmitting(true);
-      await saveStagePrefs(false);
-      try {
-        const res = await fetch(
-          `/api/learning/diagnostic?subjects=${encodeURIComponent(subjects.join(","))}`,
-        );
-        if (!res.ok) throw new Error("Could not load diagnostic");
-        const body = (await res.json()) as { questions: PublicQuestion[] };
-        setQuestions(body.questions);
-        setAnswers({});
-        setQIndex(0);
-        setStep(DIAGNOSTIC_STEP);
-      } catch {
-        setDiagError("Could not load the quick check. Try again.");
-      }
-      setSubmitting(false);
+    if (step === STAGE2_STEP) {
+      await finishOnboarding();
       return;
     }
     setStep((current) => current + 1);
   };
 
-  const finishDiagnostic = async () => {
-    const profile = buildPartialProfile({ withChallenge: true });
-    if (!profile || !challenge) return;
-    setSubmitting(true);
-    setDiagError(null);
-    try {
-      const res = await fetch("/api/learning/diagnostic", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          profile: { ...profile, challenge },
-          answers: questions.map((q) => ({
-            questionId: q.id,
-            choiceId: answers[q.id],
-            subjectId: q.subjectId,
-            kcId: q.kcId,
-            correctChoiceId: "",
-          })),
-        }),
-      });
-      if (!res.ok) {
-        const payload = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(payload?.error ?? "Diagnostic failed");
-      }
-      const body = (await res.json()) as { completedAt: string };
-      const complete: StudentProfile = {
-        ...profile,
-        challenge,
-        completedAt: body.completedAt,
-      };
-      // Cookie + local cache
-      await saveStudentProfileRemote(complete, { markComplete: true });
-
-      if (freeText.trim()) {
-        void fetch("/api/learning/free-text", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: freeText.trim() }),
-        });
-      }
-
-      router.push("/chat");
-      router.refresh();
-    } catch (err) {
-      setDiagError(err instanceof Error ? err.message : "Something went wrong");
-      setSubmitting(false);
-    }
-  };
-
   const finishEdit = async () => {
-    if (!yearGroup || !challenge) return;
-    const profile = buildPartialProfile({ withChallenge: true });
-    if (!profile) return;
+    const profile = buildProfile();
+    if (!profile || !learnerStyle) return;
     setSubmitting(true);
+    setError(null);
     try {
       profile.completedAt = new Date().toISOString();
       await saveStudentProfileRemote(profile, { markComplete: true });
+      await fetch("/api/learning/learner-style", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ learnerStyle, freeText: freeText.trim() || undefined }),
+      });
       router.push("/chat");
       router.refresh();
     } catch {
       setSubmitting(false);
     }
   };
-
-  const currentQ = questions[qIndex];
-  const totalUiSteps = editMode ? STAGE2_LAST : DIAGNOSTIC_STEP;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center px-5 pt-8 pb-8">
@@ -268,26 +220,18 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
         </div>
 
         <div className="flex gap-1.5 mb-6">
-          {Array.from({ length: editMode ? STAGE2_LAST : 3 }, (_, index) => {
+          {Array.from({ length: 2 }, (_, index) => {
             const stageNum = index + 1;
-            const active =
-              editMode
-                ? index + 1 <= step
-                : (stageNum === 1 && step <= STAGE1_LAST) ||
-                  (stageNum === 2 && step > STAGE1_LAST && step <= STAGE2_LAST) ||
-                  (stageNum === 3 && step === DIAGNOSTIC_STEP) ||
-                  (stageNum < (step <= STAGE1_LAST ? 1 : step <= STAGE2_LAST ? 2 : 3));
             const filled =
-              editMode
-                ? index + 1 < step || (index + 1 === step)
-                : stageNum < (step <= STAGE1_LAST ? 1 : step <= STAGE2_LAST ? 2 : 3) ||
-                  (stageNum === (step <= STAGE1_LAST ? 1 : step <= STAGE2_LAST ? 2 : 3));
+              (stageNum === 1 && step <= STAGE1_LAST) ||
+              (stageNum === 2 && step === STAGE2_STEP) ||
+              stageNum < (step <= STAGE1_LAST ? 1 : 2);
             return (
               <span
                 key={index}
                 className={[
                   "h-1 flex-1 rounded-full transition-colors",
-                  filled || active ? "bg-emerald-500" : "bg-gray-200",
+                  filled ? "bg-emerald-500" : "bg-gray-200",
                 ].join(" ")}
               />
             );
@@ -409,19 +353,19 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
           </StepShell>
         )}
 
-        {step === 5 && (
+        {step === STAGE2_STEP && (
           <StepShell
-            title="What's your biggest challenge right now?"
-            subtitle="Self-report only — this shapes tone, not your mastery scores."
+            title="How do you learn best?"
+            subtitle="Self-report only — shapes how your tutor talks to you, never used as proof of ability."
           >
             <div className="flex flex-col gap-2.5">
-              {CHALLENGE_OPTIONS.map((option) => {
-                const active = challenge === option.id;
+              {LEARNER_STYLE_OPTIONS.map((option) => {
+                const active = learnerStyle === option.id;
                 return (
                   <button
                     key={option.id}
                     type="button"
-                    onClick={() => setChallenge(option.id)}
+                    onClick={() => setLearnerStyle(option.id)}
                     className={[choiceCls, active ? choiceActiveCls : choiceIdleCls].join(" ")}
                   >
                     <span className="block text-[14.5px] font-semibold text-gray-900">{option.label}</span>
@@ -430,171 +374,70 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
                 );
               })}
             </div>
-          </StepShell>
-        )}
-
-        {step === 6 && (
-          <StepShell
-            title="What grade band are you aiming for?"
-            subtitle="A goal, not a prediction — never used as proof of what you know."
-          >
-            <div className="flex flex-col gap-2.5">
-              {GRADE_BAND_OPTIONS.map((option) => {
-                const active = gradeBand === option.id;
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    onClick={() => setGradeBand(option.id)}
-                    className={[choiceCls, active ? choiceActiveCls : choiceIdleCls].join(" ")}
-                  >
-                    <span className="block text-[14.5px] font-semibold text-gray-900">{option.label}</span>
-                    <span className="block mt-0.5 text-[12.5px] text-gray-500">{option.description}</span>
-                  </button>
-                );
-              })}
+            <div className="mt-5">
+              <p className="text-[12.5px] text-gray-500 mb-1.5">
+                Anything else we should know? (optional)
+              </p>
+              <textarea
+                value={freeText}
+                onChange={(e) => setFreeText(e.target.value)}
+                rows={3}
+                maxLength={1000}
+                placeholder='e.g. "I get anxious before tests" or "fractions were never explained properly"'
+                className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+              />
             </div>
+            {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
           </StepShell>
         )}
 
-        {step === 7 && (
-          <StepShell
-            title="Anything else we should know?"
-            subtitle="Optional. You can also add notes anytime later — they never change mastery scores directly."
-          >
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={3}
-              maxLength={500}
-              placeholder="e.g. I'm repeating because I froze in June…"
-              className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
-            />
-            {!editMode && (
-              <div className="mt-4">
-                <p className="text-[12.5px] text-gray-500 mb-1.5">
-                  Optional free note (anxiety, gaps in teaching, etc.)
-                </p>
-                <textarea
-                  value={freeText}
-                  onChange={(e) => setFreeText(e.target.value)}
-                  rows={2}
-                  maxLength={1000}
-                  placeholder='e.g. "I get anxious before tests" or "nobody explained fractions properly"'
-                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
-                />
-              </div>
-            )}
-          </StepShell>
-        )}
-
-        {step === DIAGNOSTIC_STEP && currentQ && (
-          <StepShell
-            title="Quick check — no hints"
-            subtitle={`Question ${qIndex + 1} of ${questions.length} · ${SUBJECTS.find((s) => s.id === currentQ.subjectId)?.name ?? currentQ.subjectId} · ${currentQ.strandLabel}`}
-          >
-            <p className="text-[15px] text-gray-900 font-medium mb-4">{currentQ.prompt}</p>
-            <div className="flex flex-col gap-2.5">
-              {currentQ.choices.map((choice) => {
-                const active = answers[currentQ.id] === choice.id;
-                return (
-                  <button
-                    key={choice.id}
-                    type="button"
-                    disabled={submitting}
-                    onClick={() => {
-                      setAnswers((prev) => ({ ...prev, [currentQ.id]: choice.id }));
-                      if (qIndex < questions.length - 1) {
-                        window.setTimeout(() => setQIndex((i) => i + 1), 180);
-                      }
-                    }}
-                    className={[choiceCls, active ? choiceActiveCls : choiceIdleCls].join(" ")}
-                  >
-                    <span className="text-[14px] text-gray-900">{choice.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {diagError && <p className="mt-3 text-sm text-red-600">{diagError}</p>}
-            <div className="mt-4 flex gap-2">
-              {qIndex > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setQIndex((i) => i - 1)}
-                  className="h-10 px-4 rounded-lg text-sm font-medium text-gray-600 border border-gray-200 hover:bg-gray-50"
-                >
-                  Previous
-                </button>
-              )}
-            </div>
-          </StepShell>
-        )}
-
-        {step < DIAGNOSTIC_STEP && (
-          <div className="mt-6 flex items-center gap-3">
-            {step > 1 ? (
-              <button
-                type="button"
-                onClick={() => setStep((current) => current - 1)}
-                className="h-10 px-4 rounded-lg text-sm font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors"
-              >
-                Back
-              </button>
-            ) : (
-              <span />
-            )}
-            {editMode && step === STAGE2_LAST ? (
-              <button
-                type="button"
-                disabled={!canContinue() || submitting}
-                onClick={() => void finishEdit()}
-                className="ml-auto h-10 px-5 rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors"
-              >
-                {submitting ? "Saving…" : "Save"}
-              </button>
-            ) : (
-              <button
-                type="button"
-                disabled={!canContinue() || submitting}
-                onClick={() => void goNext()}
-                className="ml-auto h-10 px-5 rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)] disabled:shadow-none"
-              >
-                {submitting ? "…" : step === STAGE2_LAST ? "Start quick check" : "Continue"}
-              </button>
-            )}
-          </div>
-        )}
-
-        {step === DIAGNOSTIC_STEP && (
-          <div className="mt-6 flex items-center gap-3">
+        <div className="mt-6 flex items-center gap-3">
+          {step > 1 ? (
             <button
               type="button"
-              onClick={() => setStep(STAGE2_LAST)}
-              className="h-10 px-4 rounded-lg text-sm font-medium text-gray-600 border border-gray-200 hover:bg-gray-50"
+              onClick={() => setStep((current) => current - 1)}
+              className="h-10 px-4 rounded-lg text-sm font-medium text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors"
             >
               Back
             </button>
+          ) : (
+            <span />
+          )}
+          {editMode && step === STAGE2_STEP ? (
             <button
               type="button"
               disabled={!canContinue() || submitting}
-              onClick={() => void finishDiagnostic()}
+              onClick={() => void finishEdit()}
               className="ml-auto h-10 px-5 rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors"
             >
-              {submitting ? "Finishing…" : "Finish & go to chat"}
+              {submitting ? "Saving…" : "Save"}
             </button>
-          </div>
-        )}
+          ) : (
+            <button
+              type="button"
+              disabled={!canContinue() || submitting}
+              onClick={() => void goNext()}
+              className="ml-auto h-10 px-5 rounded-lg text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:cursor-not-allowed transition-colors shadow-[inset_0_-1px_0_rgba(0,0,0,0.15),0_1px_2px_rgba(16,185,129,0.25)] disabled:shadow-none"
+            >
+              {submitting
+                ? "…"
+                : step === STAGE2_STEP
+                  ? "Finish & go to chat"
+                  : step === STAGE1_LAST
+                    ? "Continue"
+                    : "Continue"}
+            </button>
+          )}
+        </div>
       </div>
 
       <p className="mt-5 text-xs text-gray-400 text-center max-w-[360px]">
         {editMode
           ? "Update your study prefs anytime."
-          : step === DIAGNOSTIC_STEP
-            ? "Answer honestly — no hints. This is only a light baseline."
-            : "A few minutes — Stage 3 is a short check across your subjects."}
+          : step === STAGE2_STEP
+            ? "Almost done — then you're into the app."
+            : "A couple of minutes to set up your subjects."}
       </p>
-      {/* silence unused */}
-      <span className="hidden">{totalUiSteps}</span>
     </div>
   );
 }

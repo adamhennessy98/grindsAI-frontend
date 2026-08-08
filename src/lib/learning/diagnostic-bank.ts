@@ -318,3 +318,21 @@ export function buildDiagnosticPaper(subjectIds: string[]): DiagnosticQuestion[]
   }
   return out;
 }
+
+/**
+ * Per-subject first-open quick check: exactly 2 real content questions with KC tags.
+ * Returns [] when the subject has no content bank (do not fall back to study-habit generics).
+ */
+export function buildSubjectQuickCheck(subjectId: string): DiagnosticQuestion[] {
+  const custom = BANK.filter((q) => q.subjectId === subjectId);
+  if (custom.length < 2) return [];
+  const picked: DiagnosticQuestion[] = [];
+  const seen = new Set<string>();
+  for (const q of custom) {
+    if (picked.length >= 2) break;
+    if (seen.has(q.strandLabel) && picked.length >= 1) continue;
+    seen.add(q.strandLabel);
+    picked.push(q);
+  }
+  return picked.slice(0, 2);
+}

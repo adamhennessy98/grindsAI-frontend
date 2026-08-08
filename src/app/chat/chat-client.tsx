@@ -11,6 +11,7 @@ import { ConversationView, type TutorQuestionHandoff } from "@/components/app/co
 import { PapersView } from "@/components/app/papers-view";
 import { ProgressResultsView } from "@/components/app/progress-view";
 import { SubjectWorkspace } from "@/components/app/subject-workspace";
+import { SubjectQuickCheck } from "@/components/app/subject-quick-check";
 import { TopicCheckView } from "@/components/app/topic-check-view";
 import { TopicCheckHistory } from "@/components/app/topic-check-history";
 import { emptySubjectStudyState, type FocusArea, type ResultEntry, type StudyActivity, type StudyStateBySubject, type TopicCheckEntry } from "@/components/app/study-state";
@@ -33,6 +34,7 @@ export function ChatClient() {
   const [studyState, setStudyState] = useState<StudyStateBySubject>({});
   const [tutorHandoff, setTutorHandoff] = useState<TutorQuestionHandoff | null>(null);
   const [generatorTopicId, setGeneratorTopicId] = useState<string | undefined>();
+  const [quickCheckSubjectId, setQuickCheckSubjectId] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -88,7 +90,14 @@ export function ChatClient() {
     openTopic(lastTopic);
   }, [ensureSubject, openTopic, studyState]);
   const goToTool = useCallback((next: Exclude<Screen, "home" | "workspace" | "conversation">) => { ensureSubject(); setTutorHandoff(null); setPreviousScreen(screen === "conversation" ? previousScreen : screen); setScreen(next); }, [ensureSubject, previousScreen, screen]);
-  const selectSubject = useCallback((id: string) => { setSubjectId(id); setTopicId(studyState[id]?.lastTopicId ?? "general"); setTutorHandoff(null); setGeneratorTopicId(undefined); setScreen("workspace"); }, [studyState]);
+  const selectSubject = useCallback((id: string) => {
+    setSubjectId(id);
+    setTopicId(studyState[id]?.lastTopicId ?? "general");
+    setTutorHandoff(null);
+    setGeneratorTopicId(undefined);
+    setScreen("workspace");
+    setQuickCheckSubjectId(id);
+  }, [studyState]);
   const continueSubject = useCallback((id: string) => {
     const lastTopic = studyState[id]?.lastTopicId ?? "general";
     window.localStorage.setItem(`grindsai-last-tutor-topic:${id}`, lastTopic);
@@ -98,6 +107,7 @@ export function ChatClient() {
     setTutorHandoff(null);
     setPreviousScreen("workspace");
     setScreen("conversation");
+    setQuickCheckSubjectId(id);
   }, [studyState, updateSubjectState]);
 
   const addFocusArea = useCallback((label: string) => {
@@ -128,5 +138,12 @@ export function ChatClient() {
     {screen === "generator" && <PapersView key={activeSubjectId} subjectId={activeSubjectId} level={activeLevel} initialTopicId={generatorTopicId} focusAreas={activeStudyState.focusAreas.filter((area) => area.status === "current")} onQuestionGenerated={(topic) => recordActivity(activeSubjectId, { type: "question", topicId: topic.id, label: `Generated an Exam Question: ${topic.name}` })} onReflect={(outcome, topic) => { recordActivity(activeSubjectId, { type: "reflection", topicId: topic.id, label: `Question reflection: ${outcome}` }); if (outcome === "Still stuck") addFocusArea(topic.name); }} />}
     {screen === "topic-check" && <TopicCheckView subjectId={activeSubjectId} level={activeLevel} onComplete={addTopicCheck} onAddFocusArea={addFocusArea} onOpenTutor={openTopic} onOpenGenerator={openTopicGenerator} />}
     {screen === "progress" && <><ProgressResultsView subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas} results={activeStudyState.results} activities={activeStudyState.activities} onAddFocusArea={addFocusArea} onUpdateFocusArea={updateFocusArea} onAddResult={addResult} onOpenConvo={openFocusTutor} onOpenGenerator={openFocusGenerator} /><TopicCheckHistory subjectId={activeSubjectId} entries={activeStudyState.topicChecks} /></>}
-  </div></main></div>;
+  </div>
+  {quickCheckSubjectId && (
+    <SubjectQuickCheck
+      subjectId={quickCheckSubjectId}
+      onDone={() => setQuickCheckSubjectId(null)}
+    />
+  )}
+  </main></div>;
 }

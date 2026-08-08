@@ -79,11 +79,8 @@ export async function proxy(request: NextRequest) {
     ? await readOnboardingComplete(supabase, user.id, cookieComplete)
     : false;
 
-  if (user && (pathname === "/login" || pathname === "/signup")) {
-    const destination = onboardingComplete ? "/chat" : "/onboarding";
-    const redirect = NextResponse.redirect(new URL(destination, request.url));
-    return applyOnboardingCookie(redirect, onboardingComplete);
-  }
+  // /login and /signup always render — "Sign in" / "Get started" must not bounce
+  // past the auth forms just because a session cookie is still present.
 
   if (user && pathname.startsWith("/chat") && !onboardingComplete) {
     const redirect = NextResponse.redirect(new URL("/onboarding", request.url));
