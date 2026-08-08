@@ -30,6 +30,7 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
+  const purpose = body.purpose === "topic-check" ? "topic-check" : "exam-practice";
 
   const context = resolveExamGeneratorContext({
     subjectId: typeof body.subjectId === "string" ? body.subjectId : "",
@@ -37,10 +38,13 @@ export async function POST(request: Request) {
     topicId: typeof body.topicId === "string" && body.topicId.trim() ? body.topicId.trim() : "general",
     questionType: body.questionType === "short" || body.questionType === "long" ? body.questionType : "mixed",
     difficulty: body.difficulty === "easy" ? "easy" : "exam",
-    count: 1,
+    count: purpose === "topic-check" && typeof body.count === "number" ? body.count : 1,
     includeHints: Boolean(body.includeHints),
     includeWorkedSolution: Boolean(body.includeWorkedSolution),
     includeMarkingScheme: false,
+    purpose,
+    topicCheckStep: typeof body.topicCheckStep === "number" ? body.topicCheckStep : undefined,
+    topicCheckTotal: typeof body.topicCheckTotal === "number" ? body.topicCheckTotal : undefined,
   });
 
   if (!context) {

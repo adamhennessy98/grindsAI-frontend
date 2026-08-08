@@ -34,11 +34,16 @@ function generationBrief(input: GenerationContext) {
     input.topicId === "general"
       ? `Generate mixed ${input.subjectName} questions across suitable syllabus areas for ${levelLabel(input.level)}.`
       : `Generate questions focused only on ${input.topicName}.`;
+  const topicCheckInstruction =
+    input.purpose === "topic-check"
+      ? `A variable-length Topic Check covering the core procedures of ${input.topicName}, from the first essential operation through the deeper common methods.`
+      : "";
 
   return [
     `${input.subjectName} ${levelLabel(input.level)} ${QUESTION_TYPE_LABELS[input.questionType]}`,
     topicInstruction,
     `Difficulty: ${input.difficulty === "exam" ? "Exam standard" : "Easy basics practice"}.`,
+    topicCheckInstruction,
   ].join(" ");
 }
 
@@ -50,12 +55,14 @@ function fallbackQuestions(input: GenerationContext): GeneratedExamQuestion[] {
         ? `a mixed ${input.subjectName} syllabus area`
         : input.topicName;
     return {
-      title: `Question ${questionNumber}`,
+      title: input.purpose === "topic-check" ? `Foundation step ${input.topicCheckStep ?? questionNumber}` : `Question ${questionNumber}`,
       subject: input.subjectName,
       level: levelLabel(input.level),
       topic: input.topicName,
       marks: defaultMarks(input.questionType, index),
-      question: `Exam-style placeholder for ${input.subjectName} / ${levelLabel(input.level)} / ${input.topicName}. This will become a generated SEC-style question about ${focus} when the AI service is configured.`,
+      question: input.purpose === "topic-check"
+        ? `Topic Check placeholder for ${input.subjectName} / ${levelLabel(input.level)} / ${input.topicName}. This will become a straightforward foundation question about ${focus} when the AI service is configured.`
+        : `Exam-style placeholder for ${input.subjectName} / ${levelLabel(input.level)} / ${input.topicName}. This will become a generated SEC-style question about ${focus} when the AI service is configured.`,
       hint: input.includeHints ? `Identify the key information in the question, then choose the relevant method for ${focus}.` : undefined,
       workedSolution: input.includeWorkedSolution
         ? "Worked solution placeholder: outline the method, substitute the given information, simplify carefully, and state the final answer with units or context where needed."
@@ -72,6 +79,18 @@ function buildExamGeneratorPrompt(input: GenerationContext, formulaBookContext: 
     input.topicId === "general"
       ? "The selected topic is General, so generate a mixed set across appropriate syllabus areas."
       : `The selected topic is ${input.topicName}. Keep every question focused on this topic.`;
+  const topicCheckInstructions = input.purpose === "topic-check"
+    ? [
+        `Create the shortest useful Topic Check of between 5 and ${input.count} questions. Do not generate more questions than are needed to cover the topic's common foundational procedures.`,
+        "Before writing, make an internal coverage plan for the topic's main high-frequency procedures. Do not include that plan in the response.",
+        "Each question must test a different procedure from that coverage plan. Do not repeat a method, calculation pattern, or answer process across questions.",
+        "Order the questions brick by brick: begin with recognition and the first essential operation, then move through increasingly deeper but still common procedures.",
+        "Keep every question concise, straightforward, fully standalone, and independently assessable. Do not refer to earlier questions or answers.",
+        "Give each title this form: Foundation step N: [the distinct core skill being checked].",
+        "Prioritise procedural fluency and high-frequency essentials. Avoid niche edge cases, extension material, multi-topic synthesis, long exam-style scenarios, and trick wording.",
+        "Use clear givens, one main method, and a concise worked solution that makes the expected procedure easy to review.",
+      ].join("\n")
+    : "";
 
   return [
     `You are GrindsAI's Leaving Certificate exam-question generator for ${input.subjectName}.`,
@@ -79,8 +98,13 @@ function buildExamGeneratorPrompt(input: GenerationContext, formulaBookContext: 
     `Question type: ${QUESTION_TYPE_LABELS[input.questionType]}.`,
     `Difficulty: ${input.difficulty === "exam" ? "Exam level difficulty" : "Easy, for solidifying the basics"}.`,
     topicLine,
-    `Generate exactly ${input.count} question${input.count === 1 ? "" : "s"}.`,
-    "Write original exam-style or SEC-style questions. Do not claim that any question is an actual SEC past paper question.",
+    input.purpose === "topic-check"
+      ? `Generate between 5 and ${input.count} questions.`
+      : `Generate exactly ${input.count} question${input.count === 1 ? "" : "s"}.`,
+    topicCheckInstructions,
+    input.purpose === "topic-check"
+      ? "Write original foundation-practice questions, not full exam-style questions. Do not claim that any question is an actual SEC past paper question."
+      : "Write original exam-style or SEC-style questions. Do not claim that any question is an actual SEC past paper question.",
     "Use available formula-book, syllabus, or retrieval context where relevant.",
     "When Formulae and Tables excerpts are present, that notation and printed page reference take precedence over alternative notation.",
     "Write mathematical expressions using LaTeX. Use inline maths with $...$ and display maths with $$...$$ where appropriate. Do not overuse display maths for small expressions.",
@@ -139,7 +163,8 @@ function normalizeQuestions(raw: unknown, input: GenerationContext): GeneratedEx
     };
   });
 
-  if (questions.length !== input.count || questions.some((question) => !question.question.trim())) {
+  const minimumQuestionCount = input.purpose === "topic-check" ? Math.min(5, input.count) : input.count;
+  if (questions.length < minimumQuestionCount || (input.purpose !== "topic-check" && questions.length !== input.count) || questions.some((question) => !question.question.trim())) {
     return null;
   }
 
@@ -154,12 +179,25 @@ export function resolveExamGeneratorContext(input: ExamGeneratorRequest): Genera
     ? input.topicId
     : "general";
   const topic = getTopic(input.subjectId, validTopic);
+  const purpose = input.purpose === "topic-check" ? "topic-check" : "exam-practice";
+  const count = purpose === "topic-check"
+    ? Math.min(10, Math.max(5, Math.round(Number(input.count) || 10)))
+    : Math.min(3, Math.max(1, Math.round(Number(input.count) || 1)));
+  const topicCheckTotal = purpose === "topic-check"
+    ? count
+    : undefined;
+  const topicCheckStep = purpose === "topic-check"
+    ? Math.min(topicCheckTotal!, Math.max(1, Math.round(Number(input.topicCheckStep) || 1)))
+    : undefined;
 
   return {
     ...input,
     level: input.level === "OL" ? "OL" : "HL",
     topicId: validTopic,
-    count: Math.min(3, Math.max(1, Math.round(Number(input.count) || 1))),
+    count,
+    purpose,
+    topicCheckStep,
+    topicCheckTotal,
     subjectName: subject.name,
     topicName: topic.name,
   };
@@ -185,10 +223,12 @@ export async function generateExamQuestions(input: GenerationContext): Promise<E
     messages: [
       {
         role: "user",
-        content: `Generate ${input.count} ${QUESTION_TYPE_LABELS[input.questionType].toLowerCase()} for ${input.subjectName} / ${levelLabel(input.level)} / ${input.topicName}.`,
+        content: input.purpose === "topic-check"
+          ? `Generate a complete, varied Topic Check for ${input.subjectName} / ${levelLabel(input.level)} / ${input.topicName}. Cover the common core procedures in brick-by-brick order without repeating a procedure.`
+          : `Generate ${input.count} ${QUESTION_TYPE_LABELS[input.questionType].toLowerCase()} for ${input.subjectName} / ${levelLabel(input.level)} / ${input.topicName}.`,
       },
     ],
-    max_tokens: 3200,
+    max_tokens: input.purpose === "topic-check" ? 7200 : 3200,
     temperature: input.difficulty === "exam" ? 0.55 : 0.45,
   });
 
