@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogoIcon } from "@/components/icons";
+import { BrandLogo } from "@/components/icons";
 import { SUBJECTS } from "@/lib/constants";
 import { subjectThemeStyle } from "@/components/app/subjects";
 import { LEARNER_STYLE_OPTIONS, type LearnerStyle } from "@/lib/learning/learner-style";
@@ -146,7 +146,10 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
 
       if (!prefs.ok) {
         // Retry prefs once — style saved; do not leave the account unmarked if possible.
-        await saveStudentProfileRemote(complete, { markComplete: true });
+        const retry = await saveStudentProfileRemote(complete, { markComplete: true });
+        if (!retry.ok) {
+          throw new Error(retry.error ?? prefs.error ?? "Could not finish onboarding. Please try again.");
+        }
       }
 
       window.location.assign("/chat");
@@ -195,9 +198,8 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center px-5 pt-8 pb-8">
-      <Link href="/" className="flex items-center gap-2.5 mb-6">
-        <LogoIcon size={32} />
-        <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+      <Link href="/" className="mb-6 inline-flex items-center" aria-label="GrindsAI home">
+        <BrandLogo height={42} />
       </Link>
 
       <div

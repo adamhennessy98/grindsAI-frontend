@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { LogoIcon } from "@/components/icons";
+import { BrandLogo } from "@/components/icons";
 
 export default function NotFound() {
   return (
     <div className="min-h-full bg-gray-50 flex flex-col items-center justify-center px-6 py-16 text-center">
-      <Link href="/" className="flex items-center gap-2.5 mb-10 text-gray-900">
-        <LogoIcon size={32} />
-        <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+      <Link href="/" className="mb-10 inline-flex items-center" aria-label="GrindsAI home">
+        <BrandLogo height={42} />
       </Link>
       <p className="text-xs text-emerald-700 uppercase tracking-[0.08em] font-mono mb-3">404</p>
       <h1 className="text-2xl font-semibold tracking-[-0.02em] m-0">Page not found</h1>

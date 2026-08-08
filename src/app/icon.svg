@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">GrindsAI app icon centered</title>
+  <desc id="desc">A centered teal and lime rounded G icon with a learning spark.</desc>
+  <defs>
+    <linearGradient id="brandGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0AAFC2"/>
+      <stop offset="100%" stop-color="#75D51D"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="142" fill="url(#brandGradient)"/>
+  <g transform="translate(96 96)">
+    <path d="M240 80c-24-24-53-38-91-38-72 0-126 53-126 128s54 128 126 128c38 0 72-13 96-40v-89h-77v45h38v33c-10 8-26 13-39 13-43 0-76-32-76-90s33-90 76-90c24 0 46 8 62 27l31-27z" fill="#fff"/>
+    <path d="M292 6l11 29 29 11-29 11-11 29-11-29-29-11 29-11 11-29z" fill="#fff" opacity=".95"/>
+  </g>
+</svg>

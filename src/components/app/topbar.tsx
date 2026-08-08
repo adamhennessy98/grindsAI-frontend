@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { BrandLogo } from "@/components/icons";
 import { subjectLabel, subjectThemeStyle } from "./subjects";
 import type { Screen } from "./types";
 
@@ -43,9 +44,9 @@ export function AppTopBar({ screen, activeSubjectId, userInitials, onBack, onHom
     <header style={subjectThemeStyle(activeSubjectId)} className="sticky top-0 z-20 border-b border-white/70 bg-[#f7faf8]/90 px-4 py-3 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 sm:px-6">
       <div className="mx-auto flex max-w-[1120px] items-center gap-3">
         {isHome ? (
-          <button type="button" onClick={onHome} className="flex min-w-0 items-center gap-2.5 text-left">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#10b981,#22d3ee)] font-heading text-sm font-semibold text-white shadow-[0_10px_24px_-16px_rgba(16,185,129,.9)]">G</span>
-            <span><span className="block font-heading text-[17px] font-semibold text-gray-900 dark:text-white">GrindsAI</span><span className="block text-xs text-gray-400">Leaving Cert study workspace</span></span>
+          <button type="button" onClick={onHome} className="flex min-w-0 flex-col items-start gap-0.5 text-left">
+            <BrandLogo height={36} />
+            <span className="pl-0.5 text-[11px] text-gray-400">Leaving Cert study workspace</span>
           </button>
         ) : (
           <button type="button" onClick={onBack} aria-label="Go back" className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-cyan-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">

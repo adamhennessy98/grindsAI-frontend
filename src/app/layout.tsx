@@ -10,6 +10,10 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono"
 export const metadata: Metadata = {
   title: "GrindsAI - Your personal Leaving Cert tutor",
   description: "A personalised Leaving Cert study workspace for exam questions, step-by-step tutoring, and focused improvement.",
+  icons: {
+    icon: "/grindsai-logo-icon-centered.svg",
+    apple: "/grindsai-logo-icon-centered.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
