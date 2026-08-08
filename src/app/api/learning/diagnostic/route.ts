@@ -94,27 +94,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    for (const answer of body.answers) {
-      const q = byId.get(answer.questionId);
-      if (!q) {
-        return NextResponse.json({ error: "Unknown diagnostic question." }, { status: 400 });
-      }
-      if (!q.choices.some((c) => c.id === answer.choiceId)) {
-        return NextResponse.json({ error: "Invalid diagnostic choice." }, { status: 400 });
-      }
-      const outcome = answer.choiceId === q.correctChoiceId ? "correct" : "incorrect";
-      await recordLearningEvent(supabase, user.id, {
-        kcId: q.kcId,
-        subjectId: q.subjectId,
-        outcome,
-        source: "onboarding_diagnostic",
-        hintDepth: 0,
-        scaffolded: false,
-        transferCheck: false,
-        chunkId: q.id,
-      });
-    }
-
     const completedAt = new Date().toISOString();
     const profile: StudentProfile = {
       yearGroup: profileIn.yearGroup as YearGroup,
@@ -127,9 +106,46 @@ export async function POST(request: Request) {
       completedAt,
     };
 
+    // Mark complete FIRST — recording events must never leave the student stuck on onboarding.
     await upsertStudentPrefs(supabase, profile, { markComplete: true });
 
-    return NextResponse.json({ ok: true, completedAt });
+    const eventErrors: string[] = [];
+    for (const answer of body.answers) {
+      const q = byId.get(answer.questionId);
+      if (!q) {
+        eventErrors.push(`unknown question ${answer.questionId}`);
+        continue;
+      }
+      if (!q.choices.some((c) => c.id === answer.choiceId)) {
+        eventErrors.push(`invalid choice for ${answer.questionId}`);
+        continue;
+      }
+      const outcome = answer.choiceId === q.correctChoiceId ? "correct" : "incorrect";
+      try {
+        await recordLearningEvent(supabase, user.id, {
+          kcId: q.kcId,
+          subjectId: q.subjectId,
+          outcome,
+          source: "onboarding_diagnostic",
+          hintDepth: 0,
+          scaffolded: false,
+          transferCheck: false,
+          chunkId: q.id,
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "event failed";
+        console.error("[learning/diagnostic] event record failed:", q.kcId, message);
+        eventErrors.push(`${q.kcId}: ${message}`);
+      }
+    }
+
+    if (eventErrors.length) {
+      console.warn(
+        `[learning/diagnostic] completed prefs for ${user.id} with ${eventErrors.length} event error(s)`,
+      );
+    }
+
+    return NextResponse.json({ ok: true, completedAt, eventWarnings: eventErrors.length });
   } catch (err) {
     console.error("[learning/diagnostic] POST failed:", err);
     return NextResponse.json({ error: "Could not finish diagnostic." }, { status: 500 });

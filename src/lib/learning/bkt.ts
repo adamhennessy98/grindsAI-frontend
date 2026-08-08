@@ -26,8 +26,9 @@ export function evidenceWeight(opts: {
 }): number {
   // Fewer observations → larger swing; grows toward full weight.
   const byCount = Math.min(1, (opts.evidenceN + 1) / 8);
-  // Diagnostic is weaker evidence than a real tutor/archive attempt.
-  const bySource = opts.source === "onboarding_diagnostic" ? 0.35 : 1;
+  // Early diagnostics are weaker evidence than a real tutor/archive attempt.
+  const bySource =
+    opts.source === "onboarding_diagnostic" || opts.source === "subject_diagnostic" ? 0.35 : 1;
   return Math.max(0.15, byCount * bySource);
 }
 

@@ -7,7 +7,8 @@ export type LearningEventSource =
   | "exam_gen"
   | "archive"
   | "system"
-  | "onboarding_diagnostic";
+  | "onboarding_diagnostic"
+  | "subject_diagnostic";
 
 export type LearningEventInput = {
   kcId: string;

@@ -1,20 +1,32 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isLearnerStyle, type LearnerStyle } from "@/lib/learning/learner-style";
 
 export type StudentToneContext = {
   anxietyFlag: boolean;
   notes: string[];
   rawFreeText: string | null;
+  learnerStyle: LearnerStyle | null;
 };
 
 type ContextRow = {
   anxiety_flag: boolean;
   notes: unknown;
   raw_free_text: string | null;
+  learner_style?: string | null;
 };
 
 function notesFromJson(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.filter((n): n is string => typeof n === "string").slice(0, 20);
+}
+
+function rowToTone(row: ContextRow): StudentToneContext {
+  return {
+    anxietyFlag: Boolean(row.anxiety_flag),
+    notes: notesFromJson(row.notes),
+    rawFreeText: row.raw_free_text,
+    learnerStyle: isLearnerStyle(row.learner_style) ? row.learner_style : null,
+  };
 }
 
 export async function fetchStudentToneContext(
@@ -23,17 +35,24 @@ export async function fetchStudentToneContext(
 ): Promise<StudentToneContext | null> {
   const { data, error } = await supabase
     .from("student_context")
-    .select("anxiety_flag, notes, raw_free_text")
+    .select("anxiety_flag, notes, raw_free_text, learner_style")
     .eq("user_id", userId)
     .maybeSingle();
-  if (error) throw error;
+
+  if (error) {
+    // Column may not exist until migration is applied — fall back without learner_style.
+    const legacy = await supabase
+      .from("student_context")
+      .select("anxiety_flag, notes, raw_free_text")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (legacy.error) throw legacy.error;
+    if (!legacy.data) return null;
+    return rowToTone(legacy.data as ContextRow);
+  }
+
   if (!data) return null;
-  const row = data as ContextRow;
-  return {
-    anxietyFlag: Boolean(row.anxiety_flag),
-    notes: notesFromJson(row.notes),
-    rawFreeText: row.raw_free_text,
-  };
+  return rowToTone(data as ContextRow);
 }
 
 function mergeToneNotes(existing: string[], incoming: string[]): string[] {
@@ -47,7 +66,12 @@ function mergeToneNotes(existing: string[], incoming: string[]): string[] {
 export async function upsertStudentToneContext(
   supabase: SupabaseClient,
   userId: string,
-  patch: { anxietyFlag?: boolean; notes?: string[]; rawFreeText?: string | null },
+  patch: {
+    anxietyFlag?: boolean;
+    notes?: string[];
+    rawFreeText?: string | null;
+    learnerStyle?: LearnerStyle | null;
+  },
 ): Promise<StudentToneContext> {
   const existing = await fetchStudentToneContext(supabase, userId);
   const next = {
@@ -56,6 +80,8 @@ export async function upsertStudentToneContext(
       ? mergeToneNotes(existing?.notes ?? [], patch.notes)
       : (existing?.notes ?? []),
     raw_free_text: patch.rawFreeText !== undefined ? patch.rawFreeText : (existing?.rawFreeText ?? null),
+    learner_style:
+      patch.learnerStyle !== undefined ? patch.learnerStyle : (existing?.learnerStyle ?? null),
     updated_at: new Date().toISOString(),
   };
 
@@ -68,11 +94,7 @@ export async function upsertStudentToneContext(
   );
   if (error) throw error;
 
-  return {
-    anxietyFlag: next.anxiety_flag,
-    notes: notesFromJson(next.notes),
-    rawFreeText: next.raw_free_text,
-  };
+  return rowToTone(next);
 }
 
 /** Heuristic extract — never writes mastery. Returns tone flags + topic labels for check queue. */
