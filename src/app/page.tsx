@@ -4,6 +4,7 @@ import { HowItWorks } from "@/components/landing/how-it-works";
 import { Features } from "@/components/landing/features";
 import { PricingTeaser } from "@/components/landing/pricing-teaser";
 import { SocialProof } from "@/components/landing/social-proof";
+import { StudySystemDetail } from "@/components/landing/study-system-detail";
 import { Footer } from "@/components/landing/footer";
 
 export default function LandingPage() {
@@ -15,6 +16,7 @@ export default function LandingPage() {
       <Features />
       <PricingTeaser />
       <SocialProof />
+      <StudySystemDetail />
       <Footer />
     </div>
   );
