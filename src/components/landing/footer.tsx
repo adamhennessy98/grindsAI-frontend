@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="border-t border-cyan-100 bg-[#eef4f2] py-8">
       <div className="mx-auto flex max-w-[1140px] flex-wrap items-center justify-between gap-4 px-6">
         <div className="flex flex-wrap items-center gap-2.5 text-[13px] text-gray-500">
-          <LogoIcon size={20} />
+          <LogoIcon size={22} />
           <span>Copyright 2026 GrindsAI / Made in Dublin</span>
         </div>
         <div className="flex gap-6 text-[13px] text-gray-500">

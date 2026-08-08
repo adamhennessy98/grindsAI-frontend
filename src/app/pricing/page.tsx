@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LogoIcon } from "@/components/icons";
+import { BrandLogo } from "@/components/icons";
 import { PricingCard } from "@/components/landing/pricing-teaser";
 import { FAQ } from "@/components/pricing/faq";
 import { IS_BETA } from "@/lib/beta";
@@ -51,9 +51,8 @@ export default function PricingPage() {
     <div className="min-h-screen bg-white flex flex-col">
       <header className="border-b border-gray-200 bg-white sticky top-0 z-20">
         <div className="max-w-[1140px] mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <LogoIcon size={26} />
-            <span className="font-heading text-[16.5px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+          <Link href="/" className="inline-flex items-center" aria-label="GrindsAI home">
+            <BrandLogo height={36} />
           </Link>
           <Link
             href="/chat"

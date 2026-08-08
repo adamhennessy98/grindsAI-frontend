@@ -14,7 +14,7 @@ export function SocialProof() {
       <div className="mx-auto max-w-[1140px] px-6">
         <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
           {quotes.map((q) => (
-            <figure key={q.name} className="m-0 rounded-2xl border border-violet-100 bg-violet-50/55 p-[22px]">
+            <figure key={`${q.name}-${q.school}`} className="m-0 rounded-2xl border border-violet-100 bg-violet-50/55 p-[22px]">
               <blockquote className="m-0 text-[15px] leading-relaxed text-gray-900">
                 &ldquo;{q.text}&rdquo;
               </blockquote>

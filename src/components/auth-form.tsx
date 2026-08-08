@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { LogoIcon, GoogleIcon, EyeIcon } from "@/components/icons";
+import { BrandLogo, GoogleIcon, EyeIcon } from "@/components/icons";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { getAuthCallbackUrl } from "@/lib/site-url";
 import { clearOnboardingCookie, ONBOARDING_COOKIE } from "@/lib/onboarding";
@@ -158,9 +158,8 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center px-5 pt-10 pb-6">
-      <Link href="/" className="flex items-center gap-2.5 mb-7">
-        <LogoIcon size={32} />
-        <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+      <Link href="/" className="mb-7 inline-flex items-center" aria-label="GrindsAI home">
+        <BrandLogo height={42} />
       </Link>
 
       <div

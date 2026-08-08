@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { LogoIcon } from "@/components/icons";
+import { BrandLogo } from "@/components/icons";
 
 export default function AuthCodeErrorPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 text-center">
-      <Link href="/" className="flex items-center gap-2.5 mb-8 text-gray-900">
-        <LogoIcon size={32} />
-        <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+      <Link href="/" className="mb-8 inline-flex items-center" aria-label="GrindsAI home">
+        <BrandLogo height={42} />
       </Link>
       <h1 className="text-xl font-semibold m-0">Sign-in link expired</h1>
       <p className="mt-2 text-gray-500 max-w-md">

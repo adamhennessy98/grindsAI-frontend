@@ -1,12 +1,52 @@
 interface IconProps { size?: number; className?: string; }
 
-export function LogoIcon({ size = 28 }: IconProps) {
+/** Full brand lockup (mark + GrindsAI wordmark). Prefer this in headers/nav. */
+export function BrandLogo({ height = 40, className = "" }: { height?: number; className?: string }) {
+  const width = Math.round(height * (540 / 156));
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="#10b981" />
-      <path d="M11 21.5V13a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v8.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M21 16.5h-3.2a2.3 2.3 0 0 0 0 4.6H21" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <span className={`inline-flex items-center ${className}`}>
+      <img
+        src="/grindsai-logo-lockup.svg"
+        alt="GrindsAI"
+        width={width}
+        height={height}
+        className="block dark:hidden"
+        decoding="async"
+      />
+      {/* Lockup wordmark is dark; pair icon + light text in dark mode */}
+      <span className="hidden items-center gap-2 dark:inline-flex" aria-label="GrindsAI">
+        <img
+          src="/grindsai-logo-icon-centered.svg"
+          alt=""
+          width={height}
+          height={height}
+          className="block shrink-0"
+          aria-hidden="true"
+          decoding="async"
+        />
+        <span
+          className="font-heading font-semibold tracking-[-0.02em] text-white"
+          style={{ fontSize: Math.max(14, Math.round(height * 0.58)) }}
+        >
+          Grinds<span className="text-[#2DAF8B]">AI</span>
+        </span>
+      </span>
+    </span>
+  );
+}
+
+/** App mark only — use when the wordmark sits elsewhere (e.g. footer line). */
+export function LogoIcon({ size = 28, className }: IconProps) {
+  return (
+    <img
+      src="/grindsai-logo-icon-centered.svg"
+      alt=""
+      width={size}
+      height={size}
+      className={`block shrink-0 ${className ?? ""}`}
+      aria-hidden="true"
+      decoding="async"
+    />
   );
 }
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LogoIcon } from "@/components/icons";
+import { BrandLogo } from "@/components/icons";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import { getAuthCallbackUrl } from "@/lib/site-url";
 
@@ -38,9 +38,8 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center px-5 pt-10 pb-6">
-      <Link href="/" className="flex items-center gap-2.5 mb-7">
-        <LogoIcon size={32} />
-        <span className="text-[18px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+      <Link href="/" className="mb-7 inline-flex items-center" aria-label="GrindsAI home">
+        <BrandLogo height={42} />
       </Link>
       <div
         className="w-full max-w-[400px] bg-white border border-gray-200 rounded-2xl p-7"

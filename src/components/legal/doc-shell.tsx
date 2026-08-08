@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoIcon } from "@/components/icons";
+import { BrandLogo } from "@/components/icons";
 
 export function LegalDocShell({
   title,
@@ -14,9 +14,8 @@ export function LegalDocShell({
     <div className="min-h-screen bg-white flex flex-col">
       <header className="border-b border-gray-200 bg-white">
         <div className="max-w-[720px] mx-auto px-6 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-gray-900">
-            <LogoIcon size={24} />
-            <span className="text-[15px] font-semibold tracking-[-0.01em]">GrindsAI</span>
+          <Link href="/" className="inline-flex items-center" aria-label="GrindsAI home">
+            <BrandLogo height={32} />
           </Link>
           <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">
             Home

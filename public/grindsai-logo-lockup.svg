@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="180" viewBox="12 12 540 156" role="img" aria-labelledby="title desc">
+  <title id="title">GrindsAI logo lockup</title>
+  <desc id="desc">A teal and lime rounded G icon with a learning spark and the GrindsAI wordmark.</desc>
+  <defs>
+    <linearGradient id="brandGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0AAFC2"/>
+      <stop offset="100%" stop-color="#75D51D"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(18 18)">
+    <rect width="144" height="144" rx="40" fill="url(#brandGradient)"/>
+    <path d="M91 48c-9-9-20-14-34-14-27 0-47 20-47 48s20 48 47 48c14 0 27-5 36-15V76H57v17h17v13c-4 3-10 5-17 5-16 0-28-12-28-29s12-29 28-29c9 0 17 3 23 10l11-15z" fill="#fff"/>
+    <path d="M108 20l3.5 9.5L121 33l-9.5 3.5L108 46l-3.5-9.5L95 33l9.5-3.5L108 20z" fill="#fff" opacity=".95"/>
+  </g>
+  <text x="190" y="112" fill="#15191C" font-family="Inter, Avenir Next, Arial, sans-serif" font-size="68" font-weight="700" letter-spacing="-2.5">Grinds<tspan fill="#2DAF8B">AI</tspan></text>
+</svg>
