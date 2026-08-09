@@ -1,3 +1,4 @@
+import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 /** Server-only: Stripe webhooks and other trusted jobs. Never import from client components. */

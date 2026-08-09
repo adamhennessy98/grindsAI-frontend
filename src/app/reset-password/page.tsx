@@ -17,20 +17,21 @@ export default function ResetPasswordPage() {
     setError("");
     const supabase = getBrowserSupabase();
     if (!supabase) {
-      setError("Auth is not configured. Add Supabase keys to .env.local.");
+      setError("Password reset is temporarily unavailable. Please try again later.");
       return;
     }
-    if (!email.includes("@")) {
+    const normalisedEmail = email.trim().toLowerCase();
+    if (!normalisedEmail.includes("@")) {
       setError("Please enter a valid email.");
       return;
     }
     setLoading(true);
-    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: getAuthCallbackUrl("/chat", window.location.origin),
+    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(normalisedEmail, {
+      redirectTo: getAuthCallbackUrl("/update-password", window.location.origin),
     });
     setLoading(false);
     if (resetErr) {
-      setError(resetErr.message);
+      setError("We could not send a reset link. Please try again shortly.");
       return;
     }
     setSent(true);
@@ -48,7 +49,7 @@ export default function ResetPasswordPage() {
         <h1 className="text-[22px] font-semibold tracking-[-0.015em] m-0">Reset password</h1>
         <p className="mt-1.5 mb-5 text-gray-500 text-sm">We will email you a link to choose a new password.</p>
         {sent ? (
-          <p className="text-sm text-gray-700">Check your inbox for the reset link.</p>
+          <p className="text-sm text-gray-700">If an account exists for that email, check its inbox for the reset link.</p>
         ) : (
           <form onSubmit={(e) => void submit(e)} className="flex flex-col gap-3">
             <label className="flex flex-col gap-1.5">

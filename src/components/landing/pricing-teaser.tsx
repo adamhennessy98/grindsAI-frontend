@@ -4,10 +4,12 @@ import { SubscribeButton } from "@/components/pricing/subscribe-button";
 import { SectionHeader } from "./how-it-works";
 
 const FEATURES = [
-  "Unlimited Socratic tutoring sessions",
-  "All LC subjects - Higher & Ordinary",
-  "Practice question generator",
-  "Exam tracker and progress views",
+  "Unlimited guided tutoring sessions",
+  "Leaving Cert subject, level and topic context",
+  "Past-paper and marking-scheme aware practice",
+  "Topic Checks for core foundations",
+  "Exam Question generator",
+  "Progress and results in every subject",
   "Mobile, tablet & desktop",
   "Cancel any time, no contract",
 ];
@@ -62,8 +64,8 @@ export function PricingTeaser() {
       <div className="max-w-[1140px] mx-auto px-6">
         <SectionHeader
           eyebrow="Pricing"
-          title="A tutor workspace for every subject."
-          subtitle="Use GrindsAI at home, on the bus, or before class. Sign in to continue, or create an account to start."
+          title="A study workspace you can open when you need it."
+          subtitle="Use GrindsAI at home, on the bus, before class, or the night before a test. Start with the help you need, then follow the next useful step."
         />
         <div className="mt-10 grid place-items-center">
           <PricingCard />

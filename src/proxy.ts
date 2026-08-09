@@ -10,12 +10,14 @@ function applyOnboardingCookie(response: NextResponse, complete: boolean) {
       path: "/",
       maxAge: ONBOARDING_COOKIE_MAX_AGE,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
   } else {
     response.cookies.set(ONBOARDING_COOKIE, "", {
       path: "/",
       maxAge: 0,
       sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     });
   }
   return response;
@@ -24,7 +26,6 @@ function applyOnboardingCookie(response: NextResponse, complete: boolean) {
 async function readOnboardingComplete(
   supabase: ReturnType<typeof createServerClient>,
   userId: string,
-  cookieFallback: boolean,
 ): Promise<boolean> {
   try {
     const { data, error } = await supabase
@@ -32,14 +33,16 @@ async function readOnboardingComplete(
       .select("onboarding_completed_at")
       .eq("id", userId)
       .maybeSingle();
-    if (error) return cookieFallback;
+    if (error) return false;
     return Boolean(data?.onboarding_completed_at);
   } catch {
-    return cookieFallback;
+    return false;
   }
 }
 
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
   if (request.nextUrl.pathname.startsWith("/api/webhooks")) {
     return NextResponse.next();
   }
@@ -47,6 +50,15 @@ export async function proxy(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+    }
+    if (pathname.startsWith("/chat") || pathname.startsWith("/onboarding")) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("error", "config");
+      return NextResponse.redirect(url);
+    }
     return NextResponse.next();
   }
 
@@ -73,10 +85,8 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-  const cookieComplete = request.cookies.get(ONBOARDING_COOKIE)?.value === "1";
   const onboardingComplete = user
-    ? await readOnboardingComplete(supabase, user.id, cookieComplete)
+    ? await readOnboardingComplete(supabase, user.id)
     : false;
 
   // /login and /signup always render — "Sign in" / "Get started" must not bounce
@@ -97,6 +107,10 @@ export async function proxy(request: NextRequest) {
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
+  }
+
+  if (!user && pathname === "/update-password") {
+    return NextResponse.redirect(new URL("/reset-password", request.url));
   }
 
   if (!user && pathname.startsWith("/chat")) {

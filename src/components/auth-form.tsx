@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BrandLogo, GoogleIcon, EyeIcon } from "@/components/icons";
 import { getBrowserSupabase } from "@/lib/supabase/client";
-import { getAuthCallbackUrl } from "@/lib/site-url";
+import { getAuthCallbackUrl, safeNextPath } from "@/lib/site-url";
 import { clearOnboardingCookie, ONBOARDING_COOKIE } from "@/lib/onboarding";
+import { PASSWORD_GUIDANCE, passwordRequirementError } from "@/lib/password-policy";
 
 type Mode = "login" | "signup";
 
@@ -36,9 +37,8 @@ const inputCls =
 function mapAuthMessage(message: string): string {
   if (message.includes("Invalid login credentials")) return "Email or password is incorrect.";
   if (message.includes("Email not confirmed")) return "Confirm your email first — check your inbox for the link from GrindsAI.";
-  if (message.includes("User already registered")) return "An account with this email already exists. Try signing in.";
   if (message.includes("Unsupported provider")) return "Google sign-in is not enabled yet. Please use email and password.";
-  return message;
+  return "We could not sign you in. Check your details and try again.";
 }
 
 const googleAuthEnabled = process.env.NEXT_PUBLIC_ENABLE_GOOGLE_AUTH === "true";
@@ -48,8 +48,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
   const searchParams = useSearchParams();
   const nextPath = useMemo(() => {
     const n = searchParams.get("next");
-    if (n && n.startsWith("/") && !n.startsWith("//")) return n;
-    return "/chat";
+    return n ? safeNextPath(n) : "/chat";
   }, [searchParams]);
 
   /** After auth: trust server completion, not a leftover browser cookie. */
@@ -89,17 +88,19 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
     e.preventDefault();
     setError("");
     setInfo("");
-    if (!email.includes("@")) {
+    const normalisedEmail = email.trim().toLowerCase();
+    if (!normalisedEmail.includes("@")) {
       setError("Please enter a valid email.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    const passwordError = mode === "signup" ? passwordRequirementError(password) : null;
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
     const supabase = getBrowserSupabase();
     if (!supabase) {
-      setError("Auth is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.");
+      setError("Sign-in is temporarily unavailable. Please try again later.");
       return;
     }
 
@@ -108,7 +109,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
       if (mode === "signup") {
         const redirectTo = getAuthCallbackUrl(nextPath, window.location.origin);
         const { data, error: signErr } = await supabase.auth.signUp({
-          email,
+          email: normalisedEmail,
           password,
           options: {
             emailRedirectTo: redirectTo,
@@ -116,7 +117,9 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
           },
         });
         if (signErr) {
-          setError(mapAuthMessage(signErr.message));
+          // Keep signup responses non-enumerable: an existing account must not
+          // produce a different student-facing result from a new email address.
+          setInfo("If this email can be used to create an account, check your inbox for a confirmation link.");
           return;
         }
         if (data.session) {
@@ -127,7 +130,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
         return;
       }
 
-      const { error: signErr } = await supabase.auth.signInWithPassword({ email, password });
+      const { error: signErr } = await supabase.auth.signInWithPassword({ email: normalisedEmail, password });
       if (signErr) {
         setError(mapAuthMessage(signErr.message));
         return;
@@ -252,6 +255,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
                 placeholder="********"
                 className={`${inputCls} pr-10`}
                 autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                aria-describedby={mode === "signup" ? "password-guidance" : undefined}
               />
               <button
                 type="button"
@@ -263,6 +267,12 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
               </button>
             </div>
           </Field>
+
+          {mode === "signup" && (
+            <p id="password-guidance" className="-mt-1 mb-0 text-xs text-gray-500">
+              {PASSWORD_GUIDANCE}
+            </p>
+          )}
 
           {error && (
             <div className="text-[13px] text-red-700 bg-red-50 border border-red-200 px-2.5 py-2 rounded-lg">{error}</div>

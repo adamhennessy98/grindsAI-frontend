@@ -1,75 +1,27 @@
-import { BookIcon, MessageCircleIcon, TargetIcon } from "@/components/icons";
+import { BookIcon, MessageCircleIcon, ShieldIcon, TargetIcon } from "@/components/icons";
 import { SectionHeader } from "./how-it-works";
 
 const features = [
-  {
-    icon: <MessageCircleIcon />,
-    title: "Tutor",
-    body: "Ask about a topic, paste an exam question, or say what feels confusing. The tutor helps you reason through it.",
-    accent: "cyan",
-    demo: "Step-by-step chat",
-  },
-  {
-    icon: <BookIcon />,
-    title: "Exam Questions",
-    body: "Generate Leaving Cert-style questions by subject, level, topic, type, and difficulty.",
-    accent: "lime",
-    demo: "Exam-style practice",
-  },
-  {
-    icon: <TargetIcon />,
-    title: "Progress & Results",
-    body: "Log results, keep track of difficult areas, and see the next useful thing to work on.",
-    accent: "violet",
-    demo: "Track what to improve",
-  },
+  { icon: <BookIcon />, title: "Deep Leaving Cert context", body: "Your Tutor is grounded in the curriculum, subject specifications, level and topic you are actually studying. It is not a generic chat with a school label.", accent: "cyan" },
+  { icon: <TargetIcon />, title: "Past papers and marking in context", body: "Past-paper questions, marking schemes and exam-style practice keep revision close to how your subject is actually assessed.", accent: "lime" },
+  { icon: <MessageCircleIcon />, title: "A tutor that becomes more personal", body: "Your focus areas, Tutor conversations and results build a clearer picture of what you find easy, what needs work, and the next useful step.", accent: "violet" },
+  { icon: <ShieldIcon />, title: "Created with Irish teachers", body: "GrindsAI is made and monitored with real Irish secondary school teachers, keeping the experience grounded in the classroom and the exam.", accent: "amber" },
 ] as const;
 
 const accent = {
-  cyan: {
-    card: "border-cyan-100 bg-cyan-50/60 shadow-[0_16px_42px_-34px_rgba(8,145,178,.85)]",
-    icon: "border-cyan-100 bg-[#fbfaf6] text-cyan-700",
-    pill: "bg-cyan-100 text-cyan-800",
-  },
-  lime: {
-    card: "border-lime-100 bg-lime-50/60 shadow-[0_16px_42px_-34px_rgba(101,163,13,.8)]",
-    icon: "border-lime-100 bg-[#fbfaf6] text-lime-700",
-    pill: "bg-lime-100 text-lime-800",
-  },
-  violet: {
-    card: "border-violet-100 bg-violet-50/60 shadow-[0_16px_42px_-34px_rgba(139,92,246,.85)]",
-    icon: "border-violet-100 bg-[#fbfaf6] text-violet-700",
-    pill: "bg-violet-100 text-violet-800",
-  },
+  cyan: "border-cyan-100 bg-cyan-50/60 text-cyan-700",
+  lime: "border-lime-100 bg-lime-50/60 text-lime-700",
+  violet: "border-violet-100 bg-violet-50/60 text-violet-700",
+  amber: "border-amber-100 bg-amber-50/60 text-amber-700",
 };
 
 export function Features() {
   return (
-    <section id="features" className="bg-[#eef4f2] py-20">
+    <section id="features" className="bg-[#eef4f2] py-20 sm:py-24">
       <div className="mx-auto max-w-[1140px] px-6">
-        <SectionHeader
-          eyebrow="Features"
-          title="One subject workspace. Three clear actions."
-          subtitle="The logged-in app is built around the way students actually revise: ask, practise, improve."
-        />
-        <div className="mt-10 grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
-          {features.map((feature) => {
-            const colors = accent[feature.accent];
-            return (
-              <article key={feature.title} className={`flex min-h-[250px] flex-col rounded-2xl border p-6 ${colors.card}`}>
-                <div className={`mb-4 grid h-[42px] w-[42px] place-items-center rounded-[12px] border ${colors.icon}`}>
-                  {feature.icon}
-                </div>
-                <h3 className="mb-2 text-[19px] font-semibold tracking-[-0.01em] text-gray-900">{feature.title}</h3>
-                <p className="m-0 text-[14.5px] leading-relaxed text-gray-500">{feature.body}</p>
-                <div className="mt-auto pt-5">
-                  <span className={`inline-flex rounded-full px-3 py-1.5 text-[12.5px] font-semibold ${colors.pill}`}>
-                    {feature.demo}
-                  </span>
-                </div>
-              </article>
-            );
-          })}
+        <SectionHeader eyebrow="Why GrindsAI" title="Built for the exam you are actually sitting." subtitle="A connected study workspace gives you the right curriculum context, the right next question, and a clearer picture of your progress without sending you through a one-size-fits-all programme." />
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+          {features.map((feature) => <article key={feature.title} className={`rounded-2xl border p-6 shadow-[0_18px_44px_-36px_rgba(15,23,42,.36)] ${accent[feature.accent]}`}><div className="grid h-11 w-11 place-items-center rounded-xl border border-white/80 bg-[#fbfaf6]">{feature.icon}</div><h3 className="mt-5 text-[19px] font-semibold tracking-[-.015em] text-gray-900">{feature.title}</h3><p className="m-0 mt-2 max-w-[480px] text-[14.5px] leading-relaxed text-gray-600">{feature.body}</p></article>)}
         </div>
       </div>
     </section>

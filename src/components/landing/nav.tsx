@@ -31,9 +31,8 @@ export function LandingNav() {
 
         <nav className="hidden md:flex gap-8 text-sm text-gray-500">
           <a href="#how" className="hover:text-gray-900 transition-colors">How it works</a>
-          <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
+          <a href="#features" className="hover:text-gray-900 transition-colors">Why GrindsAI</a>
           <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
-          <Link href="/chat" className="hover:text-gray-900 transition-colors">Demo</Link>
         </nav>
 
         <div className="flex items-center gap-2">
