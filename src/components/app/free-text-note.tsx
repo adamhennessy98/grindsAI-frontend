@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-/** Anytime note — tone + check-queue only; never writes mastery. */
+/** Local support note until learner-context persistence is available. */
 export function FreeTextNote() {
   const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
@@ -28,38 +28,17 @@ export function FreeTextNote() {
   };
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white/80 px-3 py-2.5">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between text-left"
-      >
-        <span className="text-[13px] font-medium text-gray-800">Tell your tutor something</span>
-        <span className="text-[11px] text-gray-400">{open ? "Hide" : "Open"}</span>
+    <div className="border-l-2 border-cyan-500 pl-3">
+      <button type="button" onClick={() => setOpen((value) => !value)} className="flex w-full items-center justify-between gap-3 text-left">
+        <span><span className="block text-[13px] font-medium text-gray-800 dark:text-slate-100">Add a study note</span><span className="mt-0.5 block text-[12px] text-gray-500">Share anything that will make support more useful.</span></span>
+        <span className="shrink-0 text-[12px] font-medium text-cyan-700 dark:text-cyan-300">{open ? "Close" : "Add note"}</span>
       </button>
       {open && (
-        <div className="mt-2">
-          <p className="text-[11.5px] text-gray-500 mb-1.5">
-            Anxiety, gaps in teaching, anything else. This adjusts tone and may queue a quick check — it never
-            changes mastery scores by itself.
-          </p>
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={3}
-            maxLength={2000}
-            placeholder='e.g. "I get anxious before tests"'
-            className="w-full rounded-lg border border-gray-200 px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-          />
+        <div className="mt-3">
+          <p className="mb-1.5 text-[11.5px] text-gray-500">For example: a topic you missed in class, a test that is coming up, or how you prefer to learn.</p>
+          <textarea value={text} onChange={(event) => setText(event.target.value)} rows={3} maxLength={2000} placeholder='e.g. "I missed the first week of calculus"' className="w-full rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100" />
           <div className="mt-2 flex items-center gap-2">
-            <button
-              type="button"
-              disabled={!text.trim() || status === "saving"}
-              onClick={() => void submit()}
-              className="h-8 px-3 rounded-lg text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200"
-            >
-              {status === "saving" ? "Saving…" : "Save note"}
-            </button>
+            <button type="button" disabled={!text.trim() || status === "saving"} onClick={() => void submit()} className="h-8 rounded-md bg-cyan-600 px-3 text-xs font-medium text-white hover:bg-cyan-700 disabled:bg-gray-200 dark:disabled:bg-slate-700">{status === "saving" ? "Saving..." : "Save note"}</button>
             {status === "saved" && <span className="text-[11px] text-emerald-600">Saved</span>}
             {status === "error" && <span className="text-[11px] text-red-600">Could not save</span>}
           </div>

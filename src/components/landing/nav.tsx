@@ -8,6 +8,9 @@ export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    // The public landing experience is intentionally light, even after navigating from the signed-in dark theme.
+    document.documentElement.classList.remove("dark");
+
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -44,7 +47,7 @@ export function LandingNav() {
           </Link>
           <Link
             href="/signup"
-            className="inline-flex items-center h-10 px-4 rounded-lg text-sm font-medium text-white bg-[linear-gradient(135deg,#06b6d4,#84cc16)] hover:brightness-105 transition-[filter,transform] hover:-translate-y-0.5 shadow-[0_14px_30px_-20px_rgba(6,182,212,.9)]"
+            className="inline-flex h-10 items-center rounded-lg bg-cyan-600 px-4 text-sm font-medium text-white shadow-[0_14px_28px_-22px_rgba(8,145,178,.7)] transition-colors hover:bg-cyan-700"
           >
             Get started
           </Link>
