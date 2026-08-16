@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNextPath } from "@/lib/site-url";
+import { getSubscriptionAccess } from "@/lib/subscription";
 
 const ONBOARDING_COOKIE = "grindsai_onboarding";
 const ONBOARDING_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -98,14 +100,16 @@ export async function proxy(request: NextRequest) {
   }
 
   if (user && pathname === "/onboarding" && onboardingComplete && !request.nextUrl.searchParams.has("edit")) {
-    const redirect = NextResponse.redirect(new URL("/chat", request.url));
+    const nextPath = safeNextPath(request.nextUrl.searchParams.get("next"));
+    const destination = nextPath === "/onboarding" ? "/chat" : nextPath;
+    const redirect = NextResponse.redirect(new URL(destination, request.url));
     return applyOnboardingCookie(redirect, true);
   }
 
   if (!user && pathname.startsWith("/onboarding")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("next", pathname);
+    url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(url);
   }
 
@@ -122,6 +126,16 @@ export async function proxy(request: NextRequest) {
 
   if (!user && (pathname === "/api/chat" || pathname.startsWith("/api/learning"))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (user && pathname.startsWith("/chat") && onboardingComplete) {
+    const access = await getSubscriptionAccess(supabase, user.id, user.email);
+    if (!access.ok) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/pricing";
+      url.searchParams.set("required", "1");
+      return NextResponse.redirect(url);
+    }
   }
 
   if (user) {

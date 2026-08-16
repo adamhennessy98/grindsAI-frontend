@@ -30,7 +30,7 @@ const choiceCls =
 const choiceActiveCls = "border-emerald-500 bg-emerald-50/80 shadow-[0_0_0_1px_rgba(16,185,129,0.2)]";
 const choiceIdleCls = "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50";
 
-export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
+export function OnboardingFlow({ editMode = false, nextPath = "/chat" }: { editMode?: boolean; nextPath?: string }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [yearGroup, setYearGroup] = useState<YearGroup | null>(null);
@@ -152,7 +152,7 @@ export function OnboardingFlow({ editMode = false }: { editMode?: boolean }) {
         }
       }
 
-      window.location.assign("/chat");
+      window.location.assign(nextPath);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setSubmitting(false);

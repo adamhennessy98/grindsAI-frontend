@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import {
   getStudentProfile,
   parseStudentProfileInput,
-  upsertStudentProfile,
 } from "@/lib/profile";
+import { upsertStudentPrefs } from "@/lib/learning/profile";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
@@ -52,16 +52,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid student profile." }, { status: 400 });
   }
 
-  const displayName =
-    typeof user.user_metadata?.full_name === "string" ? user.user_metadata.full_name.trim() : null;
-
-  const result = await upsertStudentProfile(supabase, user.id, profile, {
-    displayName,
-    email: user.email ?? null,
-  });
-
-  if (!result.ok) {
-    return NextResponse.json({ error: result.message }, { status: 500 });
+  try {
+    // Preferences are updated via a security-definer RPC so billing columns remain server controlled.
+    await upsertStudentPrefs(supabase, profile, { markComplete: Boolean(profile.completedAt) });
+  } catch (error) {
+    console.error("[profile] save failed:", error);
+    return NextResponse.json({ error: "Could not save your profile." }, { status: 500 });
   }
 
   return NextResponse.json({ profile });

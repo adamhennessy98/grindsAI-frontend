@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   if (!supabase) return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const gate = await assertChatAllowed(supabase, user.id);
+  const gate = await assertChatAllowed(supabase, user.id, user.email);
   if (!gate.ok) return NextResponse.json({ error: gate.message }, { status: gate.status });
 
   const { searchParams } = new URL(request.url);
