@@ -69,7 +69,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
       /* fall through */
     }
     clearOnboardingCookie();
-    router.push("/onboarding");
+    router.push(`/onboarding?next=${encodeURIComponent(nextPath)}`);
     router.refresh();
   };
 

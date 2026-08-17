@@ -132,11 +132,7 @@
 /* GrindsAI design utilities */
 
 .app-study-shell {
-  background:
-    radial-gradient(120% 52% at 50% -8%, rgba(6, 182, 212, 0.07), rgba(6, 182, 212, 0) 62%),
-    radial-gradient(circle at center, rgba(15, 23, 42, 0.05) 1px, transparent 1.5px),
-    #eaf1ed;
-  background-size: 100% 100%, 23px 23px, auto;
+  background: linear-gradient(180deg, #f4f7f4 0%, #edf2ee 100%);
 }
 
 /* Keep the light workspace calm: cards retain separation without stark white glare. */
@@ -148,12 +144,26 @@ html:not(.dark) .app-study-shell .bg-gray-100 { background-color: #e9efeb; }
 html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255, 255, 0.58); }
 
 .dark .app-study-shell {
-  background:
-    radial-gradient(120% 52% at 50% -8%, rgba(34, 211, 238, 0.08), rgba(34, 211, 238, 0) 62%),
-    radial-gradient(circle at center, rgba(148, 163, 184, 0.11) 1px, transparent 1.5px),
-    #020617;
-  background-size: 100% 100%, 23px 23px, auto;
+  background: linear-gradient(180deg, #07101e 0%, #0a1422 100%);
 }
+
+/* Landing sections use explicit dark tokens so global utility overrides cannot leave pale surfaces with light text. */
+.dark .landing-revision-loop { background-color: #0b1525 !important; }
+.dark .landing-revision-loop .landing-section-title,
+.dark .landing-revision-loop .landing-revision-title { color: #f8fafc !important; }
+.dark .landing-revision-loop .landing-section-subtitle,
+.dark .landing-revision-loop .landing-revision-copy { color: #b4c1d4 !important; }
+.dark .landing-revision-loop .landing-section-eyebrow { color: #67e8f9 !important; }
+.dark .landing-revision-loop .landing-revision-step { border-top-color: #314158 !important; }
+.dark .landing-revision-loop .landing-revision-icon {
+  background-color: #101c30 !important;
+  border-color: #304159 !important;
+}
+.dark .landing-revision-loop .landing-revision-number { color: #91a0b5 !important; }
+.dark .landing-revision-loop .border-t-cyan-500 { border-top-color: #22d3ee !important; }
+.dark .landing-revision-loop .border-t-amber-500 { border-top-color: #fbbf24 !important; }
+.dark .landing-revision-loop .border-t-lime-500 { border-top-color: #a3e635 !important; }
+.dark .landing-revision-loop .border-t-violet-500 { border-top-color: #a78bfa !important; }
 
 /* Subject colours establish context. Tutor, Exam Questions, and Progress & Results retain their feature colours. */
 .subject-accent-icon {
@@ -163,6 +173,8 @@ html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255
 }
 
 .subject-context-label { color: var(--subject-accent-strong) !important; }
+
+.subject-continuation { border-left-color: var(--subject-accent) !important; }
 
 .subject-card {
   position: relative;
@@ -182,7 +194,7 @@ html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255
 .subject-card:focus-within {
   border-color: var(--subject-accent) !important;
   background-color: var(--subject-hover) !important;
-  box-shadow: 0 24px 54px -30px color-mix(in srgb, var(--subject-accent) 56%, transparent) !important;
+  box-shadow: 0 16px 28px -24px color-mix(in srgb, var(--subject-accent) 62%, transparent) !important;
 }
 
 .subject-workspace-header {
@@ -223,13 +235,15 @@ html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255
 
 .dark .subject-context-label { color: var(--subject-dark-text) !important; }
 
+.dark .subject-continuation { border-left-color: var(--subject-dark-text) !important; }
+
 .dark .subject-card { border-color: var(--subject-dark-border) !important; }
 
 .dark .subject-card:hover,
 .dark .subject-card:focus-within {
   background-color: var(--subject-dark-surface) !important;
   border-color: var(--subject-dark-text) !important;
-  box-shadow: 0 24px 54px -30px color-mix(in srgb, var(--subject-dark-text) 34%, transparent) !important;
+  box-shadow: 0 16px 28px -24px color-mix(in srgb, var(--subject-dark-text) 40%, transparent) !important;
 }
 
 .dark .subject-workspace-header {
@@ -243,6 +257,16 @@ html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255
   background: var(--subject-dark-surface) !important;
   border-color: var(--subject-dark-text) !important;
   color: var(--subject-dark-text) !important;
+}
+
+/* Feature pages share a restrained paper surface; feature colour lives in the action, not a full tinted panel. */
+.app-study-shell section.rounded-2xl {
+  border-radius: 0.75rem;
+  box-shadow: 0 14px 28px -28px rgba(15, 23, 42, 0.52);
+}
+
+.dark .app-study-shell section.rounded-2xl {
+  box-shadow: 0 14px 28px -28px rgba(0, 0, 0, 0.65);
 }
 
 @keyframes fadeUp {
@@ -267,19 +291,13 @@ html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255
   }
 
   .dotgrid {
-    background-image: radial-gradient(rgba(17, 24, 39, 0.08) 1px, transparent 1px);
-    background-size: 22px 22px;
+    background-image: radial-gradient(rgba(17, 24, 39, 0.045) 1px, transparent 1px);
+    background-size: 28px 28px;
     background-position: -1px -1px;
   }
 
   .app-study-shell {
-    background:
-      radial-gradient(900px 420px at 12% -12%, rgba(34, 211, 238, 0.18), transparent 58%),
-      radial-gradient(760px 420px at 96% 0%, rgba(190, 242, 100, 0.17), transparent 54%),
-      radial-gradient(700px 420px at 70% 106%, rgba(251, 191, 36, 0.13), transparent 55%),
-      radial-gradient(circle at center, rgba(15, 23, 42, 0.06) 1px, transparent 1.5px),
-      linear-gradient(180deg, #f4f8f6 0%, #eef4f2 100%);
-    background-size: auto, auto, auto, 23px 23px, auto;
+    background: linear-gradient(180deg, #f4f7f4 0%, #edf2ee 100%);
   }
 
   .fade-mask {
@@ -409,13 +427,7 @@ html:not(.dark) .app-study-shell ::-webkit-scrollbar-thumb {
 .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
 .dark .app-study-shell {
-  background:
-    radial-gradient(900px 420px at 10% -10%, rgba(34, 211, 238, 0.16), transparent 58%),
-    radial-gradient(760px 420px at 96% 0%, rgba(132, 204, 22, 0.12), transparent 54%),
-    radial-gradient(700px 420px at 72% 108%, rgba(245, 158, 11, 0.12), transparent 55%),
-    radial-gradient(circle at center, rgba(226, 232, 240, 0.055) 1px, transparent 1.5px),
-    linear-gradient(180deg, #020617 0%, #0f172a 100%);
-  background-size: auto, auto, auto, 23px 23px, auto;
+  background: linear-gradient(180deg, #07101e 0%, #0a1422 100%);
 }
 
 .math-markdown .katex {

@@ -32,8 +32,8 @@ const featureStories = [
   {
     icon: <BookIcon />,
     title: "Exam Questions",
-    value: "Practise the kind of thinking that earns marks.",
-    body: "Generate one focused Leaving Cert-style question for the topic, level and type of practice you need. Try it yourself first, then reveal help gradually or ask your Tutor to work through the exact question with you.",
+    value: "Unlimited exam questions for all subjects and topics.",
+    body: "Work through past exam questions or generate new Leaving Cert-style questions for the subject, topic, level and type of practice you need. Try it yourself first, then reveal help gradually or ask your Tutor to work through the exact question with you.",
     context: "Past-paper questions and marking schemes keep practice close to how the subject is assessed, while the Tutor stays available for the moment you need more than an answer.",
     label: "Focused exam practice",
     accent: "lime",
@@ -59,28 +59,28 @@ const featureStories = [
 
 const tones = {
   cyan: {
-    border: "border-cyan-100",
-    surface: "bg-cyan-50/55",
+    border: "border-gray-200 border-l-[3px] border-l-cyan-500",
+    surface: "bg-[#edf4f3]",
     text: "text-cyan-700",
-    icon: "border-cyan-100 bg-cyan-50 text-cyan-700",
+    icon: "border-gray-200 bg-white text-cyan-700",
   },
   amber: {
-    border: "border-amber-100",
-    surface: "bg-amber-50/55",
+    border: "border-gray-200 border-l-[3px] border-l-amber-500",
+    surface: "bg-[#f7f1e8]",
     text: "text-amber-700",
-    icon: "border-amber-100 bg-amber-50 text-amber-700",
+    icon: "border-gray-200 bg-white text-amber-700",
   },
   lime: {
-    border: "border-lime-100",
-    surface: "bg-lime-50/55",
+    border: "border-gray-200 border-l-[3px] border-l-lime-500",
+    surface: "bg-[#f0f4e8]",
     text: "text-lime-700",
-    icon: "border-lime-100 bg-lime-50 text-lime-700",
+    icon: "border-gray-200 bg-white text-lime-700",
   },
   violet: {
-    border: "border-violet-100",
-    surface: "bg-violet-50/55",
+    border: "border-gray-200 border-l-[3px] border-l-violet-500",
+    surface: "bg-[#f0eef7]",
     text: "text-violet-700",
-    icon: "border-violet-100 bg-violet-50 text-violet-700",
+    icon: "border-gray-200 bg-white text-violet-700",
   },
 } as const;
 
@@ -89,7 +89,7 @@ export function StudySystemDetail() {
     <section className="border-t border-cyan-100 bg-[#eef4f2] py-20 sm:py-24">
       <div className="mx-auto max-w-[1140px] px-6">
         <div className="mx-auto max-w-[780px] text-center">
-          <div className="font-mono text-xs uppercase tracking-[.08em] text-cyan-700">How GrindsAI works</div>
+          <div className="text-xs font-semibold text-cyan-700">How GrindsAI works</div>
           <h2 className="font-heading m-0 mt-3 text-[clamp(30px,4vw,44px)] font-semibold leading-[1.08] tracking-[-.03em] text-gray-950">
             One study system that gets more useful as you use it.
           </h2>
@@ -104,24 +104,25 @@ export function StudySystemDetail() {
             return (
               <article
                 key={feature.title}
-                className={`grid overflow-hidden rounded-[22px] border bg-[#fbfaf6] shadow-[0_22px_52px_-42px_rgba(15,23,42,.48)] lg:grid-cols-2 ${tone.border}`}
+                className={`grid overflow-hidden rounded-xl border bg-[#fbfaf6] lg:grid-cols-2 ${tone.border}`}
               >
                 <div className={`p-3 sm:p-5 ${tone.surface} ${index % 2 === 1 ? "lg:order-2" : ""}`}>
-                  <div className={`overflow-hidden rounded-[15px] border bg-white shadow-[0_16px_34px_-28px_rgba(15,23,42,.56)] ${tone.border}`}>
+                  <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-[0_14px_26px_-24px_rgba(15,23,42,.45)]">
                     <Image
                       src={feature.image}
                       alt={feature.imageAlt}
                       width={feature.width}
                       height={feature.height}
                       sizes="(max-width: 1024px) calc(100vw - 72px), 520px"
+                      unoptimized
                       className="block h-auto w-full"
                     />
                   </div>
                 </div>
 
                 <div className={`flex flex-col justify-center p-6 sm:p-9 ${index % 2 === 1 ? "lg:order-1" : ""}`}>
-                  <div className={`flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[.08em] ${tone.text}`}>
-                    <span className={`grid h-10 w-10 place-items-center rounded-xl border ${tone.icon}`}>{feature.icon}</span>
+                  <div className={`flex items-center gap-3 text-[12px] font-semibold ${tone.text}`}>
+                    <span className={`grid h-10 w-10 place-items-center rounded-lg border ${tone.icon}`}>{feature.icon}</span>
                     {feature.label}
                   </div>
                   <h3 className="font-heading m-0 mt-6 text-[clamp(25px,3vw,34px)] font-semibold leading-[1.08] tracking-[-.025em] text-gray-950">
@@ -136,10 +137,10 @@ export function StudySystemDetail() {
           })}
         </div>
 
-        <div className="mt-10 rounded-[22px] border border-cyan-100 bg-[#fbfaf6] p-6 shadow-[0_22px_52px_-42px_rgba(8,145,178,.54)] sm:p-8">
+        <div className="mt-10 border-y border-cyan-200 bg-[#f7faf8] px-0 py-8 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
             <div>
-              <div className="font-mono text-xs uppercase tracking-[.08em] text-cyan-700">A connected relationship, not disconnected tools</div>
+              <div className="border-l-2 border-cyan-600 pl-2.5 text-xs font-semibold text-cyan-700">A connected relationship, not disconnected tools</div>
               <h3 className="font-heading m-0 mt-3 text-[clamp(25px,3vw,34px)] font-semibold leading-[1.1] tracking-[-.025em] text-gray-950">
                 What you do in one tool helps shape the next useful step.
               </h3>
@@ -157,8 +158,8 @@ export function StudySystemDetail() {
                 const accent = ["cyan", "amber", "lime", "violet"][index] as keyof typeof tones;
                 const tone = tones[accent];
                 return (
-                  <li key={title} className={`rounded-xl border p-4 ${tone.border} ${tone.surface}`}>
-                    <div className={`font-mono text-[11px] font-semibold tracking-[.08em] ${tone.text}`}>{step}</div>
+                  <li key={title} className={`border-l-[3px] bg-white p-4 ${tone.border}`}>
+                    <div className={`text-[11px] font-semibold ${tone.text}`}>{step}</div>
                     <div className="mt-2 text-[14px] font-semibold text-gray-900">{title}</div>
                     <div className="mt-1 text-[12.5px] leading-relaxed text-gray-600">{body}</div>
                   </li>
@@ -169,21 +170,21 @@ export function StudySystemDetail() {
         </div>
 
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
-          <article className="rounded-2xl border border-amber-100 bg-amber-50/55 p-6 sm:p-7">
+          <article className="border-l-[3px] border-amber-500 bg-white/65 p-6 sm:p-7">
             <div className="flex items-start gap-3">
               <span className="mt-0.5 shrink-0 text-amber-700"><ShieldIcon size={20} /></span>
               <div>
-                <div className="text-[12px] font-semibold uppercase tracking-[.08em] text-amber-700">Relevant and teacher-informed</div>
+                <div className="text-[12px] font-semibold text-amber-700">Relevant and teacher-informed</div>
                 <h3 className="font-heading m-0 mt-3 text-[22px] font-semibold tracking-[-.02em] text-gray-950">Built around the Irish Leaving Cert, not a generic syllabus.</h3>
                 <p className="m-0 mt-3 text-[14.5px] leading-relaxed text-gray-700">Each subject workspace draws from the relevant curriculum, specification, topic, level, past papers and marking schemes. GrindsAI is created and monitored with real Irish secondary school teachers, so the study experience stays close to the classroom and the exam.</p>
               </div>
             </div>
           </article>
-          <article className="rounded-2xl border border-violet-100 bg-violet-50/55 p-6 sm:p-7">
+          <article className="border-l-[3px] border-violet-500 bg-white/65 p-6 sm:p-7">
             <div className="flex items-start gap-3">
               <span className="mt-0.5 shrink-0 text-violet-700"><TargetIcon size={20} /></span>
               <div>
-                <div className="text-[12px] font-semibold uppercase tracking-[.08em] text-violet-700">Convenient by design</div>
+                <div className="text-[12px] font-semibold text-violet-700">Convenient by design</div>
                 <h3 className="font-heading m-0 mt-3 text-[22px] font-semibold tracking-[-.02em] text-gray-950">Your subject Tutor is ready when you are.</h3>
                 <p className="m-0 mt-3 text-[14.5px] leading-relaxed text-gray-700">Use it when a homework question is blocking you, before a class test, on the bus, or when you finally have a free hour. You decide the subject, topic, pace and kind of support you need, without waiting for an appointment.</p>
               </div>
@@ -195,7 +196,7 @@ export function StudySystemDetail() {
           <p className="m-0 max-w-[650px] text-[15px] leading-relaxed text-gray-600">
             The aim is simple: every subject should feel like it has its own tutor, its own context, and one clear next step.
           </p>
-          <Link href="/signup" className="inline-flex h-11 shrink-0 items-center gap-2 rounded-[10px] bg-[linear-gradient(135deg,#06b6d4,#84cc16)] px-5 text-[14px] font-semibold text-white shadow-[0_16px_32px_-22px_rgba(6,182,212,.9)] transition-[filter,transform] hover:-translate-y-0.5 hover:brightness-105">
+          <Link href="/signup" className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-cyan-600 px-5 text-[14px] font-semibold text-white shadow-[0_14px_28px_-22px_rgba(8,145,178,.7)] transition-colors hover:bg-cyan-700">
             Create your workspace <ArrowRightIcon size={15} />
           </Link>
         </div>

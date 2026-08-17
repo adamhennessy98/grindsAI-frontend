@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const gate = await assertChatAllowed(supabase, user.id);
+  const gate = await assertChatAllowed(supabase, user.id, user.email);
   if (!gate.ok) {
     return NextResponse.json({ error: gate.message }, { status: gate.status });
   }

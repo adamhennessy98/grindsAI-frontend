@@ -74,19 +74,6 @@ export function profileRowToStudentProfile(row: ProfileRow): StudentProfile | nu
   };
 }
 
-export function studentProfileToRowFields(profile: StudentProfile, displayName?: string | null) {
-  return {
-    year_group: profile.yearGroup,
-    exam_target: profile.examTarget,
-    challenge: profile.challenge,
-    subjects: profile.subjects,
-    subject_levels: profile.subjectLevels,
-    onboarding_completed_at: profile.completedAt,
-    display_name: displayName?.trim() || null,
-    updated_at: new Date().toISOString(),
-  };
-}
-
 export function hasCompletedStudentProfile(
   profile: ProfileRow | StudentProfile | null | undefined,
 ): boolean {
@@ -110,26 +97,6 @@ export async function getStudentProfile(
 ): Promise<StudentProfile | null> {
   const row = await getProfile(supabase, userId);
   return row ? profileRowToStudentProfile(row) : null;
-}
-
-export async function upsertStudentProfile(
-  supabase: SupabaseClient,
-  userId: string,
-  profile: StudentProfile,
-  options?: { displayName?: string | null; email?: string | null },
-): Promise<{ ok: true } | { ok: false; message: string }> {
-  const fields = studentProfileToRowFields(profile, options?.displayName);
-  const payload = {
-    id: userId,
-    ...fields,
-    ...(typeof options?.email === "string" ? { email: options.email } : {}),
-  };
-
-  const { error } = await supabase.from("profiles").upsert(payload, { onConflict: "id" });
-  if (error) {
-    return { ok: false, message: error.message || "Could not save student profile." };
-  }
-  return { ok: true };
 }
 
 /** Validate a client/API payload into StudentProfile. */

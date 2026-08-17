@@ -1,75 +1,59 @@
-import Link from "next/link";
 import { CheckIcon } from "@/components/icons";
 import { SubscribeButton } from "@/components/pricing/subscribe-button";
+import { BILLING_PLAN_LIST } from "@/lib/billing-plans";
 import { SectionHeader } from "./how-it-works";
 
-const FEATURES = [
-  "Unlimited guided tutoring sessions",
-  "Leaving Cert subject, level and topic context",
-  "Past-paper and marking-scheme aware practice",
-  "Topic Checks for core foundations",
-  "Exam Question generator",
-  "Progress and results in every subject",
-  "Mobile, tablet & desktop",
+const sharedFeatures = [
+  "Unlimited guided Tutor sessions",
+  "Topic Checks, Exam Questions and past-paper practice",
+  "Progress and results for every included subject",
   "Cancel any time, no contract",
 ];
 
-export function PricingCard({ compact, checkoutCta }: { compact?: boolean; checkoutCta?: boolean }) {
+const planPresentation = {
+  individual: { tone: "cyan", note: "Four subjects cost the same as the seven-subject plan." },
+  seven: { tone: "lime", badge: "Best for most students" },
+  unlimited: { tone: "violet" },
+} as const;
+
+const tones = {
+  cyan: { border: "border-cyan-200 border-t-cyan-500", tick: "text-cyan-600", badge: "border-cyan-200 bg-cyan-50 text-cyan-800" },
+  lime: { border: "border-lime-200 border-t-lime-500", tick: "text-lime-600", badge: "border-lime-200 bg-lime-50 text-lime-800" },
+  violet: { border: "border-violet-200 border-t-violet-500", tick: "text-violet-600", badge: "border-violet-200 bg-violet-50 text-violet-800" },
+} as const;
+
+export function PricingOptions() {
   return (
-    <div
-      className="w-full max-w-[440px] bg-[#fbfaf6] border border-cyan-100 rounded-[18px] p-7"
-      style={{ boxShadow: "0 1px 2px rgba(17,24,39,0.04), 0 18px 44px -30px rgba(8,145,178,0.42)" }}
-    >
-      <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold tracking-[-0.01em] m-0">Student</h3>
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-800 text-xs font-medium border border-cyan-100">
-          Student plan
-        </span>
-      </div>
-      <div className="mt-[18px] flex items-baseline gap-1.5">
-        <span className="text-[48px] font-semibold tracking-[-0.04em]">EUR14</span>
-        <span className="text-gray-500 text-[15px]">/ month</span>
-      </div>
-      <p className="text-gray-500 text-[13.5px] mt-1 mb-0">Or EUR120/year - cancel any time.</p>
-      {checkoutCta ? (
-        <SubscribeButton label="Subscribe with Stripe" />
-      ) : (
-        <Link
-          href="/signup"
-          className="mt-5 flex items-center justify-center h-12 w-full rounded-[10px] text-[15px] font-medium text-white bg-[linear-gradient(135deg,#06b6d4,#84cc16)] hover:brightness-105 transition-[filter,transform] hover:-translate-y-0.5 shadow-[0_16px_34px_-22px_rgba(6,182,212,.9)]"
-        >
-          Create account
-        </Link>
-      )}
-      <ul className="list-none p-0 mt-6 flex flex-col gap-2.5 m-0">
-        {FEATURES.map((item) => (
-          <li key={item} className="flex items-start gap-2.5 text-sm text-gray-700">
-            <span className="text-cyan-600 mt-0.5 shrink-0"><CheckIcon size={16} /></span>
-            {item}
-          </li>
-        ))}
-      </ul>
-      {!compact && (
-        <p className="mt-5 text-[11.5px] text-gray-400 font-mono text-center pt-4 border-t border-[#eef0f3] mb-0">
-          EUR14 / less than 30 mins of a real grind
-        </p>
-      )}
+    <div className="grid w-full gap-4 lg:grid-cols-3 lg:items-stretch">
+      {BILLING_PLAN_LIST.map((plan) => {
+        const presentation = planPresentation[plan.id];
+        const tone = tones[presentation.tone];
+        return (
+          <article key={plan.id} className={`flex h-full flex-col border border-t-[3px] bg-[#fbfaf6] p-6 sm:p-7 ${tone.border}`} style={{ boxShadow: "0 16px 34px -32px rgba(15,23,42,0.42)" }}>
+            <div className="flex min-h-7 items-start justify-between gap-3">
+              <h3 className="m-0 text-[17px] font-semibold tracking-[-0.01em] text-gray-950">{plan.name}</h3>
+              {"badge" in presentation && <span className={`shrink-0 rounded-md border px-2 py-1 text-[11px] font-semibold ${tone.badge}`}>{presentation.badge}</span>}
+            </div>
+            <div className="mt-5 flex items-baseline gap-1.5"><span className="text-[42px] font-semibold tracking-[-0.04em] text-gray-950">{plan.priceLabel}</span><span className="text-[14px] text-gray-500">/ month</span></div>
+            <p className="m-0 mt-2 min-h-[64px] text-[13.5px] leading-relaxed text-gray-600">{plan.detail}</p>
+            <SubscribeButton planId={plan.id} label={plan.cta} />
+            <ul className="m-0 mt-6 list-none space-y-2.5 p-0">
+              {sharedFeatures.map((feature) => <li key={feature} className="flex items-start gap-2.5 text-[13.5px] leading-relaxed text-gray-700"><span className={`mt-0.5 shrink-0 ${tone.tick}`}><CheckIcon size={16} /></span>{feature}</li>)}
+            </ul>
+            {"note" in presentation && <p className="mb-0 mt-auto border-t border-gray-200 pt-4 text-[11.5px] leading-relaxed text-gray-500">{presentation.note}</p>}
+          </article>
+        );
+      })}
     </div>
   );
 }
 
 export function PricingTeaser() {
   return (
-    <section id="pricing" className="py-24 bg-[#f4f8f6]">
-      <div className="max-w-[1140px] mx-auto px-6">
-        <SectionHeader
-          eyebrow="Pricing"
-          title="A study workspace you can open when you need it."
-          subtitle="Use GrindsAI at home, on the bus, before class, or the night before a test. Start with the help you need, then follow the next useful step."
-        />
-        <div className="mt-10 grid place-items-center">
-          <PricingCard />
-        </div>
+    <section id="pricing" className="bg-[#f4f8f6] py-24">
+      <div className="mx-auto max-w-[1140px] px-6">
+        <SectionHeader eyebrow="Pricing" title="Choose the subjects you need." subtitle="Start with one subject, or keep every part of your Leaving Cert study life in one place. Every plan includes the same subject-aware support and you can cancel any time." />
+        <div className="mt-10"><PricingOptions /></div>
       </div>
     </section>
   );
