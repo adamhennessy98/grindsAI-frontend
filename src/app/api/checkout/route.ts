@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       customer_email: profile?.stripe_customer_id ? undefined : user.email ?? undefined,
       client_reference_id: user.id,
       line_items: checkoutLines.lineItems,
-      success_url: `${site}/pricing?checkout=success`,
+      success_url: `${site}/thanks?for=subscription`,
       cancel_url: `${site}/pricing?checkout=cancelled`,
       metadata: { userId: user.id, planId, subjectCount: String(subjectCount) },
       subscription_data: { metadata: { userId: user.id, planId } },

@@ -126,7 +126,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
           await goAfterAuth();
           return;
         }
-        setInfo("Account created. Check your email for a confirmation link, then sign in.");
+        router.push("/thanks?for=signup");
         return;
       }
 

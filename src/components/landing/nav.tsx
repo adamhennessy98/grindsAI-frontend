@@ -32,10 +32,12 @@ export function LandingNav() {
           <BrandLogo height={42} />
         </Link>
 
-        <nav className="hidden md:flex gap-8 text-sm text-gray-500">
+        <nav className="hidden md:flex gap-6 text-sm text-gray-500">
           <a href="#how" className="hover:text-gray-900 transition-colors">How it works</a>
-          <a href="#features" className="hover:text-gray-900 transition-colors">Why GrindsAI</a>
+          <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
+          <a href="#subjects" className="hover:text-gray-900 transition-colors">Subjects</a>
           <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
+          <a href="#faq" className="hover:text-gray-900 transition-colors">FAQ</a>
         </nav>
 
         <div className="flex items-center gap-2">

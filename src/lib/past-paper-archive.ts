@@ -1,9 +1,6 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { getSubjectTopics } from "@/lib/constants";
-
-const ARCHIVE_ROOT = path.join(process.cwd(), "docs", "processed", "maths-rag-preprocessing", "output_question_chunks");
-const ASSETS_ROOT = path.join(process.cwd(), "docs", "processed", "maths-rag-preprocessing", "image_assets");
+import { getSubjectTopics, SUBJECTS } from "@/lib/constants";
 
 type Collection = "mixed" | "topic_specific" | "unclassified";
 type RecordItem = {
@@ -23,16 +20,27 @@ type RecordItem = {
   tutorMarkingSchemeText: string;
 };
 
-export type MathsArchiveQuestion = Pick<RecordItem, "id" | "year" | "questionNumber" | "topic" | "hasVisual"> & { topicId: string };
-export type MathsArchiveYear = { year: number; questions: MathsArchiveQuestion[] };
-export type MathsArchiveDetail = MathsArchiveQuestion & {
+export type PastPaperArchiveQuestion = Pick<RecordItem, "id" | "year" | "questionNumber" | "topic" | "hasVisual"> & { topicId: string };
+export type PastPaperArchiveYear = { year: number; questions: PastPaperArchiveQuestion[] };
+export type PastPaperArchiveDetail = PastPaperArchiveQuestion & {
   questionText: string;
   markingSchemeText: string;
   tutorQuestionText: string;
   tutorMarkingSchemeText: string;
 };
 
-let archiveCache: Promise<RecordItem[]> | undefined;
+const ARCHIVE_SUBJECT_IDS = new Set(SUBJECTS.map((subject) => subject.id));
+const archiveCache = new Map<string, Promise<RecordItem[]>>();
+
+function archiveRoot(subjectId: string) {
+  if (!ARCHIVE_SUBJECT_IDS.has(subjectId)) return null;
+  return path.join(process.cwd(), "docs", "processed", `${subjectId}-rag-preprocessing`, "output_question_chunks");
+}
+
+function assetsRoot(subjectId: string) {
+  if (!ARCHIVE_SUBJECT_IDS.has(subjectId)) return null;
+  return path.join(process.cwd(), "docs", "processed", `${subjectId}-rag-preprocessing`, "image_assets");
+}
 
 function normalizeLabel(value: string) {
   return value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
@@ -42,8 +50,8 @@ function normalizeLevel(level: string) {
   return level === "OL" || level.toLowerCase().includes("ordinary") ? "ordinary" : "higher";
 }
 
-function encodeId(filePath: string) {
-  return Buffer.from(path.relative(ARCHIVE_ROOT, filePath)).toString("base64url");
+function encodeId(root: string, filePath: string) {
+  return Buffer.from(path.relative(root, filePath)).toString("base64url");
 }
 
 async function listMarkdownFiles(directory: string): Promise<string[]> {
@@ -78,13 +86,12 @@ function imageReferences(value: string) {
   return Array.from(value.matchAll(/!\[[^\]]*]\(([^)]+)\)/g), (match) => match[1].trim());
 }
 
-function cleanMarkdown(value: string, questionId: string, assetCursor: { value: number }) {
+function cleanMarkdown(value: string, subjectId: string, questionId: string, assetCursor: { value: number }) {
   const images = imageReferences(value);
   if (images.length > 0) {
     const firstImageIndex = assetCursor.value;
     assetCursor.value += images.length;
-    // The scanned pages are more reliable than the OCR for formulae and diagrams.
-    return images.map((_image, offset) => `![Scanned exam page](/api/maths-archive?questionId=${encodeURIComponent(questionId)}&asset=${firstImageIndex + offset})`).join("\n\n");
+    return images.map((_image, offset) => `![Scanned exam page](/api/past-paper-archive?subjectId=${encodeURIComponent(subjectId)}&questionId=${encodeURIComponent(questionId)}&asset=${firstImageIndex + offset})`).join("\n\n");
   }
   return value
     .replace(/<!--[\s\S]*?-->/g, "")
@@ -112,8 +119,10 @@ function locationFor(filePath: string): Pick<RecordItem, "level" | "collection">
   return level && collection ? { level, collection } : null;
 }
 
-async function loadArchive() {
-  const files = await listMarkdownFiles(ARCHIVE_ROOT);
+async function loadArchive(subjectId: string) {
+  const root = archiveRoot(subjectId);
+  if (!root) return [];
+  const files = await listMarkdownFiles(root);
   const records = await Promise.all(files.map(async (filePath) => {
     const location = locationFor(filePath);
     if (!location) return null;
@@ -125,7 +134,7 @@ async function loadArchive() {
     const questionNumber = Number(scalar(frontmatter, "question_number"));
     const topic = scalar(frontmatter, "topic");
     if (!Number.isFinite(year) || !Number.isFinite(questionNumber) || !topic) return null;
-    const id = encodeId(filePath);
+    const id = encodeId(root, filePath);
     const cursor = { value: 0 };
     const body = match[2];
     const visualAssets = imageReferences(body);
@@ -134,8 +143,8 @@ async function loadArchive() {
       id, filePath, ...location, year, questionNumber, topic,
       secondaryTopics: list(frontmatter, "secondary_topics"), visualAssets,
       hasVisual: visualAssets.length > 0,
-      questionText: cleanMarkdown(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References"), id, cursor),
-      markingSchemeText: cleanMarkdown(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References"), id, cursor),
+      questionText: cleanMarkdown(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References"), subjectId, id, cursor),
+      markingSchemeText: cleanMarkdown(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References"), subjectId, id, cursor),
       tutorQuestionText: tutorText(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References")),
       tutorMarkingSchemeText: tutorText(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References")),
     } satisfies RecordItem;
@@ -143,25 +152,25 @@ async function loadArchive() {
   return records.filter((record): record is RecordItem => Boolean(record));
 }
 
-function getArchive() {
-  archiveCache ??= loadArchive();
-  return archiveCache;
+function getArchive(subjectId: string) {
+  if (!archiveCache.has(subjectId)) archiveCache.set(subjectId, loadArchive(subjectId));
+  return archiveCache.get(subjectId)!;
 }
 
-function matchesTopic(record: RecordItem, topicId: string) {
+function matchesTopic(subjectId: string, record: RecordItem, topicId: string) {
   if (topicId === "general") return true;
   if (record.collection === "mixed") return false;
-  const topicName = getSubjectTopics("maths").find((topic) => topic.id === topicId)?.name;
+  const topicName = getSubjectTopics(subjectId).find((topic) => topic.id === topicId)?.name;
   if (!topicName) return false;
   const target = normalizeLabel(topicName);
   return normalizeLabel(record.topic) === target || record.secondaryTopics.some((topic) => normalizeLabel(topic) === target);
 }
 
-function summary(record: RecordItem): MathsArchiveQuestion {
+function summary(subjectId: string, record: RecordItem): PastPaperArchiveQuestion {
   if (record.collection === "mixed" || record.collection === "unclassified") {
     return { id: record.id, year: record.year, questionNumber: record.questionNumber, topic: "Mixed", topicId: "general", hasVisual: record.hasVisual };
   }
-  const mappedTopic = getSubjectTopics("maths").find((topic) => normalizeLabel(topic.name) === normalizeLabel(record.topic));
+  const mappedTopic = getSubjectTopics(subjectId).find((topic) => normalizeLabel(topic.name) === normalizeLabel(record.topic));
   return {
     id: record.id,
     year: record.year,
@@ -172,21 +181,25 @@ function summary(record: RecordItem): MathsArchiveQuestion {
   };
 }
 
-export async function getMathsArchiveByTopic(input: { level: string; topicId: string }) {
-  const byYear = new Map<number, MathsArchiveQuestion[]>();
-  for (const record of await getArchive()) {
-    if (record.level !== normalizeLevel(input.level) || !matchesTopic(record, input.topicId)) continue;
-    const questions = byYear.get(record.year) ?? [];
-    questions.push(summary(record));
-    byYear.set(record.year, questions);
-  }
-  return Array.from(byYear, ([year, questions]) => ({ year, questions: questions.sort((a, b) => a.questionNumber - b.questionNumber) })).sort((a, b) => b.year - a.year) satisfies MathsArchiveYear[];
+export function isPastPaperArchiveSubject(subjectId: string) {
+  return ARCHIVE_SUBJECT_IDS.has(subjectId);
 }
 
-export async function getMathsArchiveDetail(id: string): Promise<MathsArchiveDetail | null> {
-  const record = (await getArchive()).find((item) => item.id === id);
+export async function getPastPaperArchiveByTopic(input: { subjectId: string; level: string; topicId: string }) {
+  const byYear = new Map<number, PastPaperArchiveQuestion[]>();
+  for (const record of await getArchive(input.subjectId)) {
+    if (record.level !== normalizeLevel(input.level) || !matchesTopic(input.subjectId, record, input.topicId)) continue;
+    const questions = byYear.get(record.year) ?? [];
+    questions.push(summary(input.subjectId, record));
+    byYear.set(record.year, questions);
+  }
+  return Array.from(byYear, ([year, questions]) => ({ year, questions: questions.sort((a, b) => a.questionNumber - b.questionNumber) })).sort((a, b) => b.year - a.year) satisfies PastPaperArchiveYear[];
+}
+
+export async function getPastPaperArchiveDetail(input: { subjectId: string; id: string }): Promise<PastPaperArchiveDetail | null> {
+  const record = (await getArchive(input.subjectId)).find((item) => item.id === input.id);
   return record ? {
-    ...summary(record),
+    ...summary(input.subjectId, record),
     questionText: record.questionText,
     markingSchemeText: record.markingSchemeText,
     tutorQuestionText: record.tutorQuestionText,
@@ -194,12 +207,13 @@ export async function getMathsArchiveDetail(id: string): Promise<MathsArchiveDet
   } : null;
 }
 
-export async function getMathsArchiveAsset(id: string, assetIndex: number) {
-  const record = (await getArchive()).find((item) => item.id === id);
-  const reference = record?.visualAssets[assetIndex];
-  if (!record || !reference) return null;
+export async function getPastPaperArchiveAsset(input: { subjectId: string; id: string; assetIndex: number }) {
+  const root = assetsRoot(input.subjectId);
+  const record = (await getArchive(input.subjectId)).find((item) => item.id === input.id);
+  const reference = record?.visualAssets[input.assetIndex];
+  if (!root || !record || !reference) return null;
   const filePath = path.resolve(path.dirname(record.filePath), reference);
-  if (!filePath.startsWith(`${ASSETS_ROOT}${path.sep}`)) return null;
+  if (!filePath.startsWith(`${root}${path.sep}`)) return null;
   const extension = path.extname(filePath).toLowerCase();
   const contentType = extension === ".png" ? "image/png" : extension === ".jpg" || extension === ".jpeg" ? "image/jpeg" : "image/webp";
   return { bytes: await readFile(filePath), contentType };
