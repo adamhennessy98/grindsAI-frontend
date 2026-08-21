@@ -26,8 +26,16 @@ export type LoadAgentContextInput = {
   subjectId?: string | null;
   level?: string | null;
   topicId?: string | null;
-  /** Extra prompt fragments (e.g. question handoff context). */
-  extras?: string[];
+  /**
+   * Extra prompt fragments (e.g. question handoff context).
+   * Accept a Promise so callers can start RAG/memories without waiting for the brief.
+   */
+  extras?: string[] | Promise<string[] | undefined>;
+  /**
+   * When provided (including a Promise), skip a second profiles read.
+   * Omit to load via getStudentProfile.
+   */
+  profile?: StudentProfile | null | Promise<StudentProfile | null>;
 };
 
 export type AgentRuntimeContext = {
@@ -65,8 +73,42 @@ export function resolveAgentId(input: {
   return "general-coach";
 }
 
+async function loadRagContext(input: {
+  agent: AgentDefinition;
+  subjectId?: string;
+  level?: string;
+  topicId?: string;
+  userMessage: string;
+}): Promise<RagContext> {
+  const rag: RagContext = {};
+  const { agent, subjectId, level, topicId, userMessage } = input;
+  if (!subjectId || (!agent.rag.formulaBook && !agent.rag.pastPapers)) return rag;
+
+  const [formulaBook, pastPapers] = await Promise.all([
+    agent.rag.formulaBook
+      ? getFormulaBookContext({
+          subjectId,
+          level,
+          topicId,
+          userMessage,
+        })
+      : Promise.resolve(""),
+    agent.rag.pastPapers
+      ? getPastPaperContext({
+          subjectId,
+          level: level ?? "HL",
+          topicId,
+          userMessage,
+        })
+      : Promise.resolve(""),
+  ]);
+  if (formulaBook) rag.formulaBook = formulaBook;
+  if (pastPapers) rag.pastPapers = pastPapers;
+  console.log("[RAG]", pastPapers ? `${pastPapers.substring(0, 150)}...` : "EMPTY");
+  return rag;
+}
+
 export async function loadAgentContext(input: LoadAgentContextInput): Promise<AgentRuntimeContext> {
-  const profile = await getStudentProfile(input.supabase, input.userId);
   const agentId = resolveAgentId({
     explicitAgentId: input.agentId,
     subjectId: input.subjectId,
@@ -79,36 +121,23 @@ export async function loadAgentContext(input: LoadAgentContextInput): Promise<Ag
   const level = input.level === "OL" ? "OL" : subjectId ? "HL" : undefined;
   const topicId = subjectId ? resolveTopicId(subjectId, input.topicId) : undefined;
 
-  const memories = await loadRecentMemories(input.supabase, input.userId, {
+  const profileP =
+    input.profile !== undefined ? Promise.resolve(input.profile) : getStudentProfile(input.supabase, input.userId);
+  const memoriesP = loadRecentMemories(input.supabase, input.userId, {
     subjectId,
     limit: 8,
   });
-  const memoryContext = formatMemoriesForPrompt(memories);
+  const ragP = loadRagContext({
+    agent,
+    subjectId,
+    level,
+    topicId,
+    userMessage: input.userMessage,
+  });
+  const extrasP = Promise.resolve(input.extras);
 
-  const rag: RagContext = {};
-  if (subjectId && (agent.rag.formulaBook || agent.rag.pastPapers)) {
-    const [formulaBook, pastPapers] = await Promise.all([
-      agent.rag.formulaBook
-        ? getFormulaBookContext({
-            subjectId,
-            level,
-            topicId,
-            userMessage: input.userMessage,
-          })
-        : Promise.resolve(""),
-      agent.rag.pastPapers
-        ? getPastPaperContext({
-            subjectId,
-            level: level ?? "HL",
-            topicId,
-            userMessage: input.userMessage,
-          })
-        : Promise.resolve(""),
-    ]);
-    if (formulaBook) rag.formulaBook = formulaBook;
-    if (pastPapers) rag.pastPapers = pastPapers;
-    console.log("[RAG]", pastPapers ? `${pastPapers.substring(0, 150)}...` : "EMPTY");
-  }
+  const [profile, memories, rag, extras] = await Promise.all([profileP, memoriesP, ragP, extrasP]);
+  const memoryContext = formatMemoriesForPrompt(memories);
 
   const systemPrompt = composeSystemPrompt({
     agent,
@@ -119,7 +148,7 @@ export async function loadAgentContext(input: LoadAgentContextInput): Promise<Ag
     mode,
     rag,
     memoryContext,
-    extras: input.extras,
+    extras,
   });
 
   return {

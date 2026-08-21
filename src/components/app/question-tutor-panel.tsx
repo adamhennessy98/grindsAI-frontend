@@ -25,7 +25,7 @@ export function QuestionTutorPanel({ subjectId, level, handoff, onClose }: { sub
     const userMessage: TutorMessage = { id: `question-user-${Date.now()}`, role: "user", text };
     const assistantMessageId = `question-ai-${Date.now()}`;
     const history = messages.map(({ role, text: messageText }) => ({ role, text: messageText }));
-    setMessages((current) => [...current, userMessage]);
+    setMessages((current) => [...current, userMessage, { id: assistantMessageId, role: "ai", text: "" }]);
     setDraft("");
     setIsResponding(true);
 
@@ -53,7 +53,6 @@ export function QuestionTutorPanel({ subjectId, level, handoff, onClose }: { sub
       if (!reader) throw new Error("Your Tutor could not respond just now.");
       const decoder = new TextDecoder();
       let reply = "";
-      setMessages((current) => [...current, { id: assistantMessageId, role: "ai", text: "" }]);
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;

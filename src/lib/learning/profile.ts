@@ -86,24 +86,29 @@ export async function upsertStudentPrefs(
 const STRUGGLING_THRESHOLD = 0.55;
 const TOP_N = 8;
 
-export async function getLearningProfile(
-  supabase: SupabaseClient,
-  userId: string,
-): Promise<LearningProfile> {
-  const prefs = await fetchStudentPrefs(supabase, userId);
-  const tone = await fetchStudentToneContext(supabase, userId);
-
-  const { data: states, error } = await supabase
+async function fetchKcStates(supabase: SupabaseClient, userId: string) {
+  const { data, error } = await supabase
     .from("student_kc_state")
     .select("kc_id, mastery_p, evidence_n, last_outcome, last_event_at")
     .eq("user_id", userId)
     .gt("evidence_n", 0)
     .order("mastery_p", { ascending: true })
     .limit(40);
-
   if (error) throw error;
+  return data ?? [];
+}
 
-  const kcIds = [...new Set((states ?? []).map((row) => row.kc_id as string))];
+export async function getLearningProfile(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<LearningProfile> {
+  const [prefs, tone, states] = await Promise.all([
+    fetchStudentPrefs(supabase, userId),
+    fetchStudentToneContext(supabase, userId),
+    fetchKcStates(supabase, userId),
+  ]);
+
+  const kcIds = [...new Set(states.map((row) => row.kc_id as string))];
   const labelByKc = new Map<string, { label: string; subject_id: string; strand_topic_id: string }>();
   if (kcIds.length) {
     const { data: kcs, error: kcErr } = await supabase
@@ -121,7 +126,7 @@ export async function getLearningProfile(
   }
 
   const strugglingKcs: KcMasterySummary[] = [];
-  for (const row of states ?? []) {
+  for (const row of states) {
     const meta = labelByKc.get(row.kc_id as string);
     if (!meta) continue;
     const masteryP = Number(row.mastery_p);
