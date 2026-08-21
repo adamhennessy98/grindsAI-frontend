@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getTopic } from "@/lib/constants";
 import { MathMarkdown } from "@/components/math-markdown";
+import { ArchivedSessionsPanel } from "./archived-sessions-panel";
 import { subjectInitial, subjectLabel, subjectThemeStyle } from "./subjects";
 import { MobileTutorTopicDrawer, TutorTopicSidebar } from "./tutor-topic-sidebar";
 
@@ -12,7 +13,7 @@ export type TutorQuestionHandoff = {
   topicId: string;
   topicName: string;
   level: string;
-  sourceLabel: "Generated exam question" | "Past exam question" | "Topic Check question";
+  sourceLabel: "Generated exam question" | "Past exam question" | "Topic Check question" | "Session continue";
   summary: string;
   initialMessage: string;
   contextPrompt: string;
@@ -24,6 +25,8 @@ interface ConversationViewProps {
   subjectId: string;
   level: string;
   topicId: string;
+  /** Bump when opening Tutor from workspace so we start a fresh sitting. */
+  sessionResetKey?: number;
   handoff: TutorQuestionHandoff | null;
   onStartSession: (topicId: string) => void;
   onOpenTopic: (topicId: string) => void;
@@ -44,6 +47,7 @@ export function ConversationView({
   subjectId,
   level,
   topicId,
+  sessionResetKey = 0,
   handoff,
   onStartSession,
   onOpenTopic,
@@ -55,11 +59,18 @@ export function ConversationView({
   const [draft, setDraft] = useState("");
   const [messagesByTopic, setMessagesByTopic] = useState<Record<string, TutorMessage[]>>({});
   const [respondingTopicId, setRespondingTopicId] = useState<string | null>(null);
-  const conversationIds = useRef<Record<string, string>>({});
+  const [ending, setEnding] = useState(false);
+  const [lastWrapUpLine, setLastWrapUpLine] = useState<string | null>(null);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [archiveRefreshKey, setArchiveRefreshKey] = useState(0);
+  const sessionIds = useRef<Record<string, string>>({});
   const questionContexts = useRef<Record<string, string>>({});
   const handledHandoffs = useRef(new Set<string>());
+  const lastResetKey = useRef(sessionResetKey);
+  const lastActivityAt = useRef(Date.now());
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const messages = messagesByTopic[topic.id] ?? [];
+  const hasActiveSession = Boolean(sessionIds.current[topic.id]) || messages.length > 0 || Boolean(handoff);
   const isNewTopic = messages.length === 0 && !handoff;
   const isResponding = respondingTopicId === topic.id;
   const contextualActions =
@@ -70,25 +81,100 @@ export function ConversationView({
         : ["I'm still stuck", "Show another step", "Show a worked example"];
   const scrollToBottom = useCallback(() => bottomRef.current?.scrollIntoView({ block: "end" }), []);
 
+  const clearTopicSitting = useCallback((activeTopicId: string) => {
+    delete sessionIds.current[activeTopicId];
+    delete questionContexts.current[activeTopicId];
+    setMessagesByTopic((current) => {
+      const next = { ...current };
+      delete next[activeTopicId];
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (sessionResetKey === lastResetKey.current) return;
+    lastResetKey.current = sessionResetKey;
+    clearTopicSitting(topic.id);
+  }, [clearTopicSitting, sessionResetKey, topic.id]);
+
+  useEffect(() => {
+    setArchiveOpen(false);
+  }, [topic.id]);
+
   useEffect(() => {
     window.requestAnimationFrame(scrollToBottom);
   }, [scrollToBottom, messages.length, topic.id, isResponding]);
 
-  const sendMessage = useCallback(async (value: string, studentContext = "") => {
+  const endSession = useCallback(async (reason: "manual" | "idle" = "manual") => {
+    const sessionId = sessionIds.current[topic.id];
+    if (!sessionId && reason === "idle") return;
+    setEnding(true);
+    try {
+      let summary: string | null = null;
+      if (sessionId) {
+        const response = await fetch("/api/learning/sessions/end", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
+        if (response.ok) {
+          const payload = (await response.json().catch(() => null)) as {
+            wrapUp?: { summaryLine?: string | null };
+          } | null;
+          summary = payload?.wrapUp?.summaryLine?.trim() || null;
+        }
+      }
+      clearTopicSitting(topic.id);
+      setArchiveRefreshKey((value) => value + 1);
+      if (summary) {
+        setLastWrapUpLine(reason === "idle" ? `Session timed out — ${summary}` : summary);
+      } else if (reason === "idle") {
+        setLastWrapUpLine("Session ended after a while idle.");
+      } else {
+        setLastWrapUpLine(null);
+      }
+    } finally {
+      setEnding(false);
+    }
+  }, [clearTopicSitting, topic.id]);
+
+  useEffect(() => {
+    const idleMs = 15 * 60 * 1000;
+    const timer = window.setInterval(() => {
+      if (!sessionIds.current[topic.id]) return;
+      if (Date.now() - lastActivityAt.current < idleMs) return;
+      void endSession("idle");
+    }, 60_000);
+    return () => window.clearInterval(timer);
+  }, [endSession, topic.id]);
+
+  const sendMessage = useCallback(async (value: string, studentContext = "", options?: { fresh?: boolean }) => {
     const message = value.trim();
     if (!message || respondingTopicId) return;
+    if (options?.fresh) {
+      delete sessionIds.current[topic.id];
+      delete questionContexts.current[topic.id];
+      setMessagesByTopic((current) => {
+        const next = { ...current };
+        delete next[topic.id];
+        return next;
+      });
+    }
     if (studentContext.trim()) questionContexts.current[topic.id] = studentContext.trim();
-    const activeMessages = messagesByTopic[topic.id] ?? [];
+    const activeMessages = options?.fresh ? [] : (messagesByTopic[topic.id] ?? []);
     const wasEmpty = activeMessages.length === 0;
     const userMessage: TutorMessage = { id: `user-${Date.now()}`, role: "user", text: message };
     const assistantMessageId = `ai-${Date.now()}`;
+    const sessionType = studentContext.trim() || questionContexts.current[topic.id] ? "paste_question" : "explain";
 
     setMessagesByTopic((current) => ({
       ...current,
-      [topic.id]: [...(current[topic.id] ?? []), userMessage, { id: assistantMessageId, role: "ai", text: "" }],
+      [topic.id]: [...(options?.fresh ? [] : (current[topic.id] ?? [])), userMessage, { id: assistantMessageId, role: "ai", text: "" }],
     }));
     setDraft("");
     setRespondingTopicId(topic.id);
+    setLastWrapUpLine(null);
+    lastActivityAt.current = Date.now();
     if (wasEmpty) onStartSession(topic.id);
 
     try {
@@ -96,7 +182,8 @@ export function ConversationView({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          conversationId: conversationIds.current[topic.id] ?? null,
+          sessionId: options?.fresh ? null : (sessionIds.current[topic.id] ?? null),
+          sessionType,
           subjectId,
           level,
           topicId: topic.id,
@@ -112,8 +199,8 @@ export function ConversationView({
         throw new Error(payload?.error ?? "Your Tutor could not respond just now.");
       }
 
-      const conversationId = response.headers.get("X-Conversation-Id");
-      if (conversationId) conversationIds.current[topic.id] = conversationId;
+      const sessionId = response.headers.get("X-Session-Id");
+      if (sessionId) sessionIds.current[topic.id] = sessionId;
       const reader = response.body?.getReader();
       if (!reader) throw new Error("Your Tutor could not respond just now.");
       const decoder = new TextDecoder();
@@ -140,7 +227,7 @@ export function ConversationView({
   useEffect(() => {
     if (!handoff || handledHandoffs.current.has(handoff.id)) return;
     handledHandoffs.current.add(handoff.id);
-    void sendMessage(handoff.initialMessage, handoff.contextPrompt);
+    void sendMessage(handoff.initialMessage, handoff.contextPrompt, { fresh: true });
   }, [handoff, sendMessage]);
 
   return (
@@ -152,13 +239,45 @@ export function ConversationView({
           <button type="button" onClick={() => setTopicsOpen(true)} aria-label="Open tutor topics" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 transition-colors hover:border-cyan-500 hover:text-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 lg:hidden">Topics</button>
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-500 font-heading text-sm font-semibold text-white">AI</span>
           <div className="min-w-0 flex-1"><div className="font-heading text-[17px] font-semibold text-gray-900 dark:text-white">{subject} Tutor</div><div className="flex min-w-0 items-center gap-1.5" aria-live="polite"><span className="subject-context-marker flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[9px] font-semibold">{subjectInitial(subjectId)}</span><div className="subject-context-label truncate text-[12.5px]">{level === "OL" ? "Ordinary Level" : "Higher Level"} / {topic.name}</div></div></div>
-          <span className="hidden border-l-2 border-cyan-500 pl-2 text-xs font-medium text-cyan-700 dark:text-cyan-300 sm:inline">Guided help</span>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setArchiveOpen(true)}
+              className="shrink-0 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-gray-700 hover:border-cyan-500 hover:text-cyan-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            >
+              Archived
+            </button>
+            {hasActiveSession ? (
+              <button
+                type="button"
+                onClick={() => void endSession("manual")}
+                disabled={ending || isResponding}
+                className="shrink-0 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-gray-700 hover:border-cyan-500 hover:text-cyan-700 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              >
+                {ending ? "Ending…" : "End session"}
+              </button>
+            ) : (
+              <span className="hidden border-l-2 border-cyan-500 pl-2 text-xs font-medium text-cyan-700 dark:text-cyan-300 sm:inline">Guided help</span>
+            )}
+          </div>
         </div>
 
+        {lastWrapUpLine && isNewTopic && (
+          <p className="m-0 shrink-0 border-b border-gray-100 px-1 py-2 text-[12.5px] text-gray-600 dark:border-slate-800 dark:text-slate-300" role="status">
+            Last session: {lastWrapUpLine}
+          </p>
+        )}
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-1 pb-4 pt-4"><div key={topic.id} className="animate-fade-up flex flex-col gap-4">{isNewTopic ? <TutorEmptyState topicName={topic.name} onChoose={sendMessage} /> : <>{handoff && <QuestionHandoff handoff={handoff} />}{!handoff && messages.length === 0 && <TutorBubble>You are in {topic.name}. Tell me what you are working on or where you are stuck.</TutorBubble>}{messages.map((message) => message.role === "ai" ? <TutorBubble key={message.id}>{message.text || "Thinking..."}</TutorBubble> : <StudentBubble key={message.id}>{message.text}</StudentBubble>)}</>}</div><div ref={bottomRef} /></div>
 
         <div className="shrink-0 border-t border-gray-200 bg-[#f4f7f4]/95 px-1 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-sm dark:border-slate-800 dark:bg-[#07101e]/95">{(contextualActions.length > 0 || messages.length > 0 || handoff) && <div className="mb-2.5 flex flex-wrap gap-2">{contextualActions.map((action) => <QuickAction key={action} onClick={() => void sendMessage(action)}>{action}</QuickAction>)}{(messages.length > 0 || handoff) && <QuickAction onClick={onOpenGenerator}>Practise this topic</QuickAction>}</div>}<form onSubmit={(event) => { event.preventDefault(); void sendMessage(draft); }} className="flex items-center gap-2.5 rounded-lg border border-gray-300 bg-white py-1.5 pl-4 pr-1.5 shadow-[0_8px_18px_-18px_rgba(15,23,42,.5)] dark:border-slate-700 dark:bg-slate-900"><input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Paste a question or tell your Tutor where you are stuck..." className="flex-1 border-none bg-transparent py-2.5 text-[14.5px] text-gray-700 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-slate-400" /><button type="submit" disabled={!draft.trim() || isResponding} aria-label="Send message" className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-md bg-cyan-600 text-[12px] font-semibold text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 disabled:bg-gray-300 dark:disabled:bg-slate-700">Send</button></form></div>
       </div>
+      <ArchivedSessionsPanel
+        subjectId={subjectId}
+        topicId={topic.id}
+        open={archiveOpen}
+        onClose={() => setArchiveOpen(false)}
+        refreshKey={archiveRefreshKey}
+      />
     </div>
   );
 }

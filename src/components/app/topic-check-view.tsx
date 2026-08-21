@@ -48,11 +48,14 @@ async function readTutorReview(input: {
   question: GeneratedExamQuestion;
   answer: string;
   assisted: boolean;
+  sessionId?: string | null;
 }) {
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      sessionId: input.sessionId ?? null,
+      sessionType: "topic_check",
       subjectId: input.subjectId,
       level: input.level,
       topicId: input.topicId,
@@ -79,17 +82,17 @@ async function readTutorReview(input: {
     throw new Error(payload?.error ?? "The answer review could not be completed.");
   }
 
+  const nextSessionId = response.headers.get("X-Session-Id");
   const reader = response.body?.getReader();
   if (!reader) throw new Error("The answer review could not be completed.");
   const decoder = new TextDecoder();
-  let review = "";
+  let text = "";
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    review += decoder.decode(value, { stream: true });
+    text += decoder.decode(value, { stream: true });
   }
-  if (!review.trim()) throw new Error("The answer review could not be completed.");
-  return review.trim();
+  return { text, sessionId: nextSessionId };
 }
 
 export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, onOpenTutor, onOpenGenerator }: TopicCheckViewProps) {
@@ -106,6 +109,7 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
   const [reviews, setReviews] = useState<TopicCheckReview[]>([]);
   const [error, setError] = useState("");
   const [completed, setCompleted] = useState<TopicCheckEntry | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const activeTopic = topics.find((topic) => topic.id === topicId) ?? topics[0];
   const activeQuestion = questions[activeQuestionIndex];
   const allAnswered = questions.length > 0 && answers.length === questions.length && answers.every((answer) => answer.trim());
@@ -113,7 +117,22 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
   const needsWorkCount = reviews.filter((review) => review.status === "needs-correction").length;
   const allCorrect = reviews.length === questions.length && correctCount === questions.length;
 
+  const endTopicCheckSession = async (id: string | null) => {
+    if (!id) return;
+    try {
+      await fetch("/api/learning/sessions/end", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: id }),
+      });
+    } catch {
+      // best-effort end
+    }
+  };
+
   const resetCheck = () => {
+    void endTopicCheckSession(sessionId);
+    setSessionId(null);
     setQuestions([]);
     setAnswers([]);
     setAssistedQuestionIndexes([]);
@@ -136,6 +155,21 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
     resetCheck();
 
     try {
+      const sessionRes = await fetch("/api/learning/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionType: "topic_check",
+          subjectId,
+          level,
+          topicId: activeTopic.id,
+        }),
+      });
+      if (sessionRes.ok) {
+        const payload = (await sessionRes.json()) as { sessionId?: string };
+        if (payload.sessionId) setSessionId(payload.sessionId);
+      }
+
       const result = await requestExamQuestions({
         subjectId,
         level,
@@ -174,11 +208,12 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
     setReviews([]);
     setError("");
 
+    let activeSessionId = sessionId;
     const nextReviews: TopicCheckReview[] = [];
     for (let index = 0; index < questions.length; index += 1) {
       setReviewStep(index + 1);
       try {
-        const text = await readTutorReview({
+        const reviewed = await readTutorReview({
           subjectId,
           level,
           topicId: activeTopic.id,
@@ -186,8 +221,13 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
           question: questions[index],
           answer: answers[index],
           assisted: assistedQuestionIndexes.includes(index),
+          sessionId: activeSessionId,
         });
-        nextReviews.push({ questionIndex: index, status: reviewStatus(text), text });
+        if (reviewed.sessionId) {
+          activeSessionId = reviewed.sessionId;
+          setSessionId(reviewed.sessionId);
+        }
+        nextReviews.push({ questionIndex: index, status: reviewStatus(reviewed.text), text: reviewed.text });
       } catch (reviewError) {
         nextReviews.push({
           questionIndex: index,
@@ -209,6 +249,8 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
     setReviews(nextReviews);
     setCompleted(entry);
     onComplete(entry);
+    await endTopicCheckSession(activeSessionId);
+    setSessionId(null);
     setIsReviewing(false);
     setReviewStep(0);
   };

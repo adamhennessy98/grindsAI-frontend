@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { conversationKey, getTopic, getSubjectTopics, SUBJECTS } from "@/lib/constants";
+import { getTopic, getSubjectTopics, SUBJECTS } from "@/lib/constants";
 import { loadAgentContext } from "@/lib/agents/load-context";
 import { isAgentId, isAgentMode } from "@/lib/agents/registry";
 import { composeStudentContext } from "@/lib/learning/compose-student-context";
 import { getLearningProfile } from "@/lib/learning/profile";
+import {
+  ensureChatStudySession,
+  parseSessionType,
+  type StudySessionType,
+} from "@/lib/learning/sessions";
 import { streamAgentReply } from "@/lib/llm";
 import { buildChatMemorySummary, saveMemory } from "@/lib/memory";
 import { assertChatAllowed } from "@/lib/subscription";
@@ -12,7 +17,8 @@ import { createClient } from "@/lib/supabase/server";
 import type { Message } from "@/lib/types";
 
 type ChatBody = {
-  conversationId?: string | null;
+  sessionId?: string | null;
+  sessionType?: string | null;
   subjectId: string;
   level: string;
   topicId?: string | null;
@@ -25,7 +31,7 @@ type ChatBody = {
 };
 
 type SaveMessageResult =
-  | { ok: true; conversationId: string }
+  | { ok: true; conversationId: string; sessionId: string }
   | { ok: false; status: number; error: string };
 
 function isValidSubject(id: string) {
@@ -44,60 +50,27 @@ async function* singleChunk(text: string) {
 async function saveUserMessage(input: {
   supabase: SupabaseClient;
   userId: string;
-  conversationId: string | null;
+  sessionId: string | null;
+  sessionType: StudySessionType;
   subjectId: string;
-  level: string;
+  level: "HL" | "OL";
   topicId: string;
-  key: string;
   text: string;
 }): Promise<SaveMessageResult> {
-  let conversationId = input.conversationId;
-
-  if (conversationId) {
-    const { data: conv, error: convErr } = await input.supabase
-      .from("conversations")
-      .select("id, conversation_key")
-      .eq("id", conversationId)
-      .eq("user_id", input.userId)
-      .maybeSingle();
-    if (convErr || !conv) {
-      return { ok: false, status: 404, error: "Conversation not found." };
-    }
-  } else {
-    const { data: existing } = await input.supabase
-      .from("conversations")
-      .select("id")
-      .eq("user_id", input.userId)
-      .eq("conversation_key", input.key)
-      .maybeSingle();
-
-    if (existing?.id) {
-      conversationId = existing.id;
-    } else {
-      const { data: created, error: insErr } = await input.supabase
-        .from("conversations")
-        .insert({
-          user_id: input.userId,
-          subject_id: input.subjectId,
-          level: input.level,
-          topic_id: input.topicId,
-          conversation_key: input.key,
-        })
-        .select("id")
-        .single();
-      if (insErr || !created) {
-        return { ok: false, status: 500, error: "Could not start conversation." };
-      }
-      conversationId = created.id;
-    }
-  }
-
-  if (!conversationId) {
-    return { ok: false, status: 500, error: "Could not start conversation." };
+  const ensured = await ensureChatStudySession(input.supabase, {
+    userId: input.userId,
+    sessionId: input.sessionId,
+    sessionType: input.sessionType,
+    subjectId: input.subjectId,
+    level: input.level,
+    topicId: input.topicId,
+  });
+  if (!ensured.ok) {
+    return { ok: false, status: ensured.status, error: ensured.error };
   }
 
   const { error: userMsgErr } = await input.supabase.from("messages").insert({
-    conversation_id: conversationId,
+    conversation_id: ensured.conversationId,
     role: "user",
     content: input.text,
   });
@@ -105,7 +78,7 @@ async function saveUserMessage(input: {
     return { ok: false, status: 500, error: "Could not save your message." };
   }
 
-  return { ok: true, conversationId };
+  return { ok: true, conversationId: ensured.conversationId, sessionId: ensured.session.id };
 }
 
 export async function POST(request: Request) {
@@ -145,7 +118,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid subject." }, { status: 400 });
   }
   const topicId = validTopicId(subjectId, body.topicId);
-  const key = conversationKey(subjectId, level, topicId);
+  const sessionType = parseSessionType(
+    body.sessionType,
+    typeof body.studentContext === "string" && body.studentContext.trim() ? "paste_question" : "explain",
+  );
 
   const history: Pick<Message, "role" | "text">[] = Array.isArray(body.history)
     ? body.history.map((m) => ({ role: m.role === "ai" ? "ai" : "user", text: String(m.text) }))
@@ -180,11 +156,11 @@ export async function POST(request: Request) {
   const savedP = saveUserMessage({
     supabase,
     userId: user.id,
-    conversationId: typeof body.conversationId === "string" ? body.conversationId : null,
+    sessionId: typeof body.sessionId === "string" ? body.sessionId : null,
+    sessionType,
     subjectId,
     level,
     topicId,
-    key,
     text,
   });
 
@@ -282,6 +258,7 @@ export async function POST(request: Request) {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-cache, no-transform",
       "X-Conversation-Id": activeConversationId,
+      "X-Session-Id": saved.sessionId,
       "X-Agent-Id": resolvedAgentId,
       "X-Used-Fallback": String(usedFallback),
     },

@@ -3,16 +3,43 @@
 import { useMemo, useState } from "react";
 import { getSubjectTopics } from "@/lib/constants";
 import { RecommendationCard } from "./recommendation-card";
+import { SubjectExamDate } from "./subject-exam-date";
 import type { FocusArea, ResultEntry, StudyActivity } from "./study-state";
 import { subjectLabel, subjectThemeStyle } from "./subjects";
+import { useRecommendedNextStep } from "./use-recommended-next-step";
 
-interface ProgressResultsViewProps { subjectId: string; level: string; focusAreas: FocusArea[]; results: ResultEntry[]; activities: StudyActivity[]; onAddFocusArea: (label: string) => void; onUpdateFocusArea: (area: FocusArea, status: FocusArea["status"]) => void; onAddResult: (result: ResultEntry) => void; onOpenConvo: (focus?: string) => void; onOpenGenerator: (focus?: string) => void; }
+interface ProgressResultsViewProps {
+  subjectId: string;
+  level: string;
+  focusAreas: FocusArea[];
+  results: ResultEntry[];
+  activities: StudyActivity[];
+  onAddFocusArea: (label: string) => void;
+  onUpdateFocusArea: (area: FocusArea, status: FocusArea["status"]) => void;
+  onAddResult: (result: ResultEntry) => void;
+  onOpenConvo: (focus?: string) => void;
+  onOpenGenerator: (focus?: string) => void;
+  onOpenTopicCheck?: () => void;
+}
 
-export function ProgressResultsView({ subjectId, level, focusAreas, results, activities, onAddFocusArea, onUpdateFocusArea, onAddResult, onOpenConvo, onOpenGenerator }: ProgressResultsViewProps) {
+export function ProgressResultsView({
+  subjectId,
+  level,
+  focusAreas,
+  results,
+  activities,
+  onAddFocusArea,
+  onUpdateFocusArea,
+  onAddResult,
+  onOpenConvo,
+  onOpenGenerator,
+  onOpenTopicCheck,
+}: ProgressResultsViewProps) {
   const subject = subjectLabel(subjectId);
   const topics = useMemo(() => getSubjectTopics(subjectId), [subjectId]);
   const currentFocus = focusAreas.filter((area) => area.status === "current");
   const improved = focusAreas.filter((area) => area.status === "improved");
+  const { nextStep } = useRecommendedNextStep(subjectId);
   const [focusDraft, setFocusDraft] = useState("");
   const [resultOpen, setResultOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -22,25 +49,73 @@ export function ProgressResultsView({ subjectId, level, focusAreas, results, act
   const [wentWell, setWentWell] = useState("");
   const [difficult, setDifficult] = useState("");
   const [teacherNote, setTeacherNote] = useState("");
-  const showFeedback = (message: string) => { setFeedback(message); window.setTimeout(() => setFeedback(""), 2200); };
-  const addFocus = () => { const value = focusDraft.trim(); if (!value) return; onAddFocusArea(value); setFocusDraft(""); showFeedback("Focus area added"); };
-  const addResult = (event: React.FormEvent) => { event.preventDefault(); if (!score.trim() && !wentWell.trim() && !difficult.trim() && !teacherNote.trim()) return; onAddResult({ id: `result-${Date.now()}`, topic: resultTopic, type: resultType, score: score.trim(), wentWell: wentWell.trim(), difficult: difficult.trim(), teacherNote: teacherNote.trim(), createdAt: new Date().toISOString() }); setScore(""); setWentWell(""); setDifficult(""); setTeacherNote(""); setResultOpen(false); showFeedback("Result saved"); };
-  const latestResultWithDifficulty = [...results].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)).find((result) => result.difficult.trim());
-  const latestTopicCheck = activities.find((activity) => activity.type === "topic-check");
-  const recommendation = currentFocus[0]
-    ? { title: `Practise ${currentFocus[0].label}`, reason: "Based on your current focus area.", cta: "Start question", onClick: () => onOpenGenerator(currentFocus[0].label), feature: "questions" as const }
-    : latestResultWithDifficulty
-      ? { title: `Review ${latestResultWithDifficulty.topic} with your Tutor`, reason: "Based on what you found difficult in your latest result.", cta: "Ask Tutor", onClick: () => onOpenConvo(latestResultWithDifficulty.topic), feature: "tutor" as const }
-      : latestTopicCheck
-        ? { title: "Try an Exam Question next", reason: "Based on your completed Topic Check.", cta: "Start question", onClick: () => onOpenGenerator(latestTopicCheck.topicId), feature: "questions" as const }
-        : { title: "Add something you are finding difficult", reason: "Focus areas help shape your next useful step.", cta: "Add focus area", onClick: () => document.getElementById("focus-input")?.focus(), feature: "progress" as const };
+  const showFeedback = (message: string) => {
+    setFeedback(message);
+    window.setTimeout(() => setFeedback(""), 2200);
+  };
+  const addFocus = () => {
+    const value = focusDraft.trim();
+    if (!value) return;
+    onAddFocusArea(value);
+    setFocusDraft("");
+    showFeedback("Focus area added");
+  };
+  const addResult = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!score.trim() && !wentWell.trim() && !difficult.trim() && !teacherNote.trim()) return;
+    onAddResult({
+      id: `result-${Date.now()}`,
+      topic: resultTopic,
+      type: resultType,
+      score: score.trim(),
+      wentWell: wentWell.trim(),
+      difficult: difficult.trim(),
+      teacherNote: teacherNote.trim(),
+      createdAt: new Date().toISOString(),
+    });
+    setScore("");
+    setWentWell("");
+    setDifficult("");
+    setTeacherNote("");
+    setResultOpen(false);
+    showFeedback("Result saved");
+  };
+
+  const recommendation = nextStep
+    ? {
+        title: nextStep.title,
+        reason: nextStep.reason,
+        cta: nextStep.cta,
+        feature: nextStep.feature,
+        onClick: () => {
+          if (nextStep.action === "topic-check") onOpenTopicCheck?.();
+          else if (nextStep.action === "questions") onOpenGenerator(nextStep.topicId);
+          else if (nextStep.action === "progress") document.getElementById("focus-input")?.focus();
+          else onOpenConvo(getSubjectTopics(subjectId).find((t) => t.id === nextStep.topicId)?.name);
+        },
+      }
+    : currentFocus[0]
+      ? {
+          title: `Practise ${currentFocus[0].label}`,
+          reason: "Based on your current focus area.",
+          cta: "Start question",
+          onClick: () => onOpenGenerator(currentFocus[0].label),
+          feature: "questions" as const,
+        }
+      : {
+          title: "Add something you are finding difficult",
+          reason: "Focus areas help shape your next useful step.",
+          cta: "Add focus area",
+          onClick: () => document.getElementById("focus-input")?.focus(),
+          feature: "progress" as const,
+        };
 
   const recentItems = [
     ...results.map((result) => ({ id: result.id, at: result.createdAt, node: <ResultRow key={result.id} result={result} /> })),
     ...activities.filter((activity) => activity.type !== "result").map((activity) => ({ id: activity.id, at: activity.createdAt, node: <ActivityRow key={activity.id} activity={activity} /> })),
   ].sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 8);
 
-  return <div style={subjectThemeStyle(subjectId)} className="animate-fade-up mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9"><header className="mb-5"><div className="subject-context-label text-[12px] font-semibold uppercase tracking-[.08em]">{subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}</div><h1 className="font-heading m-0 mt-1 text-[30px] font-semibold tracking-[-.02em] text-gray-900 dark:text-white">Progress & Results</h1><p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">See what to work on next, keep track of difficult areas, and make improvement visible.</p></header><RecommendationCard {...recommendation} />{feedback && <p role="status" className="animate-fade-up m-0 mt-3 text-[13px] font-semibold text-violet-700 dark:text-violet-200">{feedback}</p>}<section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Things I&apos;m finding hard</h2><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">Your focus areas help GrindsAI recommend what to work on next.</p></div></div><div className="mt-4 flex gap-2"><input id="focus-input" value={focusDraft} onChange={(event) => setFocusDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addFocus(); } }} placeholder="e.g. starting long questions" className={inputClass} /><button type="button" onClick={addFocus} className="rounded-xl bg-violet-500 px-3.5 py-2.5 text-[13px] font-semibold text-white hover:bg-violet-600">Add</button></div>{currentFocus.length ? <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">{currentFocus.map((area) => <FocusAreaCard key={area.id} area={area} onTutor={() => onOpenConvo(area.label)} onQuestion={() => onOpenGenerator(area.label)} onComfortable={() => { onUpdateFocusArea(area, "improved"); showFeedback(`${area.label} moved to Improved areas`); }} />)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 bg-violet-50/60 px-4 py-4 text-[13px] leading-relaxed text-gray-500 dark:bg-violet-400/10">Nothing added yet. Start with one topic or exam skill you want to feel more confident with.</div>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Recent activity and results</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Your Tutor sessions, Exam Questions, Topic Checks, and logged results appear here.</p></div>{recentItems.length ? <div className="mt-4 divide-y divide-violet-100 overflow-hidden rounded-xl border border-violet-100 dark:divide-violet-950 dark:border-violet-950">{recentItems.map((item) => item.node)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 px-4 py-5 text-[13px] leading-relaxed text-gray-500">Nothing recorded yet. Tutor sessions, questions, Topic Checks, and results will build your study history here.</div>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div className="flex items-center justify-between gap-3"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Improved areas</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Areas you have marked as comfortable.</p></div><span className="rounded-full bg-violet-50 px-2.5 py-1 text-[12px] font-semibold text-violet-700 dark:bg-violet-400/10 dark:text-violet-200">{improved.length}</span></div>{improved.length ? <div className="mt-4 flex flex-wrap gap-2">{improved.map((area) => <span key={area.id} className="animate-fade-up inline-flex items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-[13px] font-medium text-violet-800 dark:bg-violet-400/10 dark:text-violet-200">{area.label}<button type="button" onClick={() => onUpdateFocusArea(area, "current")} className="rounded-lg bg-white px-2 py-1 text-[11px] font-semibold text-violet-700 hover:bg-violet-100 dark:bg-slate-900 dark:text-violet-200">Restore</button></span>)}</div> : <p className="mb-0 mt-4 text-[13px] text-gray-500">Mark a current focus area as comfortable to make your progress visible here.</p>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 dark:bg-slate-900"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Log a result</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Add a score, reflection, or teacher feedback when you have it.</p></div><button type="button" onClick={() => setResultOpen((open) => !open)} className="rounded-xl border border-violet-200 bg-violet-50 px-3.5 py-2.5 text-[13px] font-semibold text-violet-700 hover:border-violet-500 dark:border-violet-900 dark:bg-violet-400/10 dark:text-violet-200">{resultOpen ? "Close" : "Log a result"}</button></div>{resultOpen && <ResultForm topics={topics} topic={resultTopic} type={resultType} score={score} wentWell={wentWell} difficult={difficult} teacherNote={teacherNote} onTopic={setResultTopic} onType={setResultType} onScore={setScore} onWentWell={setWentWell} onDifficult={setDifficult} onTeacherNote={setTeacherNote} onSubmit={addResult} />}</section><p className="m-0 mt-4 text-center text-[11.5px] text-gray-400">Progress is saved in this browser for this signed-in account.</p></div>;
+  return <div style={subjectThemeStyle(subjectId)} className="animate-fade-up mx-auto max-w-[1060px] px-4 pb-12 pt-6 sm:px-6 lg:pt-9"><header className="mb-5"><div className="subject-context-label text-[12px] font-semibold uppercase tracking-[.08em]">{subject} / {level === "OL" ? "Ordinary Level" : "Higher Level"}</div><h1 className="font-heading m-0 mt-1 text-[30px] font-semibold tracking-[-.02em] text-gray-900 dark:text-white">Progress & Results</h1><p className="m-0 mt-1 max-w-[680px] text-sm leading-relaxed text-gray-500">See what to work on next, keep track of difficult areas, and make improvement visible.</p></header><RecommendationCard {...recommendation} />{feedback && <p role="status" className="animate-fade-up m-0 mt-3 text-[13px] font-semibold text-violet-700 dark:text-violet-200">{feedback}</p>}<SubjectExamDate subjectId={subjectId} level={level} /><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Things I&apos;m finding hard</h2><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">Your focus areas help GrindsAI recommend what to work on next.</p></div></div><div className="mt-4 flex gap-2"><input id="focus-input" value={focusDraft} onChange={(event) => setFocusDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addFocus(); } }} placeholder="e.g. starting long questions" className={inputClass} /><button type="button" onClick={addFocus} className="rounded-xl bg-violet-500 px-3.5 py-2.5 text-[13px] font-semibold text-white hover:bg-violet-600">Add</button></div>{currentFocus.length ? <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">{currentFocus.map((area) => <FocusAreaCard key={area.id} area={area} onTutor={() => onOpenConvo(area.label)} onQuestion={() => onOpenGenerator(area.label)} onComfortable={() => { onUpdateFocusArea(area, "improved"); showFeedback(`${area.label} moved to Improved areas`); }} />)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 bg-violet-50/60 px-4 py-4 text-[13px] leading-relaxed text-gray-500 dark:bg-violet-400/10">Nothing added yet. Start with one topic or exam skill you want to feel more confident with.</div>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Recent activity and results</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Your Tutor sessions, Exam Questions, Topic Checks, and logged results appear here.</p></div>{recentItems.length ? <div className="mt-4 divide-y divide-violet-100 overflow-hidden rounded-xl border border-violet-100 dark:divide-violet-950 dark:border-violet-950">{recentItems.map((item) => item.node)}</div> : <div className="mt-4 rounded-xl border border-dashed border-violet-200 px-4 py-5 text-[13px] leading-relaxed text-gray-500">Nothing recorded yet. Tutor sessions, questions, Topic Checks, and results will build your study history here.</div>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(139,92,246,.55)] dark:bg-slate-900"><div className="flex items-center justify-between gap-3"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Improved areas</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Areas you have marked as comfortable.</p></div><span className="rounded-full bg-violet-50 px-2.5 py-1 text-[12px] font-semibold text-violet-700 dark:bg-violet-400/10 dark:text-violet-200">{improved.length}</span></div>{improved.length ? <div className="mt-4 flex flex-wrap gap-2">{improved.map((area) => <span key={area.id} className="animate-fade-up inline-flex items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-[13px] font-medium text-violet-800 dark:bg-violet-400/10 dark:text-violet-200">{area.label}<button type="button" onClick={() => onUpdateFocusArea(area, "current")} className="rounded-lg bg-white px-2 py-1 text-[11px] font-semibold text-violet-700 hover:bg-violet-100 dark:bg-slate-900 dark:text-violet-200">Restore</button></span>)}</div> : <p className="mb-0 mt-4 text-[13px] text-gray-500">Mark a current focus area as comfortable to make your progress visible here.</p>}</section><section className="mt-4 rounded-2xl border border-violet-100 bg-white px-5 py-5 dark:bg-slate-900"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="font-heading m-0 text-lg font-semibold text-gray-900 dark:text-white">Log a result</h2><p className="m-0 mt-1 text-[13px] text-gray-500">Add a score, reflection, or teacher feedback when you have it.</p></div><button type="button" onClick={() => setResultOpen((open) => !open)} className="rounded-xl border border-violet-200 bg-violet-50 px-3.5 py-2.5 text-[13px] font-semibold text-violet-700 hover:border-violet-500 dark:border-violet-900 dark:bg-violet-400/10 dark:text-violet-200">{resultOpen ? "Close" : "Log a result"}</button></div>{resultOpen && <ResultForm topics={topics} topic={resultTopic} type={resultType} score={score} wentWell={wentWell} difficult={difficult} teacherNote={teacherNote} onTopic={setResultTopic} onType={setResultType} onScore={setScore} onWentWell={setWentWell} onDifficult={setDifficult} onTeacherNote={setTeacherNote} onSubmit={addResult} />}</section><p className="m-0 mt-4 text-center text-[11.5px] text-gray-400">Progress is saved in this browser for this signed-in account.</p></div>;
 }
 
 function FocusAreaCard({ area, onTutor, onQuestion, onComfortable }: { area: FocusArea; onTutor: () => void; onQuestion: () => void; onComfortable: () => void }) { return <article className="rounded-xl border border-violet-100 bg-violet-50/60 px-3.5 py-3 dark:bg-violet-400/10"><div className="text-[14px] font-semibold text-gray-900 dark:text-white">{area.label}</div><div className="mt-3 flex flex-wrap gap-2"><SmallAction onClick={onTutor}>Ask Tutor</SmallAction><SmallAction onClick={onQuestion}>Exam Question</SmallAction><SmallAction onClick={onComfortable}>Mark comfortable</SmallAction></div></article>; }
