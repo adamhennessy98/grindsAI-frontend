@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookiePreferencesButton } from "@/components/analytics-consent";
 import { LogoIcon } from "@/components/icons";
 
 export function Footer() {
@@ -9,7 +10,10 @@ export function Footer() {
           <LogoIcon size={22} />
           <span>Copyright 2026 GrindsAI / Made in Dublin</span>
         </div>
-        <div className="flex gap-6 text-[13px] text-gray-500">
+        <div className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-gray-500">
+          <Link href="/#how" className="transition-colors hover:text-gray-900">How it works</Link>
+          <Link href="/#pricing" className="transition-colors hover:text-gray-900">Pricing</Link>
+          <Link href="/#faq" className="transition-colors hover:text-gray-900">FAQ</Link>
           <Link href="/privacy" className="transition-colors hover:text-gray-900">
             Privacy
           </Link>
@@ -19,6 +23,7 @@ export function Footer() {
           <a href="mailto:hello@grindsai.ie" className="transition-colors hover:text-gray-900">
             Contact
           </a>
+          <CookiePreferencesButton />
         </div>
       </div>
     </footer>

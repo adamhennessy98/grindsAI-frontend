@@ -1,10 +1,17 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { BrandLogo } from "@/components/icons";
 import { PricingOptions } from "@/components/landing/pricing-teaser";
 import { ManageBillingButton } from "@/components/pricing/manage-billing-button";
 import { FAQ } from "@/components/pricing/faq";
 import { getSubscriptionAccess } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description: "Choose a flexible GrindsAI plan for one, up to seven, or unlimited Leaving Cert subjects.",
+  alternates: { canonical: "/pricing" },
+};
 
 const rows = [
   ["", "Private grinds", "GrindsAI"],
