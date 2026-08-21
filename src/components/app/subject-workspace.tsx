@@ -11,7 +11,7 @@ interface SubjectWorkspaceProps { subjectId: string; level: string; studyState: 
 const actions = [
   { title: "Tutor", description: "Get guided help with the topic or question in front of you.", cta: "Ask your Tutor", accent: "cyan" },
   { title: "Topic Check", description: "Check the foundations of a topic.", cta: "Start a check", accent: "amber" },
-  { title: "Exam Questions", description: "Attempt one focused exam-style question at a time.", cta: "Generate a question", accent: "lime" },
+  { title: "Exam Questions", description: "Generate unlimited exam-style questions or explore past-paper questions by topic.", cta: "Generate a question", accent: "lime" },
   { title: "Progress & Results", description: "Track what feels difficult, what improved, and your next step.", cta: "Review progress", accent: "violet" },
 ] as const;
 
