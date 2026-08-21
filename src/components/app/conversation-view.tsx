@@ -83,7 +83,10 @@ export function ConversationView({
     const userMessage: TutorMessage = { id: `user-${Date.now()}`, role: "user", text: message };
     const assistantMessageId = `ai-${Date.now()}`;
 
-    setMessagesByTopic((current) => ({ ...current, [topic.id]: [...(current[topic.id] ?? []), userMessage] }));
+    setMessagesByTopic((current) => ({
+      ...current,
+      [topic.id]: [...(current[topic.id] ?? []), userMessage, { id: assistantMessageId, role: "ai", text: "" }],
+    }));
     setDraft("");
     setRespondingTopicId(topic.id);
     if (wasEmpty) onStartSession(topic.id);
@@ -115,7 +118,6 @@ export function ConversationView({
       if (!reader) throw new Error("Your Tutor could not respond just now.");
       const decoder = new TextDecoder();
       let reply = "";
-      setMessagesByTopic((current) => ({ ...current, [topic.id]: [...(current[topic.id] ?? []), { id: assistantMessageId, role: "ai", text: "" }] }));
       while (true) {
         const { done, value: chunk } = await reader.read();
         if (done) break;
