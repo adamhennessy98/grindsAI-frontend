@@ -92,6 +92,10 @@ async function saveUserMessage(input: {
     }
   }
 
+  if (!conversationId) {
+    return { ok: false, status: 500, error: "Could not start conversation." };
+  }
+
   const { error: userMsgErr } = await input.supabase.from("messages").insert({
     conversation_id: conversationId,
     role: "user",
