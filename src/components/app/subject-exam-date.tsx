@@ -24,10 +24,12 @@ export function SubjectExamDate({
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setMessage("");
-    setError("");
     void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoading(true);
+      setMessage("");
+      setError("");
       try {
         const res = await fetch(`/api/learning/exam-schedule?subjectId=${encodeURIComponent(subjectId)}`);
         if (!res.ok) throw new Error("Could not load exam date.");

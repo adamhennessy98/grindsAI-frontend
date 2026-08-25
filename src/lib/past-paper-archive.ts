@@ -1,6 +1,6 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { getSubjectTopics, SUBJECTS } from "@/lib/constants";
+import { getSubjectTopics } from "@/lib/constants";
 
 type Collection = "mixed" | "topic_specific" | "unclassified";
 type RecordItem = {
@@ -29,17 +29,36 @@ export type PastPaperArchiveDetail = PastPaperArchiveQuestion & {
   tutorMarkingSchemeText: string;
 };
 
-const ARCHIVE_SUBJECT_IDS = new Set(SUBJECTS.map((subject) => subject.id));
+const ARCHIVE_ROOTS = {
+  accounting: "accounting-rag-preprocessing",
+  "applied-maths": "applied-maths-rag-preprocessing",
+  biology: "biology-rag-preprocessing",
+  business: "business-rag-preprocessing",
+  chemistry: "chemistry-rag-preprocessing",
+  "computer-science": "computer-science-rag-preprocessing",
+  economics: "economics-rag-preprocessing",
+  english: "english-rag-preprocessing",
+  french: "french-rag-preprocessing",
+  geography: "geography-rag-preprocessing",
+  german: "german-rag-preprocessing",
+  history: "history-rag-preprocessing",
+  irish: "irish-rag-preprocessing",
+  maths: "maths-rag-preprocessing",
+  physics: "physics-rag-preprocessing",
+  spanish: "spanish-rag-preprocessing",
+  technology: "technology-rag-preprocessing",
+} as const;
+const ARCHIVE_SUBJECT_IDS = new Set(Object.keys(ARCHIVE_ROOTS));
 const archiveCache = new Map<string, Promise<RecordItem[]>>();
 
 function archiveRoot(subjectId: string) {
-  if (!ARCHIVE_SUBJECT_IDS.has(subjectId)) return null;
-  return path.join(process.cwd(), "docs", "processed", `${subjectId}-rag-preprocessing`, "output_question_chunks");
+  const root = ARCHIVE_ROOTS[subjectId as keyof typeof ARCHIVE_ROOTS];
+  return root ? path.join(process.cwd(), "docs", "processed", root, "output_question_chunks") : null;
 }
 
 function assetsRoot(subjectId: string) {
-  if (!ARCHIVE_SUBJECT_IDS.has(subjectId)) return null;
-  return path.join(process.cwd(), "docs", "processed", `${subjectId}-rag-preprocessing`, "image_assets");
+  const root = ARCHIVE_ROOTS[subjectId as keyof typeof ARCHIVE_ROOTS];
+  return root ? path.join(process.cwd(), "docs", "processed", root, "image_assets") : null;
 }
 
 function normalizeLabel(value: string) {

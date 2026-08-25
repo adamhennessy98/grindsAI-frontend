@@ -37,7 +37,11 @@ export async function GET(request: Request) {
     .maybeSingle();
 
   const paper = buildSubjectQuickCheck(subjectId);
-  const questions = paper.map(({ correctChoiceId: _c, ...rest }) => rest);
+  const questions = paper.map((question) => {
+    const { correctChoiceId, ...publicQuestion } = question;
+    void correctChoiceId;
+    return publicQuestion;
+  });
 
   return NextResponse.json({
     questions,

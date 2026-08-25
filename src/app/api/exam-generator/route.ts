@@ -2,11 +2,16 @@ import { NextResponse } from "next/server";
 import { generateExamQuestions, resolveExamGeneratorContext } from "@/lib/exam-generator-ai";
 import { assertChatAllowed } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
+import { consumeAiRateLimit, isSameOriginRequest, readJsonBody } from "@/lib/request-security";
 import type { ExamGeneratorRequest } from "@/lib/exam-generator";
 
 type ExamGeneratorBody = Partial<ExamGeneratorRequest>;
 
 export async function POST(request: Request) {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+  }
+
   const supabase = await createClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
@@ -24,12 +29,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: gate.message }, { status: gate.status });
   }
 
-  let body: ExamGeneratorBody;
-  try {
-    body = (await request.json()) as ExamGeneratorBody;
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
-  }
+  const parsed = await readJsonBody<ExamGeneratorBody>(request, 16_000);
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: parsed.status });
+  const body = parsed.body;
+
+  const limit = await consumeAiRateLimit(supabase, "exam-generator");
+  if (!limit.ok) return NextResponse.json({ error: limit.error }, { status: limit.status });
   const purpose = body.purpose === "topic-check" ? "topic-check" : "exam-practice";
 
   const context = resolveExamGeneratorContext({

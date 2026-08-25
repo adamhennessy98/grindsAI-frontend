@@ -29,7 +29,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "subjects query required." }, { status: 400 });
   }
 
-  const questions = buildDiagnosticPaper(subjectIds).map(({ correctChoiceId: _c, ...rest }) => rest);
+  const questions = buildDiagnosticPaper(subjectIds).map((question) => {
+    const { correctChoiceId, ...publicQuestion } = question;
+    void correctChoiceId;
+    return publicQuestion;
+  });
   return NextResponse.json({ questions });
 }
 

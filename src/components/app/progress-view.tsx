@@ -14,6 +14,7 @@ interface ProgressResultsViewProps {
   focusAreas: FocusArea[];
   results: ResultEntry[];
   activities: StudyActivity[];
+  storageStatus: "loading" | "saving" | "saved" | "device-only";
   onAddFocusArea: (label: string) => void;
   onUpdateFocusArea: (area: FocusArea, status: FocusArea["status"]) => void;
   onAddResult: (result: ResultEntry) => void;
@@ -28,6 +29,7 @@ export function ProgressResultsView({
   focusAreas,
   results,
   activities,
+  storageStatus,
   onAddFocusArea,
   onUpdateFocusArea,
   onAddResult,
@@ -170,7 +172,9 @@ export function ProgressResultsView({
         <p className="m-0 mt-1 text-[12.5px] text-gray-500 dark:text-slate-300">Use it to time revision suggestions for this subject.</p>
         <SubjectExamDate subjectId={subjectId} level={level} />
       </details>
-      <p className="m-0 mt-4 text-center text-[11.5px] text-gray-400 dark:text-slate-500">Progress is saved in this browser for this signed-in account.</p>
+      <p role="status" className="m-0 mt-4 text-center text-[11.5px] text-gray-400 dark:text-slate-500">
+        {storageStatus === "saved" ? "Progress is saved to your account." : storageStatus === "saving" || storageStatus === "loading" ? "Saving your progress…" : "Progress is saved on this device until it can sync to your account."}
+      </p>
     </div>
   );
 }
