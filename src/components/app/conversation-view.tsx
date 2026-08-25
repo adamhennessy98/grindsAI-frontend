@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getTopic } from "@/lib/constants";
 import { MathMarkdown } from "@/components/math-markdown";
+import { MenuIcon } from "@/components/icons";
 import { ArchivedSessionsPanel } from "./archived-sessions-panel";
 import { subjectInitial, subjectLabel, subjectThemeStyle } from "./subjects";
 import { MobileTutorTopicDrawer, TutorTopicSidebar } from "./tutor-topic-sidebar";
@@ -232,7 +233,7 @@ export function ConversationView({
       <MobileTutorTopicDrawer subjectId={subjectId} activeTopicId={topic.id} open={topicsOpen} onClose={() => setTopicsOpen(false)} onSelectTopic={(id) => { setArchiveOpen(false); onOpenTopic(id); }} />
       <div className="flex min-h-0 min-w-0 flex-col px-4 sm:px-6">
         <div className="flex shrink-0 items-center gap-3 border-b border-gray-200 px-1 pb-3 pt-4 dark:border-slate-800">
-          <button type="button" onClick={() => setTopicsOpen(true)} aria-label="Open tutor topics" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 transition-colors hover:border-cyan-500 hover:text-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 lg:hidden">Topics</button>
+          <button type="button" onClick={() => setTopicsOpen(true)} aria-label="Open tutor topics" title="Topics" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:border-cyan-400 hover:bg-cyan-50 hover:text-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-700 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-200 lg:hidden"><MenuIcon size={18} /><span className="sr-only">Topics</span></button>
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-500 font-heading text-sm font-semibold text-white">AI</span>
           <div className="min-w-0 flex-1"><div className="truncate font-heading text-[17px] font-semibold text-gray-900 dark:text-white">{subject} Tutor</div><div className="mt-0.5 flex min-w-0 items-center gap-1.5" aria-live="polite"><span className="subject-context-marker flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[9px] font-semibold">{subjectInitial(subjectId)}</span><div className="min-w-0"><div className="subject-context-label truncate text-[11.5px]">{level === "OL" ? "Ordinary Level" : "Higher Level"}</div><div className="truncate text-[12.5px] font-medium text-cyan-700 dark:text-cyan-300">{topic.name}</div></div></div></div>
           <div className="flex shrink-0 items-center gap-2">

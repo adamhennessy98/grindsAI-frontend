@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getAppliedMathsSpecificationContext } from "@/lib/applied-maths-syllabus";
+import { getSubjectAssessmentContext } from "@/lib/assessment-context";
 import { getCurriculumContext } from "@/lib/curriculum-context";
 import {
   getProcessedPastPaperContext,
@@ -311,9 +312,9 @@ async function fetchLocalProcessedContext(input: {
   level: string;
   topicId?: string;
   userMessage: string;
-}): Promise<{ past: string; curriculum: string; spec: string }> {
+}): Promise<{ past: string; curriculum: string; spec: string; assessment: string }> {
   if (!hasProcessedSubjectConfig(input.subjectId)) {
-    return { past: "", curriculum: "", spec: "" };
+    return { past: "", curriculum: "", spec: "", assessment: "" };
   }
 
   try {
@@ -324,10 +325,15 @@ async function fetchLocalProcessedContext(input: {
         ? getAppliedMathsSpecificationContext(input)
         : Promise.resolve(""),
     ]);
-    return { past: past || "", curriculum: curriculum || "", spec: spec || "" };
+    return {
+      past: past || "",
+      curriculum: curriculum || "",
+      spec: spec || "",
+      assessment: getSubjectAssessmentContext(input),
+    };
   } catch (err) {
     console.warn(`[RAG] Local processed context retrieval failed for ${input.subjectId}:`, err);
-    return { past: "", curriculum: "", spec: "" };
+    return { past: "", curriculum: "", spec: "", assessment: "" };
   }
 }
 
@@ -370,6 +376,10 @@ export async function getPastPaperContext(input: {
   if (local.spec) {
     sections.push(local.spec);
     provenance.push("applied-maths-spec");
+  }
+  if (local.assessment) {
+    sections.push(local.assessment);
+    provenance.push("assessment");
   }
 
   if (vector?.chunks?.length) {
