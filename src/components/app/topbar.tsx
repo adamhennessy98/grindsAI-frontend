@@ -56,7 +56,7 @@ export function AppTopBar({ screen, activeSubjectId, userInitials, onBack, onHom
         {!isHome && <div className="min-w-0 flex-1"><div className="truncate font-heading text-[16.5px] font-semibold text-gray-900 dark:text-white">{title}</div><div className="subject-context-label truncate text-xs">{subtitle}</div></div>}
         {isHome && <div className="flex-1" />}
         <button type="button" onClick={toggleTheme} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"} title={darkMode ? "Switch to light mode" : "Switch to dark mode"} className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-[12.5px] font-semibold text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800">
-          {darkMode ? <SunIcon size={15} /> : <MoonIcon size={15} />}<span className="hidden sm:inline">{darkMode ? "Light" : "Dark"}</span>
+          {darkMode ? <SunIcon size={15} /> : <MoonIcon size={15} />}<span className="max-[359px]:sr-only">{darkMode ? "Light" : "Dark"}</span>
         </button>
         <button type="button" onClick={onOpenSettings} title="Study profile and feedback" className="flex h-10 w-10 items-center justify-center rounded-lg border border-cyan-200 bg-cyan-50 text-[13px] font-semibold text-cyan-900 transition-colors hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-900 dark:bg-cyan-950 dark:text-cyan-100 dark:hover:bg-cyan-900">{userInitials}</button>
       </div>

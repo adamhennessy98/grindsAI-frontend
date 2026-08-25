@@ -7,7 +7,7 @@ import { ChevronDownIcon } from "@/components/icons";
 const items = [
   { q: "How much does GrindsAI cost?", a: "Your first subject is €10 per month, with additional subjects at €5 each up to four subjects. The up-to-seven-subject plan is €25 per month, or choose unlimited subjects for €30 per month." },
   { q: "Can I cancel any time?", a: "Yes. There is no end-of-term contract. You can manage or cancel your subscription through billing." },
-  { q: "What subjects are supported?", a: "Choose the Leaving Cert subjects you take during setup. Each gets its own workspace, Tutor context, Topic Checks, exam practice and progress record." },
+  { q: "What subjects are supported?", a: "Currently supported: Accounting, Applied Maths, Biology, Business, Chemistry, Computer Science, Economics, English, French, Geography, German, History, Irish, Maths, Physics, Spanish and Technology. Choose the subjects you take during setup; each gets its own workspace, Tutor context, Topic Checks, exam practice and progress record." },
   { q: "How is it relevant to my Leaving Cert?", a: "GrindsAI is built around the relevant curriculum, subject specifications, level, topics, past papers and marking schemes. It is designed to keep revision close to the subject you are actually sitting." },
   { q: "Is GrindsAI made with teachers?", a: "Yes. It is developed and maintained with active Irish secondary school teachers, helping keep the experience grounded in classroom learning and Leaving Cert assessment." },
   { q: "How is my information used?", a: "Your account details and study activity help provide the service and make your subject support more relevant. Read the Privacy Policy for the full explanation." },

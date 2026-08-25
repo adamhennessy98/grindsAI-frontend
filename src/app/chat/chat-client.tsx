@@ -13,7 +13,6 @@ import { ProgressResultsView } from "@/components/app/progress-view";
 import { SubjectWorkspace } from "@/components/app/subject-workspace";
 import { SubjectQuickCheck } from "@/components/app/subject-quick-check";
 import { TopicCheckView } from "@/components/app/topic-check-view";
-import { TopicCheckHistory } from "@/components/app/topic-check-history";
 import { emptySubjectStudyState, loadStudyState, saveStudyState, type FocusArea, type ResultEntry, type StudyActivity, type StudyStateBySubject, type TopicCheckEntry } from "@/components/app/study-state";
 import type { Screen } from "@/components/app/types";
 
@@ -38,6 +37,7 @@ export function ChatClient() {
   const [quickCheckSubjectId, setQuickCheckSubjectId] = useState<string | null>(null);
   const [tutorSessionResetKey, setTutorSessionResetKey] = useState(0);
   const hasLoadedStudyState = useRef(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -75,6 +75,12 @@ export function ChatClient() {
   const activeSubjectId = subjectId || fallbackSubjectId;
   const activeLevel = getSubjectLevel(profile, activeSubjectId);
   const activeStudyState = studyState[activeSubjectId] ?? emptySubjectStudyState();
+
+  useEffect(() => {
+    if (screen === "conversation") return;
+    const frame = window.requestAnimationFrame(() => scrollAreaRef.current?.scrollTo(0, 0));
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeSubjectId, screen]);
 
   const updateSubjectState = useCallback((id: string, update: (current: ReturnType<typeof emptySubjectStudyState>) => ReturnType<typeof emptySubjectStudyState>) => {
     setStudyState((current) => ({ ...current, [id]: update(current[id] ?? emptySubjectStudyState()) }));
@@ -175,7 +181,7 @@ export function ChatClient() {
   const openTopicGenerator = useCallback((nextTopicId: string) => { setGeneratorTopicId(nextTopicId); goToTool("generator"); }, [goToTool]);
   const openFocusGenerator = useCallback((focus = "") => { openTopicGenerator(topicForFocus(focus)); }, [openTopicGenerator, topicForFocus]);
 
-  return <div className="h-screen min-h-screen bg-[#eaf1ed] dark:bg-slate-950"><main className="app-study-shell flex h-full min-h-0 flex-col"><AppTopBar screen={screen} subjectId={subjectId} activeSubjectId={activeSubjectId} userInitials={initialsFrom(userName, userEmail)} onBack={screen === "workspace" ? goHome : screen === "conversation" ? () => setScreen(previousScreen) : goToWorkspace} onHome={goHome} onOpenSettings={() => router.push("/onboarding?edit=1")} /><div className={screen === "conversation" ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-y-auto"}>
+  return <div className="h-[100dvh] min-h-[100dvh] bg-[#eaf1ed] dark:bg-slate-950"><main className="app-study-shell flex h-full min-h-0 flex-col"><AppTopBar screen={screen} subjectId={subjectId} activeSubjectId={activeSubjectId} userInitials={initialsFrom(userName, userEmail)} onBack={screen === "workspace" ? goHome : screen === "conversation" ? () => setScreen(previousScreen) : goToWorkspace} onHome={goHome} onOpenSettings={() => router.push("/onboarding?edit=1")} /><div ref={scrollAreaRef} className={screen === "conversation" ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-y-auto"}>
     {screen === "home" && <HomeFeed hasProfile={Boolean(profile)} subjects={subjects} subjectLevels={profile?.subjectLevels} studyState={studyState} onSelectSubject={selectSubject} onContinueSubject={continueSubject} onOpenSettings={() => router.push("/onboarding?edit=1")} />}
     {screen === "workspace" && (
       <SubjectWorkspace
@@ -200,7 +206,7 @@ export function ChatClient() {
     {screen === "conversation" && <ConversationView subjectId={activeSubjectId} level={activeLevel} topicId={topicId} sessionResetKey={tutorSessionResetKey} handoff={tutorHandoff} onOpenGenerator={() => openFocusGenerator(getTopic(activeSubjectId, topicId).name)} onStartSession={(activeTopicId) => recordActivity(activeSubjectId, { type: "tutor", topicId: activeTopicId, label: `Tutor session: ${getTopic(activeSubjectId, activeTopicId).name}`, createdAt: new Date().toISOString() })} onOpenTopic={openTopic} />}
     {screen === "generator" && <PapersView key={activeSubjectId} subjectId={activeSubjectId} level={activeLevel} initialTopicId={generatorTopicId} focusAreas={activeStudyState.focusAreas.filter((area) => area.status === "current")} onQuestionGenerated={(topic) => recordActivity(activeSubjectId, { type: "question", topicId: topic.id, label: `Generated an Exam Question: ${topic.name}`, createdAt: new Date().toISOString() })} onReflect={(outcome, topic) => { recordActivity(activeSubjectId, { type: "reflection", topicId: topic.id, label: `Question reflection: ${outcome}`, createdAt: new Date().toISOString() }); if (outcome === "Still stuck") addFocusArea(topic.name); }} />}
     {screen === "topic-check" && <TopicCheckView subjectId={activeSubjectId} level={activeLevel} onComplete={addTopicCheck} onAddFocusArea={addFocusArea} onOpenTutor={openTopic} onOpenGenerator={openTopicGenerator} />}
-    {screen === "progress" && <><ProgressResultsView subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas} results={activeStudyState.results} activities={activeStudyState.activities} onAddFocusArea={addFocusArea} onUpdateFocusArea={updateFocusArea} onAddResult={addResult} onOpenConvo={openFocusTutor} onOpenGenerator={openFocusGenerator} onOpenTopicCheck={() => goToTool("topic-check")} /><TopicCheckHistory subjectId={activeSubjectId} entries={activeStudyState.topicChecks} /></>}
+    {screen === "progress" && <ProgressResultsView subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas} results={activeStudyState.results} activities={activeStudyState.activities} onAddFocusArea={addFocusArea} onUpdateFocusArea={updateFocusArea} onAddResult={addResult} onOpenConvo={openFocusTutor} onOpenGenerator={openFocusGenerator} onOpenTopicCheck={() => goToTool("topic-check")} />}
   </div>
   {quickCheckSubjectId && (
     <SubjectQuickCheck

@@ -6,7 +6,7 @@ import type { SubjectLevel } from "@/lib/onboarding";
 import { ExamCountdownPill } from "./exam-countdown-pill";
 import { FreeTextNote } from "./free-text-note";
 import type { StudyStateBySubject } from "./study-state";
-import { subjectInitial, subjectLabel, subjectThemeStyle } from "./subjects";
+import { subjectInitial, subjectThemeStyle } from "./subjects";
 import { useExamScheduleBadges } from "./use-exam-schedule-badges";
 import { useRecommendedNextStep } from "./use-recommended-next-step";
 
@@ -164,7 +164,7 @@ function StructuredContinuationCard({
               {examBadge && <ExamCountdownPill label={examBadge} />}
             </div>
             <div className="mt-1 truncate font-heading text-[17px] font-semibold text-gray-900 dark:text-white">
-              {subjectLabel(subjectId)}: {title}
+              {title}
             </div>
             <p className="m-0 mt-1 text-[13px] text-gray-500">{reason}</p>
           </div>
@@ -189,10 +189,11 @@ function ContinuationCard({
   const topic = state.lastTopicId ? getTopic(subject.id, state.lastTopicId) : null;
   const focus = state.focusAreas.find((area) => area.status === "current");
   const detail = topic
-    ? `Continue: ${topic.name}`
+    ? topic.name
     : focus
       ? `Focus area: ${focus.label}`
       : state.activities[0]?.label ?? "Continue your study session";
+  const heading = topic ? `Continue ${detail}` : detail;
   return (
     <section
       style={subjectThemeStyle(subject.id)}
@@ -206,7 +207,7 @@ function ContinuationCard({
           <div className="min-w-0">
             <div className="subject-context-label text-[12px] font-semibold">CONTINUE STUDYING</div>
             <div className="mt-1 truncate font-heading text-[17px] font-semibold text-gray-900 dark:text-white">
-              {subjectLabel(subject.id)}: {detail}
+              {heading}
             </div>
             <p className="m-0 mt-1 text-[13px] text-gray-500">Pick up where you last left off.</p>
           </div>

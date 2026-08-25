@@ -279,6 +279,11 @@ html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255
   30%            { transform: translateY(-3px); opacity: 1;   }
 }
 
+@keyframes loadingSweep {
+  from { transform: translateX(-115%); }
+  to { transform: translateX(265%); }
+}
+
 @layer utilities {
   .chat-shell {
     grid-template-columns: auto 1fr;
@@ -310,6 +315,7 @@ html:not(.dark) .app-study-shell .border-white\/80 { border-color: rgba(255, 255
   .animate-fade-up-2 { animation: fadeUp 380ms 120ms ease both; }
   .animate-fade-up-3 { animation: fadeUp 380ms 180ms ease both; }
   .animate-fade-up-4 { animation: fadeUp 380ms 240ms ease both; }
+  .animate-loading-sweep { animation: loadingSweep 1.35s ease-in-out infinite; }
 
   .typing-dot {
     display: inline-block;
