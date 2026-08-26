@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { LoaderCircle } from "lucide-react";
 import { getSubjectTopics } from "@/lib/constants";
 import { requestExamQuestions, type GeneratedExamQuestion } from "@/lib/exam-generator";
 import { MathMarkdown } from "@/components/math-markdown";
@@ -268,6 +269,7 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
     </header>
 
     {!questions.length && !completed && <section className="rounded-2xl border border-amber-100 bg-white p-5 shadow-[0_14px_38px_-34px_rgba(217,119,6,.55)] dark:border-amber-900 dark:bg-slate-900">
+      <div className="mb-5 max-w-[620px]"><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-amber-700 dark:text-amber-300">Foundation check</div><h2 className="font-heading m-0 mt-2 text-[21px] font-semibold text-gray-900 dark:text-white">Check one topic, step by step.</h2><p className="m-0 mt-2 text-[14px] leading-relaxed text-gray-500 dark:text-slate-300">Most checks use 5 to 10 short questions. Each one builds towards the common procedures you need before exam-style practice.</p></div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0 flex-1">
           <label className="block">
@@ -276,11 +278,11 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
               {topics.map((topic) => <option key={topic.id} value={topic.id} className="bg-white text-gray-900 dark:bg-slate-900 dark:text-slate-100">{topic.name}</option>)}
             </select>
           </label>
-          <p className="m-0 mt-2 text-[12.5px] leading-relaxed text-gray-500">Choose one topic to check its most common core procedures, one step at a time.</p>
+          <p className="m-0 mt-2 text-[12.5px] leading-relaxed text-gray-500 dark:text-slate-300">Choose one topic to check its most common core procedures, one step at a time.</p>
         </div>
-        <button type="button" onClick={() => void startCheck()} disabled={isGenerating || !activeTopic} className="shrink-0 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-600 disabled:cursor-wait disabled:bg-amber-300 dark:disabled:bg-amber-900">{isGenerating ? "Building your check..." : "Start a check"}</button>
+        <button type="button" onClick={() => void startCheck()} disabled={isGenerating || !activeTopic} className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-600 disabled:cursor-wait disabled:bg-amber-300 dark:disabled:bg-amber-900">{isGenerating && <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />}{isGenerating ? "Building your check..." : "Start a check"}</button>
       </div>
-      {isGenerating && <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">{Array.from({ length: 6 }, (_, index) => <div key={index} className="h-20 animate-pulse rounded-xl border border-gray-100 bg-gray-50 dark:border-slate-800 dark:bg-slate-950" />)}</div>}
+      {isGenerating && <div role="status" aria-live="polite" className="mt-5 rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-4 dark:border-amber-900 dark:bg-amber-400/[.07]"><div className="flex items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300"><LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /></span><div><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-amber-700 dark:text-amber-300">Building your Topic Check</div><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-600 dark:text-slate-300">Choosing a clear sequence of core questions for {activeTopic?.name}.</p></div></div><div aria-hidden="true" className="mt-4 h-1.5 overflow-hidden rounded-full bg-amber-100 dark:bg-amber-950"><div className="h-full w-2/5 animate-loading-sweep rounded-full bg-amber-500" /></div><div aria-hidden="true" className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">{Array.from({ length: 4 }, (_, index) => <div key={index} className="h-14 animate-pulse rounded-xl border border-amber-100 bg-white/60 dark:border-slate-800 dark:bg-slate-950/40" />)}</div></div>}
       {error && <div role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-800 dark:border-red-950 dark:bg-red-950/25 dark:text-red-200">{error}</div>}
     </section>}
 

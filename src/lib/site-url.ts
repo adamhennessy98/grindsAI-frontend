@@ -14,9 +14,13 @@ export function getSiteUrl(fallbackOrigin?: string) {
     return withoutTrailingSlash(vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`);
   }
 
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("NEXT_PUBLIC_SITE_URL must be configured for production deployments.");
+  }
+
   // Request origins are only a safe fallback during local development. Production
   // auth redirects must use an explicitly configured deployment URL.
-  if (fallbackOrigin && process.env.NODE_ENV !== "production") return withoutTrailingSlash(fallbackOrigin);
+  if (fallbackOrigin) return withoutTrailingSlash(fallbackOrigin);
   return LOCAL_SITE_URL;
 }
 

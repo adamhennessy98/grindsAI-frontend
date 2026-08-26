@@ -13,8 +13,8 @@ import { ProgressResultsView } from "@/components/app/progress-view";
 import { SubjectWorkspace } from "@/components/app/subject-workspace";
 import { SubjectQuickCheck } from "@/components/app/subject-quick-check";
 import { TopicCheckView } from "@/components/app/topic-check-view";
-import { TopicCheckHistory } from "@/components/app/topic-check-history";
 import { emptySubjectStudyState, loadStudyState, saveStudyState, type FocusArea, type ResultEntry, type StudyActivity, type StudyStateBySubject, type TopicCheckEntry } from "@/components/app/study-state";
+import { normaliseStudyStateBySubject, type SubjectStudyState } from "@/lib/study-state";
 import type { Screen } from "@/components/app/types";
 
 function initialsFrom(name: string, email: string) {
@@ -33,11 +33,14 @@ export function ChatClient() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [studyState, setStudyState] = useState<StudyStateBySubject>({});
   const [studyStateOwner, setStudyStateOwner] = useState("");
+  const [studyStateSyncStatus, setStudyStateSyncStatus] = useState<"loading" | "saving" | "saved" | "device-only">("loading");
   const [tutorHandoff, setTutorHandoff] = useState<TutorQuestionHandoff | null>(null);
   const [generatorTopicId, setGeneratorTopicId] = useState<string | undefined>();
   const [quickCheckSubjectId, setQuickCheckSubjectId] = useState<string | null>(null);
   const [tutorSessionResetKey, setTutorSessionResetKey] = useState(0);
   const hasLoadedStudyState = useRef(false);
+  const studyStateSyncVersion = useRef(0);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -58,16 +61,47 @@ export function ChatClient() {
       setUserName(fullName || data.user.email?.split("@")[0] || "Student");
       setUserEmail(data.user.email ?? "");
       const ownerId = data.user.id;
-      setStudyState(loadStudyState(ownerId));
+      const localState = loadStudyState(ownerId);
+      setStudyState(localState);
       setStudyStateOwner(ownerId);
-      hasLoadedStudyState.current = true;
+      setStudyStateSyncStatus("loading");
+      hasLoadedStudyState.current = false;
+
+      try {
+        const response = await fetch("/api/learning/study-state");
+        if (!response.ok) throw new Error("Could not load progress.");
+        const payload = (await response.json()) as { state?: unknown };
+        const remoteState = normaliseStudyStateBySubject(payload.state);
+        const mergedState = mergeStudyStates(localState, remoteState);
+        setStudyState(mergedState);
+        setStudyStateSyncStatus("saving");
+      } catch {
+        // Keep the existing browser cache usable if an old deployment has not run the migration yet.
+        setStudyStateSyncStatus("device-only");
+      } finally {
+        hasLoadedStudyState.current = true;
+      }
     })();
   }, []);
 
   useEffect(() => {
     if (!studyStateOwner || !hasLoadedStudyState.current) return;
-    // TODO: move this browser-local progress record into the authenticated profile store when its API is available.
     saveStudyState(studyStateOwner, studyState);
+    const version = ++studyStateSyncVersion.current;
+    const timer = window.setTimeout(() => {
+      setStudyStateSyncStatus("saving");
+      void fetch("/api/learning/study-state", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ state: studyState }),
+      }).then((response) => {
+        if (!response.ok) throw new Error("Could not save progress.");
+        if (studyStateSyncVersion.current === version) setStudyStateSyncStatus("saved");
+      }).catch(() => {
+        if (studyStateSyncVersion.current === version) setStudyStateSyncStatus("device-only");
+      });
+    }, 450);
+    return () => window.clearTimeout(timer);
   }, [studyState, studyStateOwner]);
 
   const subjects = useMemo(() => (profile ? filterSubjects(profile.subjects) : []), [profile]);
@@ -75,6 +109,12 @@ export function ChatClient() {
   const activeSubjectId = subjectId || fallbackSubjectId;
   const activeLevel = getSubjectLevel(profile, activeSubjectId);
   const activeStudyState = studyState[activeSubjectId] ?? emptySubjectStudyState();
+
+  useEffect(() => {
+    if (screen === "conversation") return;
+    const frame = window.requestAnimationFrame(() => scrollAreaRef.current?.scrollTo(0, 0));
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeSubjectId, screen]);
 
   const updateSubjectState = useCallback((id: string, update: (current: ReturnType<typeof emptySubjectStudyState>) => ReturnType<typeof emptySubjectStudyState>) => {
     setStudyState((current) => ({ ...current, [id]: update(current[id] ?? emptySubjectStudyState()) }));
@@ -166,7 +206,6 @@ export function ChatClient() {
   }, [activeSubjectId, recordActivity, updateSubjectState]);
   const addResult = useCallback((result: ResultEntry) => { updateSubjectState(activeSubjectId, (current) => ({ ...current, results: [result, ...current.results].slice(0, 12) })); }, [activeSubjectId, updateSubjectState]);
   const addTopicCheck = useCallback((entry: TopicCheckEntry) => {
-    // TODO: sync the browser-local progress record to the authenticated profile store when its API is available.
     updateSubjectState(activeSubjectId, (current) => ({ ...current, topicChecks: [entry, ...current.topicChecks].slice(0, 8) }));
     recordActivity(activeSubjectId, { type: "topic-check", topicId: entry.topicId, label: `Topic Check: ${entry.topicName} (${entry.status === "independent" ? "independent" : "with support"})`, createdAt: entry.completedAt });
   }, [activeSubjectId, recordActivity, updateSubjectState]);
@@ -175,7 +214,7 @@ export function ChatClient() {
   const openTopicGenerator = useCallback((nextTopicId: string) => { setGeneratorTopicId(nextTopicId); goToTool("generator"); }, [goToTool]);
   const openFocusGenerator = useCallback((focus = "") => { openTopicGenerator(topicForFocus(focus)); }, [openTopicGenerator, topicForFocus]);
 
-  return <div className="h-screen min-h-screen bg-[#eaf1ed] dark:bg-slate-950"><main className="app-study-shell flex h-full min-h-0 flex-col"><AppTopBar screen={screen} subjectId={subjectId} activeSubjectId={activeSubjectId} userInitials={initialsFrom(userName, userEmail)} onBack={screen === "workspace" ? goHome : screen === "conversation" ? () => setScreen(previousScreen) : goToWorkspace} onHome={goHome} onOpenSettings={() => router.push("/onboarding?edit=1")} /><div className={screen === "conversation" ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-y-auto"}>
+  return <div className="h-[100dvh] min-h-[100dvh] bg-[#eaf1ed] dark:bg-slate-950"><main className="app-study-shell flex h-full min-h-0 flex-col"><AppTopBar screen={screen} subjectId={subjectId} activeSubjectId={activeSubjectId} userInitials={initialsFrom(userName, userEmail)} onBack={screen === "workspace" ? goHome : screen === "conversation" ? () => setScreen(previousScreen) : goToWorkspace} onHome={goHome} onOpenSettings={() => router.push("/account")} /><div ref={scrollAreaRef} className={screen === "conversation" ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-y-auto"}>
     {screen === "home" && <HomeFeed hasProfile={Boolean(profile)} subjects={subjects} subjectLevels={profile?.subjectLevels} studyState={studyState} onSelectSubject={selectSubject} onContinueSubject={continueSubject} onOpenSettings={() => router.push("/onboarding?edit=1")} />}
     {screen === "workspace" && (
       <SubjectWorkspace
@@ -200,7 +239,7 @@ export function ChatClient() {
     {screen === "conversation" && <ConversationView subjectId={activeSubjectId} level={activeLevel} topicId={topicId} sessionResetKey={tutorSessionResetKey} handoff={tutorHandoff} onOpenGenerator={() => openFocusGenerator(getTopic(activeSubjectId, topicId).name)} onStartSession={(activeTopicId) => recordActivity(activeSubjectId, { type: "tutor", topicId: activeTopicId, label: `Tutor session: ${getTopic(activeSubjectId, activeTopicId).name}`, createdAt: new Date().toISOString() })} onOpenTopic={openTopic} />}
     {screen === "generator" && <PapersView key={activeSubjectId} subjectId={activeSubjectId} level={activeLevel} initialTopicId={generatorTopicId} focusAreas={activeStudyState.focusAreas.filter((area) => area.status === "current")} onQuestionGenerated={(topic) => recordActivity(activeSubjectId, { type: "question", topicId: topic.id, label: `Generated an Exam Question: ${topic.name}`, createdAt: new Date().toISOString() })} onReflect={(outcome, topic) => { recordActivity(activeSubjectId, { type: "reflection", topicId: topic.id, label: `Question reflection: ${outcome}`, createdAt: new Date().toISOString() }); if (outcome === "Still stuck") addFocusArea(topic.name); }} />}
     {screen === "topic-check" && <TopicCheckView subjectId={activeSubjectId} level={activeLevel} onComplete={addTopicCheck} onAddFocusArea={addFocusArea} onOpenTutor={openTopic} onOpenGenerator={openTopicGenerator} />}
-    {screen === "progress" && <><ProgressResultsView subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas} results={activeStudyState.results} activities={activeStudyState.activities} onAddFocusArea={addFocusArea} onUpdateFocusArea={updateFocusArea} onAddResult={addResult} onOpenConvo={openFocusTutor} onOpenGenerator={openFocusGenerator} onOpenTopicCheck={() => goToTool("topic-check")} /><TopicCheckHistory subjectId={activeSubjectId} entries={activeStudyState.topicChecks} /></>}
+    {screen === "progress" && <ProgressResultsView subjectId={activeSubjectId} level={activeLevel} focusAreas={activeStudyState.focusAreas} results={activeStudyState.results} activities={activeStudyState.activities} storageStatus={studyStateSyncStatus} onAddFocusArea={addFocusArea} onUpdateFocusArea={updateFocusArea} onAddResult={addResult} onOpenConvo={openFocusTutor} onOpenGenerator={openFocusGenerator} onOpenTopicCheck={() => goToTool("topic-check")} />}
   </div>
   {quickCheckSubjectId && (
     <SubjectQuickCheck
@@ -209,4 +248,28 @@ export function ChatClient() {
     />
   )}
   </main></div>;
+}
+
+function mergeStudyStates(local: StudyStateBySubject, remote: StudyStateBySubject): StudyStateBySubject {
+  const subjectIds = new Set([...Object.keys(local), ...Object.keys(remote)]);
+  return Object.fromEntries([...subjectIds].map((subjectId) => {
+    const localState = local[subjectId] ?? emptySubjectStudyState();
+    const remoteState = remote[subjectId] ?? emptySubjectStudyState();
+    return [subjectId, {
+      lastTopicId: remoteState.lastTopicId ?? localState.lastTopicId,
+      focusAreas: mergeEntries<SubjectStudyState["focusAreas"][number]>(localState.focusAreas, remoteState.focusAreas, "updatedAt", 30),
+      results: mergeEntries<SubjectStudyState["results"][number]>(localState.results, remoteState.results, "createdAt", 60),
+      activities: mergeEntries<SubjectStudyState["activities"][number]>(localState.activities, remoteState.activities, "createdAt", 100),
+      topicChecks: mergeEntries<SubjectStudyState["topicChecks"][number]>(localState.topicChecks, remoteState.topicChecks, "completedAt", 40),
+    }];
+  }));
+}
+
+function mergeEntries<T extends { id: string }>(local: T[], remote: T[], dateKey: keyof T, max: number) {
+  const entries = new Map<string, T>();
+  for (const entry of local) entries.set(entry.id, entry);
+  for (const entry of remote) entries.set(entry.id, entry);
+  return [...entries.values()]
+    .sort((a, b) => Date.parse(String(b[dateKey])) - Date.parse(String(a[dateKey])))
+    .slice(0, max);
 }

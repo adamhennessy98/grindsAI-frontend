@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getTopic } from "@/lib/constants";
 import { MathMarkdown } from "@/components/math-markdown";
+import { MenuIcon } from "@/components/icons";
 import { ArchivedSessionsPanel } from "./archived-sessions-panel";
 import { subjectInitial, subjectLabel, subjectThemeStyle } from "./subjects";
 import { MobileTutorTopicDrawer, TutorTopicSidebar } from "./tutor-topic-sidebar";
@@ -67,10 +68,10 @@ export function ConversationView({
   const questionContexts = useRef<Record<string, string>>({});
   const handledHandoffs = useRef(new Set<string>());
   const lastResetKey = useRef(sessionResetKey);
-  const lastActivityAt = useRef(Date.now());
+  const lastActivityAt = useRef<number | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const messages = messagesByTopic[topic.id] ?? [];
-  const hasActiveSession = Boolean(sessionIds.current[topic.id]) || messages.length > 0 || Boolean(handoff);
+  const hasActiveSession = messages.length > 0 || Boolean(handoff);
   const isNewTopic = messages.length === 0 && !handoff;
   const isResponding = respondingTopicId === topic.id;
   const contextualActions =
@@ -96,10 +97,6 @@ export function ConversationView({
     lastResetKey.current = sessionResetKey;
     clearTopicSitting(topic.id);
   }, [clearTopicSitting, sessionResetKey, topic.id]);
-
-  useEffect(() => {
-    setArchiveOpen(false);
-  }, [topic.id]);
 
   useEffect(() => {
     window.requestAnimationFrame(scrollToBottom);
@@ -142,7 +139,7 @@ export function ConversationView({
     const idleMs = 15 * 60 * 1000;
     const timer = window.setInterval(() => {
       if (!sessionIds.current[topic.id]) return;
-      if (Date.now() - lastActivityAt.current < idleMs) return;
+      if (lastActivityAt.current !== null && Date.now() - lastActivityAt.current < idleMs) return;
       void endSession("idle");
     }, 60_000);
     return () => window.clearInterval(timer);
@@ -232,20 +229,20 @@ export function ConversationView({
 
   return (
     <div style={subjectThemeStyle(subjectId)} className="mx-auto grid h-[calc(100dvh-65px)] max-w-[1180px] grid-cols-1 overflow-hidden lg:grid-cols-[260px_minmax(0,1fr)]">
-      <TutorTopicSidebar subjectId={subjectId} activeTopicId={topic.id} onSelectTopic={onOpenTopic} />
-      <MobileTutorTopicDrawer subjectId={subjectId} activeTopicId={topic.id} open={topicsOpen} onClose={() => setTopicsOpen(false)} onSelectTopic={onOpenTopic} />
+      <TutorTopicSidebar subjectId={subjectId} activeTopicId={topic.id} onSelectTopic={(id) => { setArchiveOpen(false); onOpenTopic(id); }} />
+      <MobileTutorTopicDrawer subjectId={subjectId} activeTopicId={topic.id} open={topicsOpen} onClose={() => setTopicsOpen(false)} onSelectTopic={(id) => { setArchiveOpen(false); onOpenTopic(id); }} />
       <div className="flex min-h-0 min-w-0 flex-col px-4 sm:px-6">
         <div className="flex shrink-0 items-center gap-3 border-b border-gray-200 px-1 pb-3 pt-4 dark:border-slate-800">
-          <button type="button" onClick={() => setTopicsOpen(true)} aria-label="Open tutor topics" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-[12px] font-medium text-gray-600 transition-colors hover:border-cyan-500 hover:text-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 lg:hidden">Topics</button>
+          <button type="button" onClick={() => setTopicsOpen(true)} aria-label="Open tutor topics" title="Topics" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:border-cyan-400 hover:bg-cyan-50 hover:text-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-700 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-200 lg:hidden"><MenuIcon size={18} /><span className="sr-only">Topics</span></button>
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cyan-500 font-heading text-sm font-semibold text-white">AI</span>
-          <div className="min-w-0 flex-1"><div className="font-heading text-[17px] font-semibold text-gray-900 dark:text-white">{subject} Tutor</div><div className="flex min-w-0 items-center gap-1.5" aria-live="polite"><span className="subject-context-marker flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[9px] font-semibold">{subjectInitial(subjectId)}</span><div className="subject-context-label truncate text-[12.5px]">{level === "OL" ? "Ordinary Level" : "Higher Level"} / {topic.name}</div></div></div>
+          <div className="min-w-0 flex-1"><div className="truncate font-heading text-[17px] font-semibold text-gray-900 dark:text-white">{subject} Tutor</div><div className="mt-0.5 flex min-w-0 items-center gap-1.5" aria-live="polite"><span className="subject-context-marker flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[9px] font-semibold">{subjectInitial(subjectId)}</span><div className="min-w-0"><div className="subject-context-label truncate text-[11.5px]">{level === "OL" ? "Ordinary Level" : "Higher Level"}</div><div className="truncate text-[12.5px] font-medium text-cyan-700 dark:text-cyan-300">{topic.name}</div></div></div></div>
           <div className="flex shrink-0 items-center gap-2">
             <button
               type="button"
               onClick={() => setArchiveOpen(true)}
               className="shrink-0 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-gray-700 hover:border-cyan-500 hover:text-cyan-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
             >
-              Archived
+                History
             </button>
             {hasActiveSession ? (
               <button
@@ -257,7 +254,7 @@ export function ConversationView({
                 {ending ? "Ending…" : "End session"}
               </button>
             ) : (
-              <span className="hidden border-l-2 border-cyan-500 pl-2 text-xs font-medium text-cyan-700 dark:text-cyan-300 sm:inline">Guided help</span>
+              <span className="hidden border-l-2 border-cyan-500 pl-2 text-xs font-medium text-cyan-700 dark:text-cyan-300 md:inline">Guided help</span>
             )}
           </div>
         </div>

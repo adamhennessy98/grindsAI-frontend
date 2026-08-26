@@ -55,7 +55,7 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
     }
-    if (pathname.startsWith("/chat") || pathname.startsWith("/onboarding")) {
+    if (pathname.startsWith("/chat") || pathname.startsWith("/onboarding") || pathname.startsWith("/account")) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("error", "config");
@@ -106,7 +106,7 @@ export async function proxy(request: NextRequest) {
     return applyOnboardingCookie(redirect, true);
   }
 
-  if (!user && pathname.startsWith("/onboarding")) {
+  if (!user && (pathname.startsWith("/onboarding") || pathname.startsWith("/account"))) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);

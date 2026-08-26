@@ -14,6 +14,7 @@ import { streamAgentReply } from "@/lib/llm";
 import { buildChatMemorySummary, saveMemory } from "@/lib/memory";
 import { assertChatAllowed } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
+import { consumeAiRateLimit, isSameOriginRequest, readJsonBody } from "@/lib/request-security";
 import type { Message } from "@/lib/types";
 
 type ChatBody = {
@@ -82,6 +83,10 @@ async function saveUserMessage(input: {
 }
 
 export async function POST(request: Request) {
+  if (!isSameOriginRequest(request)) {
+    return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+  }
+
   const supabase = await createClient();
   if (!supabase) {
     return NextResponse.json({ error: "Supabase is not configured." }, { status: 503 });
@@ -94,22 +99,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const bodyP = request
-    .json()
-    .then((value) => ({ ok: true as const, body: value as ChatBody }))
-    .catch(() => ({ ok: false as const }));
+  const bodyP = readJsonBody<ChatBody>(request, 32_000);
   const [gate, parsed] = await Promise.all([assertChatAllowed(supabase, user.id, user.email), bodyP]);
   if (!gate.ok) {
     return NextResponse.json({ error: gate.message }, { status: gate.status });
   }
   if (!parsed.ok) {
-    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ error: parsed.error }, { status: parsed.status });
   }
+
+  const limit = await consumeAiRateLimit(supabase, "chat");
+  if (!limit.ok) return NextResponse.json({ error: limit.error }, { status: limit.status });
 
   const body = parsed.body;
   const text = typeof body.text === "string" ? body.text.trim() : "";
-  if (!text) {
-    return NextResponse.json({ error: "Message text is required." }, { status: 400 });
+  if (!text || text.length > 8_000) {
+    return NextResponse.json({ error: "Message text is required (max 8,000 characters)." }, { status: 400 });
   }
 
   const subjectId = typeof body.subjectId === "string" ? body.subjectId : "";
@@ -124,7 +129,10 @@ export async function POST(request: Request) {
   );
 
   const history: Pick<Message, "role" | "text">[] = Array.isArray(body.history)
-    ? body.history.map((m) => ({ role: m.role === "ai" ? "ai" : "user", text: String(m.text) }))
+    ? body.history.slice(-12).flatMap((message) => {
+      const content = typeof message?.text === "string" ? message.text.trim().slice(0, 4_000) : "";
+      return content ? [{ role: message.role === "ai" ? "ai" as const : "user" as const, text: content }] : [];
+    })
     : [];
 
   const mode = isAgentMode(body.mode) ? body.mode : "normal";

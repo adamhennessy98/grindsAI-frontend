@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface IconProps { size?: number; className?: string; }
 
 /** Full brand lockup (mark + GrindsAI wordmark). Prefer this in headers/nav. */
@@ -5,24 +7,23 @@ export function BrandLogo({ height = 40, className = "" }: { height?: number; cl
   const width = Math.round(height * (540 / 156));
   return (
     <span className={`inline-flex items-center ${className}`}>
-      <img
+      <Image
         src="/grindsai-logo-lockup.svg"
         alt="GrindsAI"
         width={width}
         height={height}
         className="block dark:hidden"
-        decoding="async"
+        priority
       />
       {/* Lockup wordmark is dark; pair icon + light text in dark mode */}
       <span className="hidden items-center gap-2 dark:inline-flex" aria-label="GrindsAI">
-        <img
+        <Image
           src="/grindsai-logo-icon-centered.svg"
           alt=""
           width={height}
           height={height}
           className="block shrink-0"
           aria-hidden="true"
-          decoding="async"
         />
         <span
           className="font-heading font-semibold tracking-[-0.02em] text-white"
@@ -38,14 +39,13 @@ export function BrandLogo({ height = 40, className = "" }: { height?: number; cl
 /** App mark only — use when the wordmark sits elsewhere (e.g. footer line). */
 export function LogoIcon({ size = 28, className }: IconProps) {
   return (
-    <img
+    <Image
       src="/grindsai-logo-icon-centered.svg"
       alt=""
       width={size}
       height={size}
       className={`block shrink-0 ${className ?? ""}`}
       aria-hidden="true"
-      decoding="async"
     />
   );
 }

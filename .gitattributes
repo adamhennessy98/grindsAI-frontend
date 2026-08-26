@@ -3,3 +3,7 @@
 *.jpg filter=lfs diff=lfs merge=lfs -text
 *.jpeg filter=lfs diff=lfs merge=lfs -text
 *.webp filter=lfs diff=lfs merge=lfs -text
+
+# Marketing images must be present in every standard Git deployment. Keep these
+# small public assets outside LFS so hosts do not receive pointer files.
+/public/landing/*.png -filter -diff -merge -text

@@ -9,9 +9,11 @@ export function useRecommendedNextStep(subjectId?: string | null) {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     const qs = subjectId ? `?subjectId=${encodeURIComponent(subjectId)}` : "";
     void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoading(true);
       try {
         const res = await fetch(`/api/learning/next-step${qs}`);
         if (!res.ok) throw new Error("failed");

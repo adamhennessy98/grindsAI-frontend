@@ -24,9 +24,11 @@ export function ArchivedSessionsPanel({
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    setLoading(true);
-    setError("");
     void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoading(true);
+      setError("");
       try {
         const qs = new URLSearchParams({ subjectId, topicId });
         const res = await fetch(`/api/learning/sessions?${qs.toString()}`);

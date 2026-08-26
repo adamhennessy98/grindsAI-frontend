@@ -29,7 +29,9 @@ export function SubjectQuickCheck({
   onDone: () => void;
 }) {
   const onDoneRef = useRef(onDone);
-  onDoneRef.current = onDone;
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  }, [onDone]);
 
   const [open, setOpen] = useState(false);
   const [questions, setQuestions] = useState<PublicQuestion[]>([]);
@@ -40,13 +42,15 @@ export function SubjectQuickCheck({
 
   useEffect(() => {
     let cancelled = false;
-    setOpen(false);
-    setQuestions([]);
-    setAnswers({});
-    setQIndex(0);
-    setError(null);
 
     void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setOpen(false);
+      setQuestions([]);
+      setAnswers({});
+      setQIndex(0);
+      setError(null);
       try {
         const res = await fetch(
           `/api/learning/subject-diagnostic?subjectId=${encodeURIComponent(subjectId)}`,

@@ -63,7 +63,8 @@ function withExamHint(
 function pickMostUrgent(candidates: Candidate[]): NextStep | null {
   if (!candidates.length) return null;
   const sorted = [...candidates].sort((a, b) => b.urgency - a.urgency);
-  const { urgency: _u, ...step } = sorted[0];
+  const { urgency, ...step } = sorted[0];
+  void urgency;
   return step;
 }
 

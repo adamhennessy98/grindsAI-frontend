@@ -116,7 +116,7 @@ function buildExamGeneratorPrompt(input: GenerationContext, formulaBookContext: 
     "Omit hint, workedSolution, and markingScheme keys when they were not requested.",
     pastPaperContext
       ? [
-          "Past-paper retrieval context is provided for style and marking guidance only.",
+          "Retrieved syllabus, assessment and past-paper context is provided for scope, style and marking guidance only.",
           "Do not copy it verbatim and do not describe generated questions as actual past paper questions.",
           pastPaperContext,
         ].join("\n\n")
