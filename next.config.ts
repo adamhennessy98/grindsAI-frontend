@@ -15,7 +15,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}${analyticsOrigins}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob:${supabaseOrigin ? ` ${supabaseOrigin}` : ""}${analyticsOrigins}`,
+  `img-src 'self' data: blob: https://raw.githubusercontent.com${supabaseOrigin ? ` ${supabaseOrigin}` : ""}${analyticsOrigins}`,
   "font-src 'self' data:",
   `connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ""}${analyticsOrigins}`,
   "object-src 'none'",

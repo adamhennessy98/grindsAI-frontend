@@ -1,4 +1,4 @@
-import { readdir, readFile } from "node:fs/promises";
+import { open, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { getSubjectTopics } from "@/lib/constants";
 
@@ -14,6 +14,9 @@ type RecordItem = {
   secondaryTopics: string[];
   visualAssets: string[];
   hasVisual: boolean;
+};
+
+type RecordDetail = RecordItem & {
   questionText: string;
   markingSchemeText: string;
   tutorQuestionText: string;
@@ -28,6 +31,9 @@ export type PastPaperArchiveDetail = PastPaperArchiveQuestion & {
   tutorQuestionText: string;
   tutorMarkingSchemeText: string;
 };
+export type PastPaperArchiveAsset =
+  | { bytes: Buffer; contentType: string }
+  | { remoteUrl: string };
 
 const ARCHIVE_ROOTS = {
   accounting: "accounting-rag-preprocessing",
@@ -50,6 +56,9 @@ const ARCHIVE_ROOTS = {
 } as const;
 const ARCHIVE_SUBJECT_IDS = new Set(Object.keys(ARCHIVE_ROOTS));
 const archiveCache = new Map<string, Promise<RecordItem[]>>();
+const FRONTMATTER_READ_SIZE = 32 * 1024;
+const ARCHIVE_READ_CONCURRENCY = 24;
+const DEFAULT_ARCHIVE_ASSET_BASE_URL = "https://raw.githubusercontent.com/adamhennessy98/grindsAI-frontend/main";
 
 function archiveRoot(subjectId: string) {
   const root = ARCHIVE_ROOTS[subjectId as keyof typeof ARCHIVE_ROOTS];
@@ -80,6 +89,45 @@ async function listMarkdownFiles(directory: string): Promise<string[]> {
     if (entry.isDirectory()) return listMarkdownFiles(fullPath);
     return entry.isFile() && entry.name.endsWith(".md") ? [fullPath] : [];
   }))).flat();
+}
+
+function remoteAssetUrl(filePath: string) {
+  const baseUrl = (process.env.PAST_PAPER_ASSET_BASE_URL || DEFAULT_ARCHIVE_ASSET_BASE_URL).replace(/\/$/, "");
+  const relativePath = path.relative(process.cwd(), filePath).split(path.sep).map(encodeURIComponent).join("/");
+  return `${baseUrl}/${relativePath}`;
+}
+
+async function mapWithConcurrency<T, R>(items: T[], mapper: (item: T) => Promise<R>, concurrency = ARCHIVE_READ_CONCURRENCY) {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const index = nextIndex++;
+      results[index] = await mapper(items[index]);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker));
+  return results;
+}
+
+async function readFrontmatter(filePath: string) {
+  const handle = await open(filePath, "r");
+  try {
+    const buffer = Buffer.alloc(FRONTMATTER_READ_SIZE);
+    const { bytesRead } = await handle.read(buffer, 0, buffer.length, 0);
+    const opening = buffer.subarray(0, bytesRead).toString("utf8");
+    const match = opening.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+    if (match) return match[1];
+  } finally {
+    await handle.close();
+  }
+
+  // The processed question frontmatter is intentionally small. This fallback
+  // keeps older or unusually large source files compatible.
+  const raw = await readFile(filePath, "utf8");
+  return raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/)?.[1] ?? null;
 }
 
 function scalar(frontmatter: string, key: string) {
@@ -142,33 +190,46 @@ async function loadArchive(subjectId: string) {
   const root = archiveRoot(subjectId);
   if (!root) return [];
   const files = await listMarkdownFiles(root);
-  const records = await Promise.all(files.map(async (filePath) => {
+  const candidateFiles = files.filter((filePath) => Boolean(locationFor(filePath)));
+  const records = await mapWithConcurrency(candidateFiles, async (filePath) => {
     const location = locationFor(filePath);
     if (!location) return null;
-    const raw = await readFile(filePath, "utf8");
-    const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
-    if (!match) return null;
-    const frontmatter = match[1];
+    const frontmatter = await readFrontmatter(filePath);
+    if (!frontmatter) return null;
     const year = Number(scalar(frontmatter, "year"));
     const questionNumber = Number(scalar(frontmatter, "question_number"));
     const topic = scalar(frontmatter, "topic");
     if (!Number.isFinite(year) || !Number.isFinite(questionNumber) || !topic) return null;
     const id = encodeId(root, filePath);
-    const cursor = { value: 0 };
-    const body = match[2];
-    const visualAssets = imageReferences(body);
-    if (visualAssets.length === 0) visualAssets.push(...list(frontmatter, "visual_assets"));
     return {
       id, filePath, ...location, year, questionNumber, topic,
-      secondaryTopics: list(frontmatter, "secondary_topics"), visualAssets,
-      hasVisual: visualAssets.length > 0,
-      questionText: cleanMarkdown(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References"), subjectId, id, cursor),
-      markingSchemeText: cleanMarkdown(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References"), subjectId, id, cursor),
-      tutorQuestionText: tutorText(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References")),
-      tutorMarkingSchemeText: tutorText(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References")),
+      secondaryTopics: list(frontmatter, "secondary_topics"),
+      visualAssets: list(frontmatter, "visual_assets"),
+      hasVisual: scalar(frontmatter, "has_visual").toLowerCase() === "true" || list(frontmatter, "visual_assets").length > 0,
     } satisfies RecordItem;
-  }));
+  });
   return records.filter((record): record is RecordItem => Boolean(record));
+}
+
+async function loadRecordDetail(subjectId: string, record: RecordItem): Promise<RecordDetail | null> {
+  const raw = await readFile(record.filePath, "utf8");
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!match) return null;
+
+  const body = match[2];
+  const visualAssets = imageReferences(body);
+  if (visualAssets.length === 0) visualAssets.push(...record.visualAssets);
+  const cursor = { value: 0 };
+
+  return {
+    ...record,
+    visualAssets,
+    hasVisual: visualAssets.length > 0,
+    questionText: cleanMarkdown(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References"), subjectId, record.id, cursor),
+    markingSchemeText: cleanMarkdown(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References"), subjectId, record.id, cursor),
+    tutorQuestionText: tutorText(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References")),
+    tutorMarkingSchemeText: tutorText(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References")),
+  };
 }
 
 function getArchive(subjectId: string) {
@@ -217,23 +278,31 @@ export async function getPastPaperArchiveByTopic(input: { subjectId: string; lev
 
 export async function getPastPaperArchiveDetail(input: { subjectId: string; id: string }): Promise<PastPaperArchiveDetail | null> {
   const record = (await getArchive(input.subjectId)).find((item) => item.id === input.id);
-  return record ? {
-    ...summary(input.subjectId, record),
-    questionText: record.questionText,
-    markingSchemeText: record.markingSchemeText,
-    tutorQuestionText: record.tutorQuestionText,
-    tutorMarkingSchemeText: record.tutorMarkingSchemeText,
+  if (!record) return null;
+  const detail = await loadRecordDetail(input.subjectId, record);
+  return detail ? {
+    ...summary(input.subjectId, detail),
+    questionText: detail.questionText,
+    markingSchemeText: detail.markingSchemeText,
+    tutorQuestionText: detail.tutorQuestionText,
+    tutorMarkingSchemeText: detail.tutorMarkingSchemeText,
   } : null;
 }
 
-export async function getPastPaperArchiveAsset(input: { subjectId: string; id: string; assetIndex: number }) {
+export async function getPastPaperArchiveAsset(input: { subjectId: string; id: string; assetIndex: number }): Promise<PastPaperArchiveAsset | null> {
   const root = assetsRoot(input.subjectId);
   const record = (await getArchive(input.subjectId)).find((item) => item.id === input.id);
-  const reference = record?.visualAssets[input.assetIndex];
-  if (!root || !record || !reference) return null;
+  if (!root || !record) return null;
+  const detail = await loadRecordDetail(input.subjectId, record);
+  const reference = detail?.visualAssets[input.assetIndex];
+  if (!reference) return null;
   const filePath = path.resolve(path.dirname(record.filePath), reference);
   if (!filePath.startsWith(`${root}${path.sep}`)) return null;
   const extension = path.extname(filePath).toLowerCase();
   const contentType = extension === ".png" ? "image/png" : extension === ".jpg" || extension === ".jpeg" ? "image/jpeg" : "image/webp";
-  return { bytes: await readFile(filePath), contentType };
+  try {
+    return { bytes: await readFile(filePath), contentType };
+  } catch {
+    return { remoteUrl: remoteAssetUrl(filePath) };
+  }
 }
