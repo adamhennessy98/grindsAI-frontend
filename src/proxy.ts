@@ -42,6 +42,17 @@ async function readOnboardingComplete(
   }
 }
 
+async function readCurrentLegalAcceptance(
+  supabase: ReturnType<typeof createServerClient>,
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc("has_current_legal_acceptance");
+    return !error && data === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -90,9 +101,28 @@ export async function proxy(request: NextRequest) {
   const onboardingComplete = user
     ? await readOnboardingComplete(supabase, user.id)
     : false;
+  const legalAcceptanceRequired =
+    pathname.startsWith("/chat") ||
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/account") ||
+    pathname.startsWith("/billing") ||
+    (pathname.startsWith("/api/") && pathname !== "/api/legal/acceptance");
+  const hasCurrentLegalAcceptance = user && legalAcceptanceRequired
+    ? await readCurrentLegalAcceptance(supabase)
+    : true;
 
   // /login and /signup always render — "Sign in" / "Get started" must not bounce
   // past the auth forms just because a session cookie is still present.
+
+  if (user && legalAcceptanceRequired && !hasCurrentLegalAcceptance) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Accept the current legal information before using this feature." }, { status: 428 });
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = "/consent/confirm";
+    url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+    return NextResponse.redirect(url);
+  }
 
   if (user && pathname.startsWith("/chat") && !onboardingComplete) {
     const redirect = NextResponse.redirect(new URL("/onboarding", request.url));
@@ -106,7 +136,7 @@ export async function proxy(request: NextRequest) {
     return applyOnboardingCookie(redirect, true);
   }
 
-  if (!user && (pathname.startsWith("/onboarding") || pathname.startsWith("/account"))) {
+  if (!user && (pathname.startsWith("/onboarding") || pathname.startsWith("/account") || pathname === "/consent/confirm")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
