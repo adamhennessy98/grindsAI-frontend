@@ -20,6 +20,9 @@ export function Footer() {
           <Link href="/terms" className="transition-colors hover:text-gray-900">
             Terms
           </Link>
+          <Link href="/consent" className="transition-colors hover:text-gray-900">
+            Consent
+          </Link>
           <a href="mailto:hello@grindsai.ie" className="transition-colors hover:text-gray-900">
             Contact
           </a>

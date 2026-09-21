@@ -22,7 +22,8 @@ export async function GET(request: Request) {
       if (!Number.isInteger(index) || index < 0) return NextResponse.json({ error: "Invalid visual asset." }, { status: 400 });
       const image = await getPastPaperArchiveAsset({ subjectId: "maths", id: questionId, assetIndex: index });
       if (!image) return NextResponse.json({ error: "Visual asset not found." }, { status: 404 });
-      return new NextResponse(image.bytes, { headers: { "Content-Type": image.contentType, "Cache-Control": "private, max-age=3600" } });
+      if ("remoteUrl" in image) return NextResponse.redirect(image.remoteUrl, 307);
+      return new NextResponse(new Uint8Array(image.bytes), { headers: { "Content-Type": image.contentType, "Cache-Control": "private, max-age=3600" } });
     }
     const question = await getPastPaperArchiveDetail({ subjectId: "maths", id: questionId });
     if (!question) return NextResponse.json({ error: "Past-paper question not found." }, { status: 404 });
