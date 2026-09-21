@@ -39,6 +39,10 @@ function Comparison() {
   );
 }
 
+function isPast(iso: string | null | undefined) {
+  return Boolean(iso) && new Date(iso as string).getTime() <= Date.now();
+}
+
 function BillingNotice({ required, checkout, billing, active, canManage, trialEndsAt, trialExpired, inviteOnly }: { required: boolean; checkout?: string; billing: boolean; active: boolean; canManage: boolean; trialEndsAt: string | null; trialExpired: boolean; inviteOnly: boolean }) {
   if (!inviteOnly && !required && !checkout && !billing && !active && !trialEndsAt) return null;
   const trialDate = trialEndsAt
@@ -83,9 +87,7 @@ export default async function PricingPage({ searchParams }: { searchParams: Prom
     ? await supabase.from("profiles").select("subscription_status, stripe_customer_id, trial_ends_at").eq("id", user.id).maybeSingle()
     : { data: null };
   const trialEndsAt = access?.ok && access.source === "free-trial" ? (billingProfile?.trial_ends_at ?? null) : null;
-  const trialExpired = Boolean(
-    access && !access.ok && billingProfile?.trial_ends_at && new Date(billingProfile.trial_ends_at).getTime() <= Date.now(),
-  );
+  const trialExpired = Boolean(access && !access.ok && isPast(billingProfile?.trial_ends_at));
   // Paywall on but no Stripe keys yet: early access is by invitation (free trials) only.
   const inviteOnly = isBillingEnforced() && !process.env.STRIPE_SECRET_KEY;
   const canManage = Boolean(
