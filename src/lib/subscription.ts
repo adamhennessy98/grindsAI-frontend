@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { type BillingPlanId, isBillingPlanId, planSupportsSubjectCount } from "@/lib/billing-plans";
 
-type AccessSource = "billing-disabled" | "developer" | "subscription";
+type AccessSource = "billing-disabled" | "developer" | "subscription" | "free-trial";
 
 export type SubscriptionAccess =
   | { ok: true; source: AccessSource; planId: BillingPlanId | null }
@@ -47,15 +47,21 @@ export async function getSubscriptionAccess(
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("subscription_status, subscription_plan, billing_subject_count, subjects")
+    .select("subscription_status, subscription_plan, billing_subject_count, subjects, trial_ends_at")
     .eq("id", userId)
     .maybeSingle();
 
   if (error) return { ok: false, status: 500, message: "Could not verify your subscription.", planId: null };
 
   const planId = isBillingPlanId(data?.subscription_plan) ? data.subscription_plan : null;
-  const active = data?.subscription_status === "active" || data?.subscription_status === "trialing";
-  if (!active) {
+  const subscriptionActive = data?.subscription_status === "active" || data?.subscription_status === "trialing";
+  const freeTrialActive = typeof data?.trial_ends_at === "string" && new Date(data.trial_ends_at).getTime() > Date.now();
+
+  if (freeTrialActive && !subscriptionActive) {
+    return { ok: true, source: "free-trial", planId: null };
+  }
+
+  if (!subscriptionActive) {
     return { ok: false, status: 402, message: "Choose a plan to continue using GrindsAI.", planId };
   }
 
