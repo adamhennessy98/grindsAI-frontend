@@ -4,7 +4,7 @@ import { BrandLogo } from "@/components/icons";
 import { PricingOptions } from "@/components/landing/pricing-teaser";
 import { ManageBillingButton } from "@/components/pricing/manage-billing-button";
 import { FAQ } from "@/components/pricing/faq";
-import { getSubscriptionAccess, isBillingEnforced } from "@/lib/subscription";
+import { getSubscriptionAccess } from "@/lib/subscription";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -43,8 +43,8 @@ function isPast(iso: string | null | undefined) {
   return Boolean(iso) && new Date(iso as string).getTime() <= Date.now();
 }
 
-function BillingNotice({ required, checkout, billing, active, canManage, trialEndsAt, trialExpired, inviteOnly }: { required: boolean; checkout?: string; billing: boolean; active: boolean; canManage: boolean; trialEndsAt: string | null; trialExpired: boolean; inviteOnly: boolean }) {
-  if (!inviteOnly && !required && !checkout && !billing && !active && !trialEndsAt) return null;
+function BillingNotice({ required, checkout, billing, active, canManage, trialEndsAt, trialExpired }: { required: boolean; checkout?: string; billing: boolean; active: boolean; canManage: boolean; trialEndsAt: string | null; trialExpired: boolean }) {
+  if (!required && !checkout && !billing && !active && !trialEndsAt && !trialExpired) return null;
   const trialDate = trialEndsAt
     ? new Date(trialEndsAt).toLocaleDateString("en-IE", { day: "numeric", month: "long", year: "numeric" })
     : null;
@@ -53,14 +53,10 @@ function BillingNotice({ required, checkout, billing, active, canManage, trialEn
     : checkout === "cancelled"
       ? "Checkout was cancelled. You can choose a plan whenever you are ready."
       : trialDate
-        ? inviteOnly
-          ? `You're on a free trial until ${trialDate}. No card needed.`
-          : `You're on a free trial until ${trialDate}. No card needed — choose a plan any time before then to keep your access.`
+        ? `You're on a free trial until ${trialDate}. No card needed — choose a plan any time before then to keep your access.`
         : trialExpired
           ? "Your free trial has ended. Thanks for trying GrindsAI."
-          : inviteOnly
-            ? "GrindsAI is invite-only while we're in early access. If you've been invited, make sure you signed up with the email address you were invited on."
-            : required
+          : required
               ? "Choose a plan to continue using your GrindsAI study workspace."
               : active
                 ? "Your GrindsAI subscription is active."
@@ -88,8 +84,6 @@ export default async function PricingPage({ searchParams }: { searchParams: Prom
     : { data: null };
   const trialEndsAt = access?.ok && access.source === "free-trial" ? (billingProfile?.trial_ends_at ?? null) : null;
   const trialExpired = Boolean(access && !access.ok && isPast(billingProfile?.trial_ends_at));
-  // Paywall on but no Stripe keys yet: early access is by invitation (free trials) only.
-  const inviteOnly = isBillingEnforced() && !process.env.STRIPE_SECRET_KEY;
   const canManage = Boolean(
     billingProfile?.stripe_customer_id &&
       ["active", "trialing", "past_due"].includes(billingProfile.subscription_status ?? ""),
@@ -114,8 +108,8 @@ export default async function PricingPage({ searchParams }: { searchParams: Prom
             <p className="mt-[18px] text-[17px] leading-relaxed text-gray-500">One real grinds session costs <span className="font-medium text-gray-700">€40-50</span>. This is your tutor for the whole year.</p>
           </div>
 
-          <BillingNotice required={required} checkout={checkout} billing={billing} active={active} canManage={canManage} trialEndsAt={trialEndsAt} trialExpired={trialExpired} inviteOnly={inviteOnly} />
-          {!inviteOnly && <div className="animate-fade-up-2 mt-10 w-full"><PricingOptions /></div>}
+          <BillingNotice required={required} checkout={checkout} billing={billing} active={active} canManage={canManage} trialEndsAt={trialEndsAt} trialExpired={trialExpired} />
+          <div className="animate-fade-up-2 mt-10 w-full"><PricingOptions /></div>
           <Comparison />
           <FAQ />
         </div>

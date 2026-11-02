@@ -27,7 +27,7 @@ export function LandingNav() {
         borderBottom: scrolled ? "1px solid #dfe7e1" : "1px solid transparent",
       }}
     >
-      <div className="max-w-[1140px] mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-[1140px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
         <Link href="/" className="inline-flex items-center" aria-label="GrindsAI home">
           <BrandLogo height={42} />
         </Link>
@@ -43,13 +43,13 @@ export function LandingNav() {
         <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="hidden md:inline-flex items-center h-10 px-4 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+            className="inline-flex items-center justify-center min-h-11 px-2 sm:px-4 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-cyan-600 transition-colors"
           >
             Sign in
           </Link>
           <Link
             href="/signup"
-            className="inline-flex h-10 items-center rounded-lg bg-cyan-600 px-4 text-sm font-medium text-white shadow-[0_14px_28px_-22px_rgba(8,145,178,.7)] transition-colors hover:bg-cyan-700"
+            className="inline-flex min-h-11 items-center rounded-lg bg-cyan-600 px-3 sm:px-4 text-sm font-medium text-white shadow-[0_14px_28px_-22px_rgba(8,145,178,.7)] transition-colors hover:bg-cyan-700"
           >
             Get started
           </Link>

@@ -4,14 +4,35 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getBrowserSupabase } from "@/lib/supabase/client";
+import { clearStudentProfileLocal } from "@/lib/onboarding";
 
-export function AccountPageClient({ email }: { email: string }) {
+export function AccountPageClient({ email, userId }: { email: string; userId: string }) {
   const router = useRouter();
   const [exporting, setExporting] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmation, setConfirmation] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState("");
+  const [signingOut, setSigningOut] = useState(false);
+
+  const signOut = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    setMessage("");
+    try {
+      const supabase = getBrowserSupabase();
+      if (!supabase) throw new Error("Sign out is temporarily unavailable. Please try again.");
+      const { error } = await supabase.auth.signOut({ scope: "local" });
+      if (error) throw error;
+      clearStudentProfileLocal();
+      try { for (const key of Object.keys(window.sessionStorage)) if (key.startsWith(`grindsai-draft:${userId}:`)) window.sessionStorage.removeItem(key); } catch { /* Storage may be disabled. */ }
+      try { window.localStorage.removeItem(`grindsai-study-state:v1:${userId}`); } catch { /* Storage may be disabled. */ }
+      window.location.replace("/login");
+    } catch {
+      setMessage("We could not sign you out. Please try again.");
+      setSigningOut(false);
+    }
+  };
 
   const exportData = async () => {
     setExporting(true); setMessage("");
@@ -38,7 +59,7 @@ export function AccountPageClient({ email }: { email: string }) {
   };
 
   return <main className="min-h-screen bg-[#eef4f1] px-4 py-10 text-slate-900 dark:bg-slate-950 dark:text-white sm:px-6"><div className="mx-auto max-w-[720px]">
-    <Link href="/chat" className="text-sm font-semibold text-cyan-700 hover:underline dark:text-cyan-300">Back to study workspace</Link>
+    <div className="flex flex-wrap items-center justify-between gap-3"><Link href="/chat" className="text-sm font-semibold text-cyan-700 hover:underline dark:text-cyan-300">Back to study workspace</Link><button type="button" onClick={() => void signOut()} disabled={signingOut || deleting} className="min-h-11 rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:border-cyan-500 focus-visible:outline-2 focus-visible:outline-cyan-600 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100">{signingOut ? "Signing out..." : "Sign out"}</button></div>
     <header className="mt-5"><p className="m-0 text-[12px] font-semibold uppercase tracking-[.08em] text-cyan-700 dark:text-cyan-300">Account</p><h1 className="font-heading m-0 mt-1 text-3xl font-semibold tracking-[-.025em]">Your account and data</h1><p className="m-0 mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Manage your study profile, subscription and the information saved to your account.</p></header>
     <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_42px_-35px_rgba(15,23,42,.5)] dark:border-slate-800 dark:bg-slate-900"><h2 className="m-0 text-lg font-semibold">Study profile</h2><p className="m-0 mt-1 text-sm text-slate-600 dark:text-slate-300">{email || "Signed-in student"}</p><Link href="/onboarding?edit=1" className="mt-4 inline-flex rounded-xl bg-cyan-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-cyan-700">Edit subjects and study profile</Link></section>
     <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_16px_42px_-35px_rgba(15,23,42,.5)] dark:border-slate-800 dark:bg-slate-900"><h2 className="m-0 text-lg font-semibold">Subscription</h2><p className="m-0 mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Change or cancel an active plan before deleting your account.</p><Link href="/pricing?billing=1" className="mt-4 inline-flex rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-800 hover:border-slate-500 dark:border-slate-700 dark:text-slate-100">Manage billing</Link></section>
