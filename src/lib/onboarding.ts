@@ -168,6 +168,11 @@ export function clearOnboardingCookie() {
   document.cookie = `${ONBOARDING_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
+export function clearStudentProfileLocal() {
+  clearOnboardingCookie();
+  try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* Storage may be disabled. */ }
+}
+
 export function hasCompletedOnboarding(): boolean {
   const profile = readStudentProfile();
   return Boolean(profile?.completedAt);

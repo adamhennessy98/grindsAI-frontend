@@ -13,5 +13,5 @@ export default async function AccountPage() {
   if (!supabase) redirect("/login?error=config");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/account");
-  return <AccountPageClient email={user.email ?? ""} />;
+  return <AccountPageClient email={user.email ?? ""} userId={user.id} />;
 }

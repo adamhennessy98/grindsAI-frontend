@@ -12,7 +12,7 @@ export async function DELETE(request: Request) {
 
   const parsed = await readJsonBody<{ confirmation?: string }>(request, 2_000);
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: parsed.status });
-  if (parsed.body.confirmation !== "DELETE") return NextResponse.json({ error: "Type DELETE to confirm permanent account deletion." }, { status: 400 });
+  if (!parsed.body || parsed.body.confirmation !== "DELETE") return NextResponse.json({ error: "Type DELETE to confirm permanent account deletion." }, { status: 400 });
 
   const { data: profile, error: profileError } = await supabase.from("profiles").select("subscription_status").eq("id", user.id).maybeSingle();
   if (profileError) return NextResponse.json({ error: "Could not verify your subscription." }, { status: 500 });
@@ -20,8 +20,13 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Cancel your subscription in Billing before deleting your account." }, { status: 409 });
   }
 
+  let admin: ReturnType<typeof createAdminClient>;
   try {
-    const admin = createAdminClient();
+    admin = createAdminClient();
+  } catch {
+    return NextResponse.json({ error: "Account deletion is temporarily unavailable. Please contact privacy@grindsai.ie for help." }, { status: 503 });
+  }
+  try {
     const { error } = await admin.auth.admin.deleteUser(user.id);
     if (error) throw error;
     return NextResponse.json({ ok: true });

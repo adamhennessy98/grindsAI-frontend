@@ -7,6 +7,7 @@ import { MenuIcon } from "@/components/icons";
 import { ArchivedSessionsPanel } from "./archived-sessions-panel";
 import { subjectInitial, subjectLabel, subjectThemeStyle } from "./subjects";
 import { MobileTutorTopicDrawer, TutorTopicSidebar } from "./tutor-topic-sidebar";
+import { useSessionDraft } from "./use-session-draft";
 
 export type TutorQuestionHandoff = {
   id: string;
@@ -23,6 +24,7 @@ export type TutorQuestionHandoff = {
 type TutorMessage = { id: string; role: "user" | "ai"; text: string };
 
 interface ConversationViewProps {
+  draftScope: string;
   subjectId: string;
   level: string;
   topicId: string;
@@ -45,6 +47,7 @@ const starterActions = [
 const stuckPhrases = new Set(["I'm still stuck", "I am still stuck", "I'm stuck", "I am stuck"]);
 
 export function ConversationView({
+  draftScope,
   subjectId,
   level,
   topicId,
@@ -58,6 +61,8 @@ export function ConversationView({
   const topic = getTopic(subjectId, topicId);
   const [topicsOpen, setTopicsOpen] = useState(false);
   const [draft, setDraft] = useState("");
+  const restoreDraft = useCallback((value: unknown) => setDraft(typeof value === "string" ? value : ""), []);
+  useSessionDraft(draftScope ? `grindsai-draft:${draftScope}:${subjectId}:${level}:tutor:${topicId}` : null, draft || null, restoreDraft);
   const [messagesByTopic, setMessagesByTopic] = useState<Record<string, TutorMessage[]>>({});
   const [respondingTopicId, setRespondingTopicId] = useState<string | null>(null);
   const [ending, setEnding] = useState(false);
@@ -228,7 +233,7 @@ export function ConversationView({
   }, [handoff, sendMessage]);
 
   return (
-    <div style={subjectThemeStyle(subjectId)} className="mx-auto grid h-[calc(100dvh-65px)] max-w-[1180px] grid-cols-1 overflow-hidden lg:grid-cols-[260px_minmax(0,1fr)]">
+    <div style={subjectThemeStyle(subjectId)} className="mx-auto grid h-full max-w-[1180px] grid-cols-1 overflow-hidden lg:grid-cols-[260px_minmax(0,1fr)]">
       <TutorTopicSidebar subjectId={subjectId} activeTopicId={topic.id} onSelectTopic={(id) => { setArchiveOpen(false); onOpenTopic(id); }} />
       <MobileTutorTopicDrawer subjectId={subjectId} activeTopicId={topic.id} open={topicsOpen} onClose={() => setTopicsOpen(false)} onSelectTopic={(id) => { setArchiveOpen(false); onOpenTopic(id); }} />
       <div className="flex min-h-0 min-w-0 flex-col px-4 sm:px-6">
@@ -266,7 +271,7 @@ export function ConversationView({
         )}
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-1 pb-4 pt-4"><div key={topic.id} className="animate-fade-up flex flex-col gap-4">{isNewTopic ? <TutorEmptyState topicName={topic.name} onChoose={sendMessage} /> : <>{handoff && <QuestionHandoff handoff={handoff} />}{!handoff && messages.length === 0 && <TutorBubble>You are in {topic.name}. Tell me what you are working on or where you are stuck.</TutorBubble>}{messages.map((message) => message.role === "ai" ? <TutorBubble key={message.id}>{message.text || "Thinking..."}</TutorBubble> : <StudentBubble key={message.id}>{message.text}</StudentBubble>)}</>}</div><div ref={bottomRef} /></div>
 
-        <div className="shrink-0 border-t border-gray-200 bg-[#f4f7f4]/95 px-1 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-sm dark:border-slate-800 dark:bg-[#07101e]/95">{(contextualActions.length > 0 || messages.length > 0 || handoff) && <div className="mb-2.5 flex flex-wrap gap-2">{contextualActions.map((action) => <QuickAction key={action} onClick={() => void sendMessage(action)}>{action}</QuickAction>)}{(messages.length > 0 || handoff) && <QuickAction onClick={onOpenGenerator}>Practise this topic</QuickAction>}</div>}<form onSubmit={(event) => { event.preventDefault(); void sendMessage(draft); }} className="flex items-center gap-2.5 rounded-lg border border-gray-300 bg-white py-1.5 pl-4 pr-1.5 shadow-[0_8px_18px_-18px_rgba(15,23,42,.5)] dark:border-slate-700 dark:bg-slate-900"><input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Paste a question or tell your Tutor where you are stuck..." className="flex-1 border-none bg-transparent py-2.5 text-[14.5px] text-gray-700 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-slate-400" /><button type="submit" disabled={!draft.trim() || isResponding} aria-label="Send message" className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-md bg-cyan-600 text-[12px] font-semibold text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 disabled:bg-gray-300 dark:disabled:bg-slate-700">Send</button></form></div>
+        <div className="shrink-0 border-t border-gray-200 bg-[#f4f7f4]/95 px-1 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-sm dark:border-slate-800 dark:bg-[#07101e]/95">{(contextualActions.length > 0 || messages.length > 0 || handoff) && <div className="mb-2.5 flex flex-wrap gap-2">{contextualActions.map((action) => <QuickAction key={action} onClick={() => void sendMessage(action)}>{action}</QuickAction>)}{(messages.length > 0 || handoff) && <QuickAction onClick={onOpenGenerator}>Practise this topic</QuickAction>}</div>}<form onSubmit={(event) => { event.preventDefault(); void sendMessage(draft); }} className="flex items-center gap-2.5 rounded-lg border border-gray-300 bg-white py-1.5 pl-4 pr-1.5 shadow-[0_8px_18px_-18px_rgba(15,23,42,.5)] dark:border-slate-700 dark:bg-slate-900"><input aria-label="Message your Tutor" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Paste a question or tell your Tutor where you are stuck..." className="min-w-0 flex-1 border-none bg-transparent py-2.5 text-base text-gray-700 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-slate-400 sm:text-[14.5px]" /><button type="submit" disabled={!draft.trim() || isResponding} aria-label="Send message" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-cyan-600 text-[12px] font-semibold text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-500/20 disabled:bg-gray-300 dark:disabled:bg-slate-700">Send</button></form></div>
       </div>
       <ArchivedSessionsPanel
         subjectId={subjectId}

@@ -9,6 +9,7 @@ import type { StudyStateBySubject } from "./study-state";
 import { subjectInitial, subjectThemeStyle } from "./subjects";
 import { useExamScheduleBadges } from "./use-exam-schedule-badges";
 import { useRecommendedNextStep } from "./use-recommended-next-step";
+import type { NextStep } from "@/lib/learning/next-step";
 
 interface HomeFeedProps {
   hasProfile: boolean;
@@ -17,6 +18,7 @@ interface HomeFeedProps {
   studyState: StudyStateBySubject;
   onSelectSubject: (id: string) => void;
   onContinueSubject: (id: string, topicId?: string) => void;
+  onOpenRecommendation: (step: NextStep) => void;
   onOpenSettings: () => void;
 }
 
@@ -27,6 +29,7 @@ export function HomeFeed({
   studyState,
   onSelectSubject,
   onContinueSubject,
+  onOpenRecommendation,
   onOpenSettings,
 }: HomeFeedProps) {
   if (!hasProfile) return <ProfileEmptyState onOpenSettings={onOpenSettings} />;
@@ -37,6 +40,7 @@ export function HomeFeed({
       studyState={studyState}
       onSelectSubject={onSelectSubject}
       onContinueSubject={onContinueSubject}
+      onOpenRecommendation={onOpenRecommendation}
       onOpenSettings={onOpenSettings}
     />
   );
@@ -48,6 +52,7 @@ function HomeFeedReady({
   studyState,
   onSelectSubject,
   onContinueSubject,
+  onOpenRecommendation,
   onOpenSettings,
 }: Omit<HomeFeedProps, "hasProfile">) {
   const { nextStep } = useRecommendedNextStep(null);
@@ -84,7 +89,7 @@ function HomeFeedReady({
           title={nextStep.title}
           reason={nextStep.reason}
           examBadge={nextStep.examBadge}
-          onContinue={() => onContinueSubject(nextStep.subjectId, nextStep.topicId)}
+          onContinue={() => onOpenRecommendation(nextStep)}
         />
       ) : continuation ? (
         <ContinuationCard

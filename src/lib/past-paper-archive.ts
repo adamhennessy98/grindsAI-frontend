@@ -105,6 +105,12 @@ function imageReferences(value: string) {
   return Array.from(value.matchAll(/!\[[^\]]*]\(([^)]+)\)/g), (match) => match[1].trim());
 }
 
+export function isArchiveInstructionOnly(value: string) {
+  const text = value.replace(/<!--[\s\S]*?-->/g, "").replace(/^#.*$/gm, "").trim().replace(/\s+/g, " ");
+  if (!text) return true;
+  return /^(?:section [a-z],? leaving \d+ minutes for section [a-z][.!]?|instructions(?: to candidates)?:?|blank page|this page (?:is |has been )?(?:intentionally )?left blank[.!]?|answer (?:all|any (?:one|two|three|four|five|six|\d+)) (?:of the )?(?:following )?questions(?: in (?:this )?section [a-z])?[.!]?)$/i.test(text);
+}
+
 function cleanMarkdown(value: string, subjectId: string, questionId: string, assetCursor: { value: number }) {
   const images = imageReferences(value);
   if (images.length > 0) {
@@ -156,23 +162,51 @@ async function loadArchive(subjectId: string) {
     const id = encodeId(root, filePath);
     const cursor = { value: 0 };
     const body = match[2];
-    const visualAssets = imageReferences(body);
-    if (visualAssets.length === 0) visualAssets.push(...list(frontmatter, "visual_assets"));
+    let questionBody = sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References");
+    let schemeBody = sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References");
+    const fallbackAssets = list(frontmatter, "visual_assets");
+    const hasQuestionScan = imageReferences(questionBody).length > 0 || fallbackAssets.some((asset) => !asset.replace(/\\/g, "/").includes("/marking_schemes/"));
+    if (isArchiveInstructionOnly(questionBody) && (tutorText(questionBody) || !hasQuestionScan)) return null;
+    // Some preprocessors record scans only in frontmatter, not in the Markdown.
+    if (!imageReferences(questionBody).length) {
+      questionBody += fallbackAssets.filter((asset) => !asset.replace(/\\/g, "/").includes("/marking_schemes/"))
+        .map((asset) => `\n\n![Scanned exam page](${asset})`).join("");
+    }
+    if (!imageReferences(schemeBody).length) {
+      schemeBody += fallbackAssets.filter((asset) => asset.replace(/\\/g, "/").includes("/marking_schemes/"))
+        .map((asset) => `\n\n![Scanned marking scheme](${asset})`).join("");
+    }
+    const visualAssets = [...imageReferences(questionBody), ...imageReferences(schemeBody)];
     return {
       id, filePath, ...location, year, questionNumber, topic,
       secondaryTopics: list(frontmatter, "secondary_topics"), visualAssets,
       hasVisual: visualAssets.length > 0,
-      questionText: cleanMarkdown(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References"), subjectId, id, cursor),
-      markingSchemeText: cleanMarkdown(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References"), subjectId, id, cursor),
+      questionText: cleanMarkdown(questionBody, subjectId, id, cursor),
+      markingSchemeText: cleanMarkdown(schemeBody, subjectId, id, cursor),
       tutorQuestionText: tutorText(sectionBefore(sectionBefore(body, "Marking Scheme"), "Source References")),
       tutorMarkingSchemeText: tutorText(sectionBefore(sectionAfter(body, "Marking Scheme"), "Source References")),
     } satisfies RecordItem;
   }));
-  return records.filter((record): record is RecordItem => Boolean(record));
+  const unique = new Map<string, RecordItem>();
+  const rank = { topic_specific: 0, mixed: 1, unclassified: 2 };
+  for (const record of records.filter((item): item is RecordItem => Boolean(item)).sort((a, b) => rank[a.collection] - rank[b.collection])) {
+    // The same preprocessed source often exists in classified and unclassified folders.
+    const sourceName = path.basename(record.filePath).replace(/_q\d+_.+\.md$/, "");
+    const key = `${record.level}:${sourceName}:${record.questionNumber}:${record.tutorQuestionText.replace(/\s+/g, " ")}`;
+    const existing = unique.get(key);
+    if (!existing) unique.set(key, record);
+    else if (record.collection === "topic_specific" && existing.collection === "topic_specific") {
+      existing.secondaryTopics = [...new Set([...existing.secondaryTopics, record.topic, ...record.secondaryTopics])];
+    }
+  }
+  return [...unique.values()];
 }
 
 function getArchive(subjectId: string) {
-  if (!archiveCache.has(subjectId)) archiveCache.set(subjectId, loadArchive(subjectId));
+  if (!archiveCache.has(subjectId)) archiveCache.set(subjectId, loadArchive(subjectId).catch((error) => {
+    archiveCache.delete(subjectId);
+    throw error;
+  }));
   return archiveCache.get(subjectId)!;
 }
 
@@ -226,14 +260,26 @@ export async function getPastPaperArchiveDetail(input: { subjectId: string; id: 
   } : null;
 }
 
-export async function getPastPaperArchiveAsset(input: { subjectId: string; id: string; assetIndex: number }) {
+export async function getPastPaperArchiveAsset(input: { subjectId: string; id: string; assetIndex: number }): Promise<{ url: string } | { bytes: Buffer; contentType: string } | null> {
   const root = assetsRoot(input.subjectId);
   const record = (await getArchive(input.subjectId)).find((item) => item.id === input.id);
   const reference = record?.visualAssets[input.assetIndex];
   if (!root || !record || !reference) return null;
   const filePath = path.resolve(path.dirname(record.filePath), reference);
   if (!filePath.startsWith(`${root}${path.sep}`)) return null;
+  const assetBase = process.env.PAST_PAPER_ASSET_BASE_URL?.trim();
+  if (assetBase) {
+    const base = new URL(assetBase.endsWith("/") ? assetBase : `${assetBase}/`);
+    if (!['https:', 'http:'].includes(base.protocol)) throw new Error("Invalid past-paper asset base URL");
+    const assetPath = [input.subjectId, ...path.relative(root, filePath).split(path.sep)].map(encodeURIComponent).join("/");
+    return { url: new URL(assetPath, base).toString() };
+  }
   const extension = path.extname(filePath).toLowerCase();
   const contentType = extension === ".png" ? "image/png" : extension === ".jpg" || extension === ".jpeg" ? "image/jpeg" : "image/webp";
-  return { bytes: await readFile(filePath), contentType };
+  try {
+    return { bytes: await readFile(filePath), contentType };
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
 }

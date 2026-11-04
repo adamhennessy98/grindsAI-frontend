@@ -2,6 +2,7 @@
 
 import { getSubjectTopics } from "@/lib/constants";
 import { subjectThemeStyle } from "./subjects";
+import { StudyModal } from "./study-modal";
 
 interface TutorTopicNavProps {
   subjectId: string;
@@ -17,7 +18,7 @@ export function TutorTopicSidebar({ subjectId, activeTopicId, onSelectTopic }: T
 export function MobileTutorTopicDrawer({ subjectId, activeTopicId, onSelectTopic, open, onClose }: TutorTopicNavProps & { open: boolean; onClose: () => void }) {
   const topics = getSubjectTopics(subjectId);
   if (!open) return null;
-  return <div className="fixed inset-0 z-40 lg:hidden"><button type="button" aria-label="Close topic selector" onClick={onClose} className="absolute inset-0 bg-slate-950/45" /><aside style={subjectThemeStyle(subjectId)} className="relative h-full w-[min(86vw,330px)] overflow-y-auto border-r border-gray-200 bg-white px-3 py-4 shadow-2xl dark:border-slate-700 dark:bg-slate-900"><div className="mb-4 flex items-center justify-between px-2"><div><div className="subject-context-label text-[10.5px] font-semibold">TUTOR TOPICS</div><div className="mt-1 text-[12.5px] text-gray-400">Choose the context for this chat</div></div><button type="button" onClick={onClose} className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-[12px] font-medium text-gray-500 dark:border-slate-700 dark:text-slate-300">Close</button></div><TopicList topics={topics} activeTopicId={activeTopicId} onSelectTopic={(id) => { onSelectTopic(id); onClose(); }} /></aside></div>;
+  return <StudyModal label="Tutor topics" onClose={onClose} className="inset-y-0 left-0 m-0 h-dvh max-h-none w-[min(86vw,330px)] max-w-none bg-white dark:bg-slate-900"><aside style={subjectThemeStyle(subjectId)} className="relative h-full w-[min(86vw,330px)] overflow-y-auto border-r border-gray-200 bg-white px-3 py-4 shadow-2xl dark:border-slate-700 dark:bg-slate-900"><div className="mb-4 flex items-center justify-between px-2"><div><div className="subject-context-label text-[10.5px] font-semibold">TUTOR TOPICS</div><div className="mt-1 text-[12.5px] text-gray-400">Choose the context for this chat</div></div><button type="button" onClick={onClose} className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-[12px] font-medium text-gray-500 dark:border-slate-700 dark:text-slate-300">Close</button></div><TopicList topics={topics} activeTopicId={activeTopicId} onSelectTopic={(id) => { onSelectTopic(id); onClose(); }} /></aside></StudyModal>;
 }
 
 function TopicList({ topics, activeTopicId, onSelectTopic }: { topics: ReturnType<typeof getSubjectTopics>; activeTopicId?: string; onSelectTopic: (topicId: string) => void }) {

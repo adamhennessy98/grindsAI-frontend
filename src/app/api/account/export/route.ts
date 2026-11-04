@@ -38,7 +38,7 @@ export async function GET() {
       .order("created_at", { ascending: true }))
     : { available: true, data: [] };
 
-  const [profile, progress, memories, context, learningEvents, mastery, sessions, examSchedule] = await Promise.all([
+  const [profile, progress, memories, context, learningEvents, mastery, sessions, examSchedule, legalAcceptances] = await Promise.all([
     readTable(supabase, "profiles", (query) => query.select("id, email, display_name, year_group, exam_target, challenge, subjects, subject_levels, onboarding_completed_at").eq("id", user.id).maybeSingle()),
     readTable(supabase, "student_subject_progress", (query) => query.select("subject_id, state, updated_at").eq("user_id", user.id).order("updated_at", { ascending: true })),
     readTable(supabase, "student_memories", (query) => query.select("subject_id, topic_id, level, source, summary, metadata, created_at").eq("user_id", user.id).order("created_at", { ascending: true })),
@@ -47,12 +47,13 @@ export async function GET() {
     readTable(supabase, "student_kc_state", (query) => query.select("kc_id, mastery_p, evidence_n, last_outcome, last_event_at, updated_at").eq("user_id", user.id).order("updated_at", { ascending: true })),
     readTable(supabase, "study_sessions", (query) => query.select("id, subject_id, level, topic_id, session_type, started_at, ended_at, summary_line, graded_outcome").eq("user_id", user.id).order("started_at", { ascending: true })),
     readTable(supabase, "student_exam_schedule", (query) => query.select("subject_id, level, exam_date, paper_label, updated_at").eq("user_id", user.id).order("updated_at", { ascending: true })),
+    readTable(supabase, "legal_acceptances", (query) => query.select("document_key, document_version, accepted_at, source").eq("user_id", user.id).order("accepted_at", { ascending: true })),
   ]);
 
   const body = {
     exportedAt: new Date().toISOString(),
     account: { id: user.id, email: user.email ?? null },
-    data: { profile, progress, conversations, messages, memories, context, learningEvents, mastery, sessions, examSchedule },
+    data: { profile, progress, conversations, messages, memories, context, learningEvents, mastery, sessions, examSchedule, legalAcceptances },
   };
 
   return new NextResponse(JSON.stringify(body, null, 2), {

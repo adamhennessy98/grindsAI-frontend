@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { safeNextPath } from "@/lib/site-url";
 import { getSubscriptionAccess } from "@/lib/subscription";
+import { isLegalMigrationMissingInDevelopment } from "@/lib/legal-consent";
 
 const ONBOARDING_COOKIE = "grindsai_onboarding";
 const ONBOARDING_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -37,6 +38,17 @@ async function readOnboardingComplete(
       .maybeSingle();
     if (error) return false;
     return Boolean(data?.onboarding_completed_at);
+  } catch {
+    return false;
+  }
+}
+
+async function readCurrentLegalAcceptance(
+  supabase: ReturnType<typeof createServerClient>,
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc("has_current_legal_acceptance");
+    return (!error && data === true) || isLegalMigrationMissingInDevelopment(error);
   } catch {
     return false;
   }
@@ -90,9 +102,29 @@ export async function proxy(request: NextRequest) {
   const onboardingComplete = user
     ? await readOnboardingComplete(supabase, user.id)
     : false;
+  const legalAcceptanceRequired =
+    pathname.startsWith("/chat") ||
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/billing") ||
+    (pathname.startsWith("/api/") && !pathname.startsWith("/api/account") && pathname !== "/api/legal/acceptance" && pathname !== "/api/billing/portal");
+  const hasCurrentLegalAcceptance = user && legalAcceptanceRequired
+    ? await readCurrentLegalAcceptance(supabase)
+    : true;
 
   // /login and /signup always render — "Sign in" / "Get started" must not bounce
   // past the auth forms just because a session cookie is still present.
+
+  if (user && legalAcceptanceRequired && !hasCurrentLegalAcceptance) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Accept the current legal information before using this feature." }, { status: 428 });
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = "/consent/confirm";
+    url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
+    const redirect = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+    return redirect;
+  }
 
   if (user && pathname.startsWith("/chat") && !onboardingComplete) {
     const redirect = NextResponse.redirect(new URL("/onboarding", request.url));
@@ -106,7 +138,7 @@ export async function proxy(request: NextRequest) {
     return applyOnboardingCookie(redirect, true);
   }
 
-  if (!user && (pathname.startsWith("/onboarding") || pathname.startsWith("/account"))) {
+  if (!user && (pathname.startsWith("/onboarding") || pathname.startsWith("/account") || pathname === "/consent/confirm")) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", `${pathname}${request.nextUrl.search}`);

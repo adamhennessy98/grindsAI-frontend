@@ -8,6 +8,7 @@ import { getBrowserSupabase } from "@/lib/supabase/client";
 import { getAuthCallbackUrl, safeNextPath } from "@/lib/site-url";
 import { clearOnboardingCookie, ONBOARDING_COOKIE } from "@/lib/onboarding";
 import { PASSWORD_GUIDANCE, passwordRequirementError } from "@/lib/password-policy";
+import { LEGAL_DOCUMENT_VERSION } from "@/lib/legal-consent";
 
 type Mode = "login" | "signup";
 
@@ -78,6 +79,7 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+  const [hasAcceptedLegal, setHasAcceptedLegal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -98,6 +100,10 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
       setError(passwordError);
       return;
     }
+    if (mode === "signup" && !hasAcceptedLegal) {
+      setError("Please review and accept the Terms, Privacy Policy and Consent information to create an account.");
+      return;
+    }
     const supabase = getBrowserSupabase();
     if (!supabase) {
       setError("Sign-in is temporarily unavailable. Please try again later.");
@@ -113,7 +119,11 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
           password,
           options: {
             emailRedirectTo: redirectTo,
-            data: { full_name: name.trim() || undefined },
+            data: {
+              full_name: name.trim() || undefined,
+              legal_document_version: LEGAL_DOCUMENT_VERSION,
+              legal_documents_accepted: true,
+            },
           },
         });
         if (signErr) {
@@ -123,6 +133,15 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
           return;
         }
         if (data.session) {
+          const acceptanceResponse = await fetch("/api/legal/acceptance", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ source: "signup", accepted: true, version: LEGAL_DOCUMENT_VERSION }),
+          });
+          if (!acceptanceResponse.ok) {
+            router.push(`/consent/confirm?next=${encodeURIComponent(nextPath)}`);
+            return;
+          }
           await goAfterAuth();
           return;
         }
@@ -144,6 +163,10 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
   const google = async () => {
     setError("");
     setInfo("");
+    if (mode === "signup" && !hasAcceptedLegal) {
+      setError("Please review and accept the Terms, Privacy Policy and Consent information to create an account.");
+      return;
+    }
     const supabase = getBrowserSupabase();
     if (!supabase) {
       setError("Auth is not configured. Add Supabase keys to .env.local.");
@@ -274,6 +297,23 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
             </p>
           )}
 
+          {mode === "signup" && (
+            <label className="-mt-0.5 flex cursor-pointer items-start gap-2.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-xs leading-relaxed text-gray-600">
+              <input
+                type="checkbox"
+                required
+                checked={hasAcceptedLegal}
+                onChange={(event) => setHasAcceptedLegal(event.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 accent-emerald-600"
+              />
+              <span>
+                I agree to the <Link href="/terms" target="_blank" rel="noopener noreferrer" className="font-medium text-emerald-700 underline">Terms</Link>{" "}
+                and acknowledge the <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="font-medium text-emerald-700 underline">Privacy Policy</Link>{" "}
+                and <Link href="/consent" target="_blank" rel="noopener noreferrer" className="font-medium text-emerald-700 underline">Consent and cookies</Link> information.
+              </span>
+            </label>
+          )}
+
           {error && (
             <div className="text-[13px] text-red-700 bg-red-50 border border-red-200 px-2.5 py-2 rounded-lg">{error}</div>
           )}
@@ -314,15 +354,15 @@ export function AuthForm({ initialMode, authError }: { initialMode: Mode; authEr
       </div>
 
       <p className="mt-6 text-xs text-gray-400 text-center max-w-[360px]">
-        By continuing you agree to our{" "}
+        {mode === "signup" ? "By creating an account, you agree to our" : "By signing in, your use remains subject to our"}{" "}
         <Link href="/terms" className="underline hover:text-gray-600">
           Terms
         </Link>{" "}
-        and{" "}
+        , our{" "}
         <Link href="/privacy" className="underline hover:text-gray-600">
           Privacy Policy
         </Link>
-        .
+        {" "}and our <Link href="/consent" className="underline hover:text-gray-600">Consent and cookies</Link> information.
       </p>
     </div>
   );

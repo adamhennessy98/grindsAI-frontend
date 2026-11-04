@@ -11,11 +11,14 @@ const supabaseOrigin = (() => {
 const analyticsOrigins = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
   ? " https://www.googletagmanager.com https://www.google-analytics.com"
   : "";
+const archiveAssetOrigin = process.env.PAST_PAPER_ASSET_BASE_URL
+  ? new URL(process.env.PAST_PAPER_ASSET_BASE_URL).origin
+  : "";
 const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}${analyticsOrigins}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob:${supabaseOrigin ? ` ${supabaseOrigin}` : ""}${analyticsOrigins}`,
+  `img-src 'self' data: blob:${supabaseOrigin ? ` ${supabaseOrigin}` : ""}${archiveAssetOrigin ? ` ${archiveAssetOrigin}` : ""}${analyticsOrigins}`,
   "font-src 'self' data:",
   `connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ""}${analyticsOrigins}`,
   "object-src 'none'",
@@ -27,6 +30,12 @@ const contentSecurityPolicy = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   distDir: process.env.NEXT_DIST_DIR || ".next",
+  outputFileTracingIncludes: {
+    "/api/*archive": ["./docs/processed/*/output_question_chunks/**/*.md"],
+  },
+  ...(process.env.PAST_PAPER_ASSET_BASE_URL ? {
+    outputFileTracingExcludes: { "/api/*archive": ["./docs/processed/*/image_assets/**/*"] },
+  } : {}),
   async headers() {
     return [
       {

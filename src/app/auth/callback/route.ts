@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSiteUrl, safeNextPath } from "@/lib/site-url";
+import { isLegalMigrationMissingInDevelopment } from "@/lib/legal-consent";
 
 function errorRedirect(origin: string, reason: string) {
   const url = new URL("/auth/auth-code-error", getSiteUrl(origin));
@@ -45,6 +46,12 @@ export async function GET(request: Request) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      const { data: hasAccepted, error: acceptanceStatusError } = await supabase.rpc("has_current_legal_acceptance");
+      if (!hasAccepted && !isLegalMigrationMissingInDevelopment(acceptanceStatusError)) {
+        const confirmUrl = new URL("/consent/confirm", getSiteUrl(origin));
+        confirmUrl.searchParams.set("next", next);
+        return NextResponse.redirect(confirmUrl);
+      }
       return NextResponse.redirect(new URL(next, getSiteUrl(origin)));
     }
     console.warn("[auth] Could not exchange Supabase auth code:", error.message);

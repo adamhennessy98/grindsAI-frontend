@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useSessionDraft, useUnfinishedWork } from "./use-session-draft";
+import { LoadingWaitNote } from "./loading-wait-note";
 import { LoaderCircle } from "lucide-react";
 import { getSubjectTopics } from "@/lib/constants";
 import { requestExamQuestions, type GeneratedExamQuestion } from "@/lib/exam-generator";
@@ -22,8 +24,11 @@ type TopicCheckReview = {
 };
 
 interface TopicCheckViewProps {
+  draftScope: string;
+  onTopicChange: (id: string) => void;
   subjectId: string;
   level: string;
+  initialTopicId?: string;
   onComplete: (entry: TopicCheckEntry) => void;
   onAddFocusArea: (label: string) => void;
   onOpenTutor: (topicId: string) => void;
@@ -96,9 +101,9 @@ async function readTutorReview(input: {
   return { text, sessionId: nextSessionId };
 }
 
-export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, onOpenTutor, onOpenGenerator }: TopicCheckViewProps) {
+export function TopicCheckView({ draftScope, onTopicChange, subjectId, level, initialTopicId, onComplete, onAddFocusArea, onOpenTutor, onOpenGenerator }: TopicCheckViewProps) {
   const topics = useMemo(() => getSubjectTopics(subjectId).filter((topic) => topic.id !== "general"), [subjectId]);
-  const [topicId, setTopicId] = useState(topics[0]?.id ?? "");
+  const [topicId, setTopicId] = useState(() => topics.find((topic) => topic.id === initialTopicId)?.id ?? topics[0]?.id ?? "");
   const [questions, setQuestions] = useState<GeneratedExamQuestion[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [assistedQuestionIndexes, setAssistedQuestionIndexes] = useState<number[]>([]);
@@ -117,6 +122,19 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
   const correctCount = reviews.filter((review) => review.status === "correct").length;
   const needsWorkCount = reviews.filter((review) => review.status === "needs-correction").length;
   const allCorrect = reviews.length === questions.length && correctCount === questions.length;
+  const draft = useMemo(() => questions.length && !completed ? { topicId, questions, answers, assistedQuestionIndexes, activeQuestionIndex, sessionId } : null, [topicId, questions, answers, assistedQuestionIndexes, activeQuestionIndex, sessionId, completed]);
+  const restoreDraft = useCallback((value: unknown) => {
+    if (!value || typeof value !== "object") return;
+    const saved = value as { topicId?: string; questions?: GeneratedExamQuestion[]; answers?: string[]; assistedQuestionIndexes?: number[]; activeQuestionIndex?: number; sessionId?: string };
+    if (!getSubjectTopics(subjectId).some((topic) => topic.id === saved.topicId && topic.id !== "general") || !Array.isArray(saved.questions) || saved.questions.length < 1 || saved.questions.length > 10 || !saved.questions.every((question) => question && typeof question.question === "string")) return;
+    setTopicId(saved.topicId!); onTopicChange(saved.topicId!); setQuestions(saved.questions);
+    setAnswers(saved.questions.map((_, index) => typeof saved.answers?.[index] === "string" ? saved.answers[index] : ""));
+    setAssistedQuestionIndexes((saved.assistedQuestionIndexes ?? []).filter((index) => Number.isInteger(index) && index >= 0 && index < saved.questions!.length));
+    setActiveQuestionIndex(Math.max(0, Math.min(saved.questions.length - 1, Number(saved.activeQuestionIndex) || 0)));
+    setSessionId(typeof saved.sessionId === "string" ? saved.sessionId : null);
+  }, [subjectId, onTopicChange]);
+  useSessionDraft(draftScope ? `grindsai-draft:${draftScope}:${subjectId}:${level}:topic-check` : null, draft, restoreDraft);
+  useUnfinishedWork(!completed && (questions.length > 0 || isGenerating || isReviewing));
 
   const endTopicCheckSession = async (id: string | null) => {
     if (!id) return;
@@ -148,6 +166,7 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
     if (questions.length && !completed && !window.confirm("Change topic and discard this unfinished Topic Check?")) return;
     resetCheck();
     setTopicId(nextTopicId);
+    onTopicChange(nextTopicId);
   };
 
   const startCheck = async () => {
@@ -282,11 +301,11 @@ export function TopicCheckView({ subjectId, level, onComplete, onAddFocusArea, o
         </div>
         <button type="button" onClick={() => void startCheck()} disabled={isGenerating || !activeTopic} className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-amber-600 disabled:cursor-wait disabled:bg-amber-300 dark:disabled:bg-amber-900">{isGenerating && <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />}{isGenerating ? "Building your check..." : "Start a check"}</button>
       </div>
-      {isGenerating && <div role="status" aria-live="polite" className="mt-5 rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-4 dark:border-amber-900 dark:bg-amber-400/[.07]"><div className="flex items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300"><LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /></span><div><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-amber-700 dark:text-amber-300">Building your Topic Check</div><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-600 dark:text-slate-300">Choosing a clear sequence of core questions for {activeTopic?.name}.</p></div></div><div aria-hidden="true" className="mt-4 h-1.5 overflow-hidden rounded-full bg-amber-100 dark:bg-amber-950"><div className="h-full w-2/5 animate-loading-sweep rounded-full bg-amber-500" /></div><div aria-hidden="true" className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">{Array.from({ length: 4 }, (_, index) => <div key={index} className="h-14 animate-pulse rounded-xl border border-amber-100 bg-white/60 dark:border-slate-800 dark:bg-slate-950/40" />)}</div></div>}
+      {isGenerating && <div role="status" aria-live="polite" className="mt-5 rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-4 dark:border-amber-900 dark:bg-amber-400/[.07]"><div className="flex items-center gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300"><LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /></span><div><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-amber-700 dark:text-amber-300">Building your Topic Check</div><p className="m-0 mt-1 text-[13px] leading-relaxed text-gray-600 dark:text-slate-300">Choosing a clear sequence of core questions for {activeTopic?.name}.</p><LoadingWaitNote /></div></div><div aria-hidden="true" className="mt-4 h-1.5 overflow-hidden rounded-full bg-amber-100 dark:bg-amber-950"><div className="h-full w-2/5 animate-loading-sweep rounded-full bg-amber-500" /></div><div aria-hidden="true" className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">{Array.from({ length: 4 }, (_, index) => <div key={index} className="h-14 animate-pulse rounded-xl border border-amber-100 bg-white/60 dark:border-slate-800 dark:bg-slate-950/40" />)}</div></div>}
       {error && <div role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-800 dark:border-red-950 dark:bg-red-950/25 dark:text-red-200">{error}</div>}
     </section>}
 
-    {isReviewing && <section aria-live="polite" className="rounded-2xl border border-amber-100 bg-white px-5 py-6 shadow-[0_14px_38px_-34px_rgba(217,119,6,.55)] dark:border-amber-900 dark:bg-slate-900"><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-amber-700 dark:text-amber-300">Checking your answers</div><h2 className="font-heading m-0 mt-2 text-[21px] font-semibold text-gray-900 dark:text-white">Reviewing question {reviewStep} of {questions.length}</h2><p className="m-0 mt-2 text-[14px] text-gray-500">Your Tutor is comparing your working with the question&apos;s worked solution.</p><div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">{Array.from({ length: questions.length }, (_, index) => <div key={index} className={`h-20 animate-pulse rounded-xl border ${index < reviewStep ? "border-amber-200 bg-amber-50/70 dark:border-amber-900 dark:bg-amber-400/10" : "border-gray-100 bg-gray-50 dark:border-slate-800 dark:bg-slate-950"}`} />)}</div></section>}
+    {isReviewing && <section aria-live="polite" className="rounded-2xl border border-amber-100 bg-white px-5 py-6 shadow-[0_14px_38px_-34px_rgba(217,119,6,.55)] dark:border-amber-900 dark:bg-slate-900"><div className="text-[12px] font-semibold uppercase tracking-[.08em] text-amber-700 dark:text-amber-300">Checking your answers</div><h2 className="font-heading m-0 mt-2 text-[21px] font-semibold text-gray-900 dark:text-white">Reviewing question {reviewStep} of {questions.length}</h2><p className="m-0 mt-2 text-[14px] text-gray-500">Your Tutor is comparing your working with the question&apos;s worked solution.</p><LoadingWaitNote /><div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">{Array.from({ length: questions.length }, (_, index) => <div key={index} className={`h-20 animate-pulse rounded-xl border ${index < reviewStep ? "border-amber-200 bg-amber-50/70 dark:border-amber-900 dark:bg-amber-400/10" : "border-gray-100 bg-gray-50 dark:border-slate-800 dark:bg-slate-950"}`} />)}</div></section>}
 
     {activeQuestion && !completed && !isReviewing && <section className="rounded-2xl border border-amber-100 bg-white px-5 py-5 shadow-[0_14px_38px_-34px_rgba(217,119,6,.55)] dark:border-amber-900 dark:bg-slate-900">
       <div className="flex flex-wrap items-start justify-between gap-3">
